@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: process.env.VITEPRESS_BASE || '/',
   title: "Newbie Home",
   description: "我的个人导航与博客",
   themeConfig: {
