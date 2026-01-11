@@ -95,6 +95,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 确保从 main 分支创建新分支
+          git checkout main || git checkout master
           git checkout -b ${{ steps.branch.outputs.name }}
 
       - name: Add navigation link
@@ -134,6 +136,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ steps.branch.outputs.name }}
+          base: main
           title: "添加导航链接: ${{ inputs.url }}"
           body: |
             ## 添加导航链接
