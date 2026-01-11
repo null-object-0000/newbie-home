@@ -280,3 +280,111 @@
     right: 10px;
   }
 }
+
+/* 脚注样式 */
+.vp-doc .footnotes {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.vp-doc .footnotes ol {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.vp-doc .footnotes li {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+}
+
+.vp-doc .footnotes li p {
+  margin: 0;
+}
+
+.vp-doc sup[id^="fnref"] {
+  color: var(--vp-c-brand);
+  font-weight: 600;
+  position: relative;
+}
+
+.vp-doc sup[id^="fnref"] a {
+  color: var(--vp-c-brand);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.vp-doc sup[id^="fnref"] a:hover {
+  text-decoration: underline;
+}
+
+/* Tooltip 样式 */
+.vp-doc sup.footnote-ref {
+  position: relative;
+  cursor: help;
+}
+
+.vp-doc sup.footnote-ref::before {
+  content: attr(data-footnote);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: normal;
+  width: max-content;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: translateX(-50%) translateY(-4px);
+  z-index: 1000;
+  font-weight: normal;
+  text-align: left;
+}
+
+.vp-doc sup.footnote-ref::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 2px;
+  border: 5px solid transparent;
+  border-top-color: var(--vp-c-divider);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1001;
+}
+
+.vp-doc sup.footnote-ref:hover::before,
+.vp-doc sup.footnote-ref:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.vp-doc sup.footnote-ref:hover::after {
+  transform: translateX(-50%);
+}
+
+.vp-doc .footnote-backref {
+  color: var(--vp-c-brand);
+  text-decoration: none;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+.vp-doc .footnote-backref:hover {
+  text-decoration: underline;
+}

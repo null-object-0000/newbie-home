@@ -269,7 +269,60 @@ if (typeof window !== 'undefined') {
     window.addEventListener('popstate', () => {
       setTimeout(() => {
         setupImageGallery()
+        setupFootnoteTooltips()
       }, 200)
     })
   }
+}
+
+// 处理脚注 tooltip
+function setupFootnoteTooltips() {
+  const footnoteRefs = document.querySelectorAll('.footnote-ref')
+  
+  footnoteRefs.forEach((ref) => {
+    const footnoteId = ref.id.replace('fnref:', 'fn:')
+    const footnote = document.getElementById(footnoteId)
+    
+    if (footnote) {
+      // 获取脚注文本内容（排除返回链接）
+      const backref = footnote.querySelector('.footnote-backref')
+      let footnoteText = footnote.textContent || ''
+      if (backref) {
+        footnoteText = footnoteText.replace(backref.textContent || '', '').trim()
+      }
+      
+      // 设置 data-footnote 属性（如果还没有）
+      if (!ref.getAttribute('data-footnote') && footnoteText) {
+        ref.setAttribute('data-footnote', footnoteText)
+      }
+    }
+  })
+}
+
+// 在初始化时也设置脚注 tooltip
+if (typeof window !== 'undefined') {
+  const initFootnoteTooltips = () => {
+    setTimeout(() => {
+      setupFootnoteTooltips()
+    }, 100)
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFootnoteTooltips)
+  } else {
+    initFootnoteTooltips()
+  }
+  
+  // 监听路由变化
+  window.addEventListener('load', initFootnoteTooltips)
+  
+  // 使用 MutationObserver 监听 DOM 变化
+  const footnoteObserver = new MutationObserver(() => {
+    setupFootnoteTooltips()
+  })
+  
+  footnoteObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
 }
