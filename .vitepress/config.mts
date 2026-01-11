@@ -44,7 +44,7 @@ export default defineConfig({
     nav: [
       { text: '🏠 首页', link: '/' },
       { text: '🧭 导航', link: '/nav/' },
-      { text: '📝 博客', link: '/posts/' }
+      { text: '📝 博客', link: '/posts/2025-04' }
     ],
 
     sidebar: {
