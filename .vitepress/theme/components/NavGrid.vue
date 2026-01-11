@@ -6,24 +6,26 @@
       class="nav-item"
       @click="handleClick(item.link)"
     >
-      <div class="nav-icon-wrapper">
-        <img
-          v-if="item.avatar"
-          :src="item.avatar"
-          :alt="item.name"
-          class="nav-icon"
-          loading="lazy"
-        />
-        <span
-          v-else-if="item.icon"
-          class="nav-icon-text"
-        >{{ getIconText(item.icon) }}</span>
-        <span
-          v-else
-          class="nav-icon-text"
-        >🔗</span>
+      <div class="nav-header">
+        <div class="nav-icon-wrapper">
+          <img
+            v-if="item.avatar"
+            :src="item.avatar"
+            :alt="item.name"
+            class="nav-icon"
+            loading="lazy"
+          />
+          <span
+            v-else-if="item.icon"
+            class="nav-icon-text"
+          >{{ getIconText(item.icon) }}</span>
+          <span
+            v-else
+            class="nav-icon-text"
+          >🔗</span>
+        </div>
+        <div class="nav-name">{{ item.name }}</div>
       </div>
-      <div class="nav-name">{{ item.name }}</div>
       <div v-if="item.desc" class="nav-desc">{{ item.desc }}</div>
     </div>
   </div>
@@ -66,8 +68,8 @@ const getIconText = (icon?: string) => {
 <style scoped>
 .nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
   margin: 30px 0;
   padding: 0 20px;
   max-width: 100%;
@@ -76,9 +78,7 @@ const getIconText = (icon?: string) => {
 .nav-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 20px 16px;
+  padding: 16px;
   border-radius: 12px;
   background: var(--vp-c-bg-soft);
   border: 1px solid var(--vp-c-divider);
@@ -86,7 +86,6 @@ const getIconText = (icon?: string) => {
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
-  min-height: 180px;
 }
 
 .nav-item:hover {
@@ -96,14 +95,21 @@ const getIconText = (icon?: string) => {
   background: var(--vp-c-bg);
 }
 
+.nav-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .nav-icon-wrapper {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--vp-c-bg);
   border: 1px solid var(--vp-c-divider);
   overflow: hidden;
@@ -111,7 +117,7 @@ const getIconText = (icon?: string) => {
 }
 
 .nav-item:hover .nav-icon-wrapper {
-  transform: scale(1.1);
+  transform: scale(1.05);
   border-color: var(--vp-c-brand);
 }
 
@@ -119,65 +125,65 @@ const getIconText = (icon?: string) => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 8px;
+  border-radius: 6px;
 }
 
 .nav-icon-text {
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1;
 }
 
 .nav-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--vp-c-text-1);
-  text-align: center;
   line-height: 1.4;
   word-break: break-word;
-  max-width: 100%;
-  margin-bottom: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .nav-desc {
   font-size: 12px;
   color: var(--vp-c-text-2);
-  text-align: center;
   line-height: 1.5;
   word-break: break-word;
-  max-width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
+  margin-top: 4px;
 }
 
 @media (max-width: 768px) {
   .nav-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
     padding: 0 12px;
   }
   
   .nav-item {
-    padding: 16px 12px;
-    min-height: 160px;
+    padding: 14px;
   }
   
-  .nav-icon-wrapper {
-    width: 56px;
-    height: 56px;
+  .nav-header {
+    gap: 10px;
     margin-bottom: 10px;
   }
   
+  .nav-icon-wrapper {
+    width: 44px;
+    height: 44px;
+  }
+  
   .nav-icon-text {
-    font-size: 28px;
+    font-size: 20px;
   }
   
   .nav-name {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .nav-desc {
@@ -188,32 +194,35 @@ const getIconText = (icon?: string) => {
 
 @media (max-width: 480px) {
   .nav-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
     padding: 0 8px;
   }
   
   .nav-item {
-    padding: 12px 8px;
-    min-height: 140px;
+    padding: 12px;
   }
   
-  .nav-icon-wrapper {
-    width: 48px;
-    height: 48px;
+  .nav-header {
+    gap: 10px;
     margin-bottom: 8px;
   }
   
+  .nav-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+  
   .nav-icon-text {
-    font-size: 24px;
+    font-size: 18px;
   }
   
   .nav-name {
-    font-size: 12px;
+    font-size: 14px;
   }
   
   .nav-desc {
-    font-size: 10px;
+    font-size: 12px;
     -webkit-line-clamp: 2;
   }
 }

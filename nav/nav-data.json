@@ -1,7 +1,19 @@
 [
   {
-    "name": "人工智能",
-    "title": "AI",
+    "name": "常用工具",
+    "title": "Tools",
+    "links": [
+      {
+        "name": "JSON 中文网",
+        "icon": "/icons/json_cn.ico",
+        "link": "https://www.json.cn/",
+        "desc": "Json中文网致力于在中国推广Json,并提供相关的Json解析、验证、格式化、压缩、编辑器以及Json与XML相互转换等服务"
+      }
+    ]
+  },
+  {
+    "name": "AI Chat",
+    "title": "AI Chat",
     "links": [
       {
         "name": "DeepSeek",
@@ -22,6 +34,36 @@
         "desc": "Meet Gemini, Google's AI assistant. Get help with writing, planning, brainstorming, and more. Experi"
       },
       {
+        "name": "AI办公智能体先行者",
+        "icon": "/icons/tiangong_cn.ico",
+        "link": "https://www.tiangong.cn/",
+        "desc": "天工Skywork是一款具备超强DeepResearch能力的全新AI Office智能体，通过3个专家agent和1个通用agent，让AI深度研究，一键生成AI文档、AI PPT、AI表格，高效应"
+      },
+      {
+        "name": "文心一言",
+        "icon": "/icons/yiyan_baidu_com.ico",
+        "link": "https://yiyan.baidu.com/",
+        "desc": "文心一言既是你的智能伙伴，可以陪你聊天、回答问题、画图识图；也是你的AI助手，可以提供灵感、撰写文案、阅读文档、智能翻译，帮你高效完成工作和学习任务。"
+      },
+      {
+        "name": "豆包",
+        "icon": "/icons/doubao_com.png",
+        "link": "https://www.doubao.com/",
+        "desc": "豆包是你的 AI 聊天智能对话问答助手，写作文案翻译编程全能工具。豆包为你答疑解惑，提供灵感，辅助创作，也可以和你畅聊任何你感兴趣的话题。"
+      },
+      {
+        "name": "ChatGPT",
+        "icon": "/icons/chatgpt_com.svg",
+        "link": "https://chatgpt.com/",
+        "desc": "‌ChatGPT是由OpenAI开发的先进AI聊天机器人，基于GPT大模型构建，支持多模态交互，广泛应用于对话、编程、医疗等领域‌。"
+      }
+    ]
+  },
+  {
+    "name": "AI Agent",
+    "title": "AI Agent",
+    "links": [
+      {
         "name": "Miromind",
         "icon": "/icons/dr_miromind_ai.ico",
         "link": "https://dr.miromind.ai/",
@@ -32,18 +74,18 @@
         "icon": "/icons/anygen_io.ico",
         "link": "https://www.anygen.io/",
         "desc": "Go beyond one-click generation. Work alongside AI to shape, refine, and polish work you can confiden"
-      }
-    ]
-  },
-  {
-    "name": "常用工具",
-    "title": "Tools",
-    "links": [
+      },
       {
-        "name": "JSON 中文网",
-        "icon": "json",
-        "link": "https://www.json.cn/",
-        "desc": "Json中文网致力于在中国推广Json,并提供相关的Json解析、验证、格式化、压缩、编辑器以及Json与XML相互转换等服务"
+        "name": "Google AI Studio",
+        "icon": "/icons/aistudio_google_com.png",
+        "link": "https://aistudio.google.com/",
+        "desc": "The fastest path from prompt to production with Gemini"
+      },
+      {
+        "name": "Notebooklm",
+        "icon": "/icons/notebooklm_google.svg",
+        "link": "https://notebooklm.google/",
+        "desc": "Meet NotebookLM, the AI research tool and thinking partner that can analyze your sources, turn compl"
       }
     ]
   }
