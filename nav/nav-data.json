@@ -90,6 +90,30 @@
     ]
   },
   {
+    "name": "AI Code",
+    "title": "AI Code",
+    "links": [
+      {
+        "name": "Cursor",
+        "icon": "/icons/cursor_com.png",
+        "link": "https://cursor.com/cn",
+        "desc": "Cursor 旨在让您的工作效率达到非凡水平,是使用 AI 编写代码的最佳方式。"
+      },
+      {
+        "name": "Trae",
+        "icon": "/icons/trae_ai.png",
+        "link": "https://www.trae.ai/",
+        "desc": "TRAE IDE integrates seamlessly into your workflow, collaborating with you to maximize performance an"
+      },
+      {
+        "name": "Google Antigravity",
+        "icon": "/icons/antigravity_google.png",
+        "link": "https://antigravity.google/",
+        "desc": "Google Antigravity - Build the new way"
+      }
+    ]
+  },
+  {
     "name": "开放平台",
     "title": "Open Platform",
     "links": [
@@ -136,13 +160,13 @@
         "name": "鹊桥",
         "icon": "/icons/lbvapp2_com.ico",
         "link": "https://lbvapp2.com/",
-        "desc":"鹊桥VPN采用全新一代的智能连接技术，提供安全、快速、可靠、易用的VPN服务。"
+        "desc": "鹊桥VPN采用全新一代的智能连接技术，提供安全、快速、可靠、易用的VPN服务。"
       },
       {
         "name": "FastStunnel",
         "icon": "faststunne",
         "link": "https://www.faststunnel.net/",
-        "desc":"使用快速安全通道可以解锁像 Google,Youtube,Facebook,Twitter,Instagram 等等这些网站，一个简单的点击使它可以帮你绕过防火墙过滤。"
+        "desc": "使用快速安全通道可以解锁像 Google,Youtube,Facebook,Twitter,Instagram 等等这些网站，一个简单的点击使它可以帮你绕过防火墙过滤。"
       },
       {
         "name": "Roxybrowser",
