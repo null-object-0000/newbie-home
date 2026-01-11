@@ -107,13 +107,9 @@ jobs:
           git add -A
           git commit -m "chore: 添加导航链接 - ${{ inputs.url }}"
 
-      - name: Push changes
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          git push origin ${{ steps.branch.outputs.name }}
-
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
+        id: create-pr
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -132,6 +128,18 @@ jobs:
             此 PR 由 GitHub Actions 自动创建。
           delete-branch: true
           draft: false
+          push-to-fork: false
+
+      - name: Check PR creation result
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          if [ "${{ steps.create-pr.outputs.pull-request-number }}" != "" ]; then
+            echo "✅ PR 创建成功: #${{ steps.create-pr.outputs.pull-request-number }}"
+            echo "PR URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+          else
+            echo "⚠️ PR 可能已存在或创建失败"
+            echo "请检查工作流日志获取详细信息"
+          fi
 
       - name: Summary
         if: steps.changes.outputs.has_changes == 'false'
