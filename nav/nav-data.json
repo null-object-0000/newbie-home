@@ -1,0 +1,18 @@
+[
+  {
+    "name": "人工智能",
+    "title": "AI",
+    "links": [
+      {
+        "icon": "/icons/deepseek_com.ico",
+        "link": "https://www.deepseek.com/",
+        "desc": "深度求索（DeepSeek），成立于2023年，专注于研究世界领先的通用人工智能底层模型与技术，挑战人工智能前沿性难题。基于自研训练框架、自建智算集群和万卡算力等资源，深度求索团队仅用半年时间便已发布"
+      },
+      {
+        "icon": "/icons/qianwen_com.png",
+        "link": "https://www.qianwen.com/",
+        "desc": "千问是阿里通义千问大模型打造的AI对话助手，通义千问支持问答、写作、代码、翻译、录音、PPT创作、文档处理、音视频速读。"
+      }
+    ]
+  }
+]

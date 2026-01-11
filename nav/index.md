@@ -6,27 +6,29 @@ sidebar: false
 
 <script setup>
 import { VPTeamPage, VPTeamPageTitle, VPTeamMembers } from 'vitepress/theme'
+import navData from './nav-data.json'
+import { useData } from 'vitepress'
 
-// 这里是你的数据源，以后就在这里加链接
-const navData = [
-  {
-    name: '常用工具',
-    title: 'Daily Tools',
-    links: [
-      { icon: 'github', link: 'https://github.com', desc: '代码托管' },
-      { icon: 'twitter', link: 'https://twitter.com', desc: '摸鱼' },
-      { icon: 'youtube', link: 'https://youtube.com', desc: '学习' }
-    ]
-  },
-  {
-    name: '学习资源',
-    title: 'Learning',
-    links: [
-      { icon: 'book', link: 'https://vitepress.dev', desc: 'VitePress文档' },
-      { icon: 'code', link: 'https://developer.mozilla.org', desc: 'MDN Web Docs' }
-    ]
-  }
-]
+const { site } = useData()
+const base = site.value.base || '/'
+
+// 处理图标路径，如果是本地路径则使用 avatar，否则使用 icon（内置图标）
+const processedNavData = navData.map(category => ({
+  ...category,
+  links: category.links.map(link => {
+    // 如果 icon 是路径（以 / 开头），说明是本地图标，使用 avatar
+    // 否则是内置图标名称，使用 icon
+    if (typeof link.icon === 'string' && link.icon.startsWith('/')) {
+      // 确保 base 以 / 结尾，icon 以 / 开头
+      const iconPath = base.endsWith('/') ? base + link.icon.substring(1) : base + link.icon;
+      return {
+        ...link,
+        avatar: iconPath
+      };
+    }
+    return link;
+  })
+}));
 </script>
 
 <VPTeamPage>
@@ -34,7 +36,7 @@ const navData = [
     <template #title>Newbie 的藏宝阁</template>
     <template #lead>收集灵感，记录成长</template>
   </VPTeamPageTitle>
-  <div v-for="category in navData" :key="category.name">
+  <div v-for="category in processedNavData" :key="category.name">
     <h2 style="text-align:center; margin: 40px 0 20px;">{{ category.name }}</h2>
     <VPTeamMembers :members="category.links" />
   </div>
