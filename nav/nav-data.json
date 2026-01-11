@@ -110,6 +110,12 @@
         "icon": "/icons/antigravity_google.png",
         "link": "https://antigravity.google/",
         "desc": "Google Antigravity - Build the new way"
+      },
+      {
+        "name": "Xiaomi MiMo Studio",
+        "icon": "/icons/aistudio_xiaomimimo_com.png",
+        "link": "https://aistudio.xiaomimimo.com/",
+        "desc": "陪您聊天、创作或脑洞大开，准备好探索无限可能。"
       }
     ]
   },
