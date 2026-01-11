@@ -98,6 +98,12 @@
         "icon": "/icons/notebooklm_google.svg",
         "link": "https://notebooklm.google/",
         "desc": "Meet NotebookLM, the AI research tool and thinking partner that can analyze your sources, turn compl"
+      },
+      {
+        "name": "Coze",
+        "icon": "/icons/coze_cn.png",
+        "link": "https://www.coze.cn/",
+        "desc": "扣子(Coze)是基于AI Agent的智能办公平台，提供AI写作、PPT生成、网页开发与AI设计等一体化生产力工具，扣子致力于为用户与企业提供高效、安全、便捷的智能办公新体验。"
       }
     ]
   },
@@ -122,6 +128,24 @@
         "icon": "/icons/antigravity_google.png",
         "link": "https://antigravity.google/",
         "desc": "Google Antigravity - Build the new way"
+      }
+    ]
+  },
+  {
+    "name": "AI API",
+    "title": "API API",
+    "links": [
+      {
+        "name": "Aihubmix",
+        "icon": "/icons/aihubmix_com.ico",
+        "link": "https://aihubmix.com/",
+        "desc": "Access every major LLM through a single, unified interface. Connect to ChatGPT, Claude, Gemini, Deep"
+      },
+      {
+        "name": "Yunwu",
+        "icon": "yunwu",
+        "link": "https://yunwu.ai/",
+        "desc": "提供稳定可靠的API中转服务，支持ChatGPT、Claude等多种AI模型，国内直连无需代理，低延迟高并发，按量计费更经济。"
       }
     ]
   },
@@ -185,6 +209,12 @@
         "icon": "/icons/roxybrowser_com.png",
         "link": "https://roxybrowser.com/zh",
         "desc": "Roxybrowser指纹浏览器是跨境电商领域专业的电商浏览器，完美替代vps、超级浏览器，虚拟机等，一键实现多账号多开，完美实现多账号安全隔离，支持跨境电商和社媒多账号安全运营。"
+      },
+      {
+        "name": "1ms",
+        "icon": "/icons/1ms_run.ico",
+        "link": "https://1ms.run/",
+        "desc": "国内专线拉取镜像！国内专业的镜像仓库解决方案商，简单配置即可享受极速下载，提升容器部署效率。"
       }
     ]
   }
