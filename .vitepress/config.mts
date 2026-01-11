@@ -8,22 +8,25 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
+      { text: '🏠 首页', link: '/' },
+      { text: '🧭 导航', link: '/nav/' },
+      { text: '📝 博客', link: '/posts/' }
     ],
 
-    sidebar: [
-      {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
-      }
-    ],
+    sidebar: {
+      // 简单的博客侧边栏示例
+      '/posts/': [
+        {
+          text: '2024年文章',
+          items: [
+            { text: '我的第一篇博客', link: '/posts/hello-world' }
+          ]
+        }
+      ]
+    },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/null-object-0000/newbie-home' }
     ]
   }
 })
