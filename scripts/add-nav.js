@@ -321,8 +321,24 @@ async function main() {
     categoryTitle = existingCategory ? existingCategory.title : categoryName;
   }
 
+  // 提取网站名称
+  let siteName = siteInfo.title;
+  try {
+    const urlObj = new URL(siteInfo.url);
+    const hostname = urlObj.hostname.replace('www.', '');
+    // 如果标题太长或是域名，使用域名的主部分
+    if (siteName.length > 30 || siteName === hostname) {
+      siteName = hostname.split('.')[0];
+      siteName = siteName.charAt(0).toUpperCase() + siteName.slice(1);
+    }
+  } catch {
+    // 如果解析失败，使用标题的前30个字符
+    siteName = siteInfo.title.substring(0, 30);
+  }
+
   // 创建新的链接项
   const newLink = {
+    name: siteName,
     icon: siteInfo.icon,
     link: siteInfo.url,
     desc: addAnswers.description.trim()
