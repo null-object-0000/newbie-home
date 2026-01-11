@@ -58,7 +58,13 @@
         "desc": "‌ChatGPT是由OpenAI开发的先进AI聊天机器人，基于GPT大模型构建，支持多模态交互，广泛应用于对话、编程、医疗等领域‌。"
       },
       {
-        "name": "LongCat AI",
+        "name": "Xiaomi MiMo Studio",
+        "icon": "/icons/aistudio_xiaomimimo_com.png",
+        "link": "https://aistudio.xiaomimimo.com/",
+        "desc": "陪您聊天、创作或脑洞大开，准备好探索无限可能。"
+      },
+      {
+        "name": "LongCat",
         "icon": "/icons/longcat_chat.svg",
         "link": "https://longcat.chat/",
         "desc": "我分享了【LongCat AI】，快来看吧！"
@@ -116,12 +122,6 @@
         "icon": "/icons/antigravity_google.png",
         "link": "https://antigravity.google/",
         "desc": "Google Antigravity - Build the new way"
-      },
-      {
-        "name": "Xiaomi MiMo Studio",
-        "icon": "/icons/aistudio_xiaomimimo_com.png",
-        "link": "https://aistudio.xiaomimimo.com/",
-        "desc": "陪您聊天、创作或脑洞大开，准备好探索无限可能。"
       }
     ]
   },
