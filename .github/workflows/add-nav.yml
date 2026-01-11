@@ -107,38 +107,82 @@ jobs:
           git add -A
           git commit -m "chore: 添加导航链接 - ${{ inputs.url }}"
 
+      - name: Push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git push origin ${{ steps.branch.outputs.name }}
+
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
         id: create-pr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.branch.outputs.name }}
-          base: main
-          title: "添加导航链接: ${{ inputs.url }}"
-          body: |
-            ## 添加导航链接
-            
-            - **URL**: ${{ inputs.url }}
-            - **分类**: ${{ inputs.category }}
-            ${{ inputs.description && '  - **描述**: ' || '' }}${{ inputs.description || '' }}
-            
-            ---
-            
-            此 PR 由 GitHub Actions 自动创建。
-          delete-branch: true
-          draft: false
-          push-to-fork: false
-
-      - name: Check PR creation result
-        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ steps.create-pr.outputs.pull-request-number }}" != "" ]; then
-            echo "✅ PR 创建成功: #${{ steps.create-pr.outputs.pull-request-number }}"
-            echo "PR URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+          # 构建 PR body
+          PR_BODY=$(cat <<EOF
+          ## 添加导航链接
+          
+          - **URL**: ${{ inputs.url }}
+          - **分类**: ${{ inputs.category }}
+          EOF
+          )
+          
+          if [ -n "${{ inputs.description }}" ]; then
+            PR_BODY="$PR_BODY
+          - **描述**: ${{ inputs.description }}"
+          fi
+          
+          PR_BODY="$PR_BODY
+          
+          ---
+          
+          此 PR 由 GitHub Actions 自动创建。"
+          
+          # 使用 GitHub API 创建 PR
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d "{
+              \"title\": \"添加导航链接: ${{ inputs.url }}\",
+              \"body\": $(echo "$PR_BODY" | jq -Rs .),
+              \"head\": \"${{ steps.branch.outputs.name }}\",
+              \"base\": \"main\"
+            }")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          if [ "$HTTP_CODE" = "201" ]; then
+            PR_NUMBER=$(echo "$BODY" | jq -r '.number')
+            PR_URL=$(echo "$BODY" | jq -r '.html_url')
+            echo "pull-request-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "pull-request-url=$PR_URL" >> $GITHUB_OUTPUT
+            echo "✅ PR 创建成功: #$PR_NUMBER"
+            echo "PR URL: $PR_URL"
+          elif [ "$HTTP_CODE" = "422" ]; then
+            # PR 可能已存在，尝试查找现有 PR
+            EXISTING_PR=$(curl -s \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ steps.branch.outputs.name }}&base=main" | jq -r '.[0]')
+            
+            if [ "$EXISTING_PR" != "null" ] && [ -n "$EXISTING_PR" ]; then
+              PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
+              PR_URL=$(echo "$EXISTING_PR" | jq -r '.html_url')
+              echo "pull-request-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+              echo "pull-request-url=$PR_URL" >> $GITHUB_OUTPUT
+              echo "ℹ️ PR 已存在: #$PR_NUMBER"
+              echo "PR URL: $PR_URL"
+            else
+              echo "⚠️ 创建 PR 失败 (HTTP $HTTP_CODE)"
+              echo "$BODY" | jq -r '.message // .' || echo "$BODY"
+            fi
           else
-            echo "⚠️ PR 可能已存在或创建失败"
-            echo "请检查工作流日志获取详细信息"
+            echo "⚠️ 创建 PR 失败 (HTTP $HTTP_CODE)"
+            echo "$BODY" | jq -r '.message // .' || echo "$BODY"
           fi
 
       - name: Summary
