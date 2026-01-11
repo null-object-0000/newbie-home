@@ -8,11 +8,10 @@ on:
         required: true
         type: string
       category:
-        description: '现有分类名称（如果创建新分类，请选择"不选择"）'
-        required: false
+        description: '现有分类名称'
+        required: true
         type: choice
         options:
-          - ''
           - '常用工具'
           - 'AI Chat'
           - 'AI Agent'
@@ -20,15 +19,7 @@ on:
           - '开放平台'
           - '云服务商'
           - '网络代理'
-        default: ''
-      new_category:
-        description: '新分类名称（如果要创建新分类）'
-        required: false
-        type: string
-      new_category_title:
-        description: '新分类英文标题（创建新分类时必需）'
-        required: false
-        type: string
+        default: '常用工具'
       description:
         description: '网站描述（可选，会自动从网站获取）'
         required: false
@@ -60,18 +51,11 @@ jobs:
       - name: Validate inputs
         id: validate
         run: |
-          # 检查是否选择了分类或创建新分类
+          # 检查是否选择了分类
           CATEGORY="${{ inputs.category }}"
-          NEW_CATEGORY="${{ inputs.new_category }}"
           
-          if [ -z "$CATEGORY" ] && [ -z "$NEW_CATEGORY" ]; then
-            echo "error=必须选择现有分类（category）或提供新分类（new_category）" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          
-          # 如果创建新分类，必须提供标题
-          if [ -n "$NEW_CATEGORY" ] && [ -z "${{ inputs.new_category_title }}" ]; then
-            echo "error=创建新分类时必须提供 new_category_title" >> $GITHUB_OUTPUT
+          if [ -z "$CATEGORY" ]; then
+            echo "error=必须选择现有分类（category）" >> $GITHUB_OUTPUT
             exit 1
           fi
           
@@ -104,8 +88,6 @@ jobs:
           NON_INTERACTIVE: 'true'
           INPUT_URL: ${{ inputs.url }}
           INPUT_CATEGORY: ${{ inputs.category }}
-          INPUT_NEW_CATEGORY: ${{ inputs.new_category }}
-          INPUT_NEW_CATEGORY_TITLE: ${{ inputs.new_category_title }}
           INPUT_DESCRIPTION: ${{ inputs.description }}
         run: npm run add-nav
 
@@ -142,8 +124,7 @@ jobs:
             ## 添加导航链接
             
             - **URL**: ${{ inputs.url }}
-            - **分类**: ${{ inputs.category || inputs.new_category }}
-            ${{ inputs.new_category && '  - **新分类标题**: ' || '' }}${{ inputs.new_category && inputs.new_category_title || '' }}
+            - **分类**: ${{ inputs.category }}
             ${{ inputs.description && '  - **描述**: ' || '' }}${{ inputs.description || '' }}
             
             ---
