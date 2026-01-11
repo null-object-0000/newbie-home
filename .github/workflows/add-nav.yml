@@ -8,9 +8,19 @@ on:
         required: true
         type: string
       category:
-        description: '现有分类名称（如果创建新分类，请留空）'
+        description: '现有分类名称（如果创建新分类，请选择"不选择"）'
         required: false
-        type: string
+        type: choice
+        options:
+          - ''
+          - '常用工具'
+          - 'AI Chat'
+          - 'AI Agent'
+          - 'AI Code'
+          - '开放平台'
+          - '云服务商'
+          - '网络代理'
+        default: ''
       new_category:
         description: '新分类名称（如果要创建新分类）'
         required: false
@@ -50,14 +60,21 @@ jobs:
       - name: Validate inputs
         id: validate
         run: |
-          if [ -z "${{ inputs.category }}" ] && [ -z "${{ inputs.new_category }}" ]; then
-            echo "error=必须提供现有分类（category）或新分类（new_category）" >> $GITHUB_OUTPUT
+          # 检查是否选择了分类或创建新分类
+          CATEGORY="${{ inputs.category }}"
+          NEW_CATEGORY="${{ inputs.new_category }}"
+          
+          if [ -z "$CATEGORY" ] && [ -z "$NEW_CATEGORY" ]; then
+            echo "error=必须选择现有分类（category）或提供新分类（new_category）" >> $GITHUB_OUTPUT
             exit 1
           fi
-          if [ -n "${{ inputs.new_category }}" ] && [ -z "${{ inputs.new_category_title }}" ]; then
+          
+          # 如果创建新分类，必须提供标题
+          if [ -n "$NEW_CATEGORY" ] && [ -z "${{ inputs.new_category_title }}" ]; then
             echo "error=创建新分类时必须提供 new_category_title" >> $GITHUB_OUTPUT
             exit 1
           fi
+          
           echo "valid=true" >> $GITHUB_OUTPUT
 
       - name: Generate branch name
