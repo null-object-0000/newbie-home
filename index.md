@@ -24,21 +24,21 @@ hero:
   <div class="quick-nav-icon">🤖</div>
   <h3>AI 助手</h3>
   <p>访问常用的 AI 对话工具</p>
-  <a href="/nav/" class="quick-nav-link">前往 →</a>
+  <a href="/newbie-home/nav/" class="quick-nav-link">前往 →</a>
 </div>
 
 <div class="quick-nav-card">
   <div class="quick-nav-icon">🛠️</div>
   <h3>常用工具</h3>
   <p>开发与调试必备工具</p>
-  <a href="/nav/" class="quick-nav-link">前往 →</a>
+  <a href="/newbie-home/nav/" class="quick-nav-link">前往 →</a>
 </div>
 
 <div class="quick-nav-card">
   <div class="quick-nav-icon">🤝</div>
   <h3>AI Agent</h3>
   <p>智能自动化工具集合</p>
-  <a href="/nav/" class="quick-nav-link">前往 →</a>
+  <a href="/newbie-home/nav/" class="quick-nav-link">前往 →</a>
 </div>
 
 </div>
@@ -53,7 +53,7 @@ hero:
   <p class="post-excerpt">记录了一次生产环境服务器无响应问题的完整排查过程，包括问题定位、内存分析、线程死锁排查等...</p>
   <div class="post-meta">
     <span class="post-date">2025-04</span>
-    <a href="/posts/2025-04" class="post-link">阅读全文 →</a>
+    <a href="/newbie-home/posts/2025-04" class="post-link">阅读全文 →</a>
   </div>
 </div>
 
