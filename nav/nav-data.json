@@ -88,5 +88,68 @@
         "desc": "Meet NotebookLM, the AI research tool and thinking partner that can analyze your sources, turn compl"
       }
     ]
+  },
+  {
+    "name": "开放平台",
+    "title": "Open Platform",
+    "links": [
+      {
+        "name": "微信公众号开发文档",
+        "icon": "/icons/developers_weixin_qq_com.ico",
+        "link": "https://developers.weixin.qq.com/doc/subscription/guide/h5/jssdk.html"
+      },
+      {
+        "name": "微信小程序开发文档",
+        "icon": "/icons/developers_weixin_qq_com.ico",
+        "link": "https://developers.weixin.qq.com/miniprogram/dev/framework/"
+      },
+      {
+        "name": "微信公众号测试号",
+        "icon": "/icons/mp_weixin_qq_com.ico",
+        "link": "https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login"
+      }
+    ]
+  },
+  {
+    "name": "云服务商",
+    "title": "Cloud Service",
+    "links": [
+      {
+        "name": "腾讯云",
+        "icon": "/icons/cloud_tencent_com.ico",
+        "link": "https://cloud.tencent.com/",
+        "desc": "腾讯云(tencent cloud)为数百万的企业和开发者提供安全稳定的云计算服务，涵盖云服务器、云数据库、云存储、视频与CDN、域名注册等全方位云服务和各行业解决方案。"
+      },
+      {
+        "name": "阿里云",
+        "icon": "/icons/aliyun_com.ico",
+        "link": "https://www.aliyun.com/",
+        "desc": "阿里云——阿里巴巴集团旗下全球领先的云计算及人工智能科技公司之一。提供全栈云服务，包括弹性计算、高性能数据库、网络与存储方案，以及AI大模型、向量检索、大数据分析等智能化能力。依托飞天云计算操作系统与"
+      }
+    ]
+  },
+  {
+    "name": "网络代理",
+    "title": "VPN",
+    "links": [
+      {
+        "name": "鹊桥",
+        "icon": "/icons/lbvapp2_com.ico",
+        "link": "https://lbvapp2.com/",
+        "desc":"鹊桥VPN采用全新一代的智能连接技术，提供安全、快速、可靠、易用的VPN服务。"
+      },
+      {
+        "name": "FastStunnel",
+        "icon": "faststunne",
+        "link": "https://www.faststunnel.net/",
+        "desc":"使用快速安全通道可以解锁像 Google,Youtube,Facebook,Twitter,Instagram 等等这些网站，一个简单的点击使它可以帮你绕过防火墙过滤。"
+      },
+      {
+        "name": "Roxybrowser",
+        "icon": "/icons/roxybrowser_com.png",
+        "link": "https://roxybrowser.com/zh",
+        "desc": "Roxybrowser指纹浏览器是跨境电商领域专业的电商浏览器，完美替代vps、超级浏览器，虚拟机等，一键实现多账号多开，完美实现多账号安全隔离，支持跨境电商和社媒多账号安全运营。"
+      }
+    ]
   }
 ]
