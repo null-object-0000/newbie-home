@@ -1,0 +1,143 @@
+name: Add Navigation Link
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: '网站 URL'
+        required: true
+        type: string
+      category:
+        description: '现有分类名称（如果创建新分类，请留空）'
+        required: false
+        type: string
+      new_category:
+        description: '新分类名称（如果要创建新分类）'
+        required: false
+        type: string
+      new_category_title:
+        description: '新分类英文标题（创建新分类时必需）'
+        required: false
+        type: string
+      description:
+        description: '网站描述（可选，会自动从网站获取）'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  add-nav:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate inputs
+        id: validate
+        run: |
+          if [ -z "${{ inputs.category }}" ] && [ -z "${{ inputs.new_category }}" ]; then
+            echo "error=必须提供现有分类（category）或新分类（new_category）" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          if [ -n "${{ inputs.new_category }}" ] && [ -z "${{ inputs.new_category_title }}" ]; then
+            echo "error=创建新分类时必须提供 new_category_title" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "valid=true" >> $GITHUB_OUTPUT
+
+      - name: Generate branch name
+        id: branch
+        run: |
+          # 从 URL 生成分支名
+          URL="${{ inputs.url }}"
+          # 移除协议和 www
+          BRANCH_NAME=$(echo "$URL" | sed -e 's|^[^/]*//||' -e 's|^www\.||' -e 's|/.*$||' -e 's|[^a-z0-9]|-|g' | tr '[:upper:]' '[:lower:]')
+          # 添加时间戳确保唯一性
+          TIMESTAMP=$(date +%s)
+          BRANCH_NAME="add-nav-${BRANCH_NAME}-${TIMESTAMP}"
+          # 限制长度
+          BRANCH_NAME=$(echo "$BRANCH_NAME" | cut -c1-50)
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b ${{ steps.branch.outputs.name }}
+
+      - name: Add navigation link
+        env:
+          NON_INTERACTIVE: 'true'
+          INPUT_URL: ${{ inputs.url }}
+          INPUT_CATEGORY: ${{ inputs.category }}
+          INPUT_NEW_CATEGORY: ${{ inputs.new_category }}
+          INPUT_NEW_CATEGORY_TITLE: ${{ inputs.new_category_title }}
+          INPUT_DESCRIPTION: ${{ inputs.description }}
+        run: npm run add-nav
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "没有检测到更改，可能链接已存在或出现错误"
+          fi
+
+      - name: Commit changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git commit -m "chore: 添加导航链接 - ${{ inputs.url }}"
+
+      - name: Push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git push origin ${{ steps.branch.outputs.name }}
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch.outputs.name }}
+          title: "添加导航链接: ${{ inputs.url }}"
+          body: |
+            ## 添加导航链接
+            
+            - **URL**: ${{ inputs.url }}
+            - **分类**: ${{ inputs.category || inputs.new_category }}
+            ${{ inputs.new_category && '  - **新分类标题**: ' || '' }}${{ inputs.new_category && inputs.new_category_title || '' }}
+            ${{ inputs.description && '  - **描述**: ' || '' }}${{ inputs.description || '' }}
+            
+            ---
+            
+            此 PR 由 GitHub Actions 自动创建。
+          delete-branch: true
+          draft: false
+
+      - name: Summary
+        if: steps.changes.outputs.has_changes == 'false'
+        run: |
+          echo "## ⚠️ 没有更改" >> $GITHUB_STEP_SUMMARY
+          echo "没有检测到任何更改。可能的原因：" >> $GITHUB_STEP_SUMMARY
+          echo "- 链接已存在于该分类中" >> $GITHUB_STEP_SUMMARY
+          echo "- 脚本执行出错" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "请检查工作流日志以获取更多信息。" >> $GITHUB_STEP_SUMMARY

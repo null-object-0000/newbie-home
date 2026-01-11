@@ -234,91 +234,173 @@ async function main() {
   // 提取现有分类
   const categories = navData.map(cat => cat.name);
 
-  // 询问用户输入
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'url',
-      message: '请输入网站 URL:',
-      validate: (input) => {
-        if (!input.trim()) {
-          return 'URL 不能为空';
-        }
-        try {
-          const url = input.startsWith('http') ? input : 'https://' + input;
-          new URL(url);
-          return true;
-        } catch {
-          return '请输入有效的 URL';
+  // 检查是否为非交互模式（通过环境变量）
+  const isNonInteractive = process.env.NON_INTERACTIVE === 'true' || 
+                          process.env.INPUT_URL || 
+                          process.env.NAV_URL;
+
+  let url, categoryName, categoryTitle, description;
+
+  if (isNonInteractive) {
+    // 非交互模式：从环境变量读取
+    url = process.env.INPUT_URL || process.env.NAV_URL;
+    categoryName = process.env.INPUT_CATEGORY || process.env.NAV_CATEGORY;
+    const newCategory = process.env.INPUT_NEW_CATEGORY || process.env.NAV_NEW_CATEGORY;
+    const newCategoryTitle = process.env.INPUT_NEW_CATEGORY_TITLE || process.env.NAV_NEW_CATEGORY_TITLE;
+    description = process.env.INPUT_DESCRIPTION || process.env.NAV_DESCRIPTION;
+
+    // 验证必需参数
+    if (!url || !url.trim()) {
+      throw new Error('URL 不能为空（请设置 INPUT_URL 或 NAV_URL 环境变量）');
+    }
+
+    // 验证 URL 格式
+    try {
+      const testUrl = url.startsWith('http') ? url : 'https://' + url;
+      new URL(testUrl);
+    } catch {
+      throw new Error('请输入有效的 URL');
+    }
+
+    // 处理分类
+    if (newCategory && newCategory.trim()) {
+      // 创建新分类
+      if (categories.includes(newCategory.trim())) {
+        throw new Error('该分类已存在');
+      }
+      categoryName = newCategory.trim();
+      categoryTitle = (newCategoryTitle && newCategoryTitle.trim()) || newCategory.trim();
+    } else if (categoryName && categoryName.trim()) {
+      // 使用现有分类
+      if (!categories.includes(categoryName.trim())) {
+        throw new Error(`分类 "${categoryName}" 不存在`);
+      }
+      const existingCategory = navData.find(cat => cat.name === categoryName.trim());
+      categoryTitle = existingCategory ? existingCategory.title : categoryName.trim();
+      categoryName = categoryName.trim();
+    } else {
+      throw new Error('必须提供分类（INPUT_CATEGORY 或 INPUT_NEW_CATEGORY 环境变量）');
+    }
+
+    // 描述可以为空，稍后会使用网站信息中的描述
+  } else {
+    // 交互模式：使用 inquirer
+    // 询问用户输入
+    const answers = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'url',
+        message: '请输入网站 URL:',
+        validate: (input) => {
+          if (!input.trim()) {
+            return 'URL 不能为空';
+          }
+          try {
+            const url = input.startsWith('http') ? input : 'https://' + input;
+            new URL(url);
+            return true;
+          } catch {
+            return '请输入有效的 URL';
+          }
         }
       }
-    }
-  ]);
+    ]);
 
-  // 获取网站信息
-  const siteInfo = await fetchWebsiteInfo(answers.url);
-  
-  console.log(`\n📋 网站信息:`);
-  console.log(`   标题: ${siteInfo.title}`);
-  console.log(`   图标: ${siteInfo.icon}`);
-  if (siteInfo.description) {
-    console.log(`   描述: ${siteInfo.description}`);
+    url = answers.url;
+
+    // 获取网站信息
+    const siteInfo = await fetchWebsiteInfo(url);
+    
+    console.log(`\n📋 网站信息:`);
+    console.log(`   标题: ${siteInfo.title}`);
+    console.log(`   图标: ${siteInfo.icon}`);
+    if (siteInfo.description) {
+      console.log(`   描述: ${siteInfo.description}`);
+    }
+
+    // 询问分类和描述
+    const addAnswers = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'category',
+        message: '选择分类:',
+        choices: [
+          ...categories,
+          new inquirer.Separator(),
+          { name: '+ 创建新分类', value: '__NEW__' }
+        ]
+      },
+      {
+        type: 'input',
+        name: 'newCategory',
+        message: '请输入新分类名称:',
+        when: (answers) => answers.category === '__NEW__',
+        validate: (input) => {
+          if (!input.trim()) {
+            return '分类名称不能为空';
+          }
+          if (categories.includes(input.trim())) {
+            return '该分类已存在';
+          }
+          return true;
+        }
+      },
+      {
+        type: 'input',
+        name: 'newCategoryTitle',
+        message: '请输入新分类英文标题:',
+        when: (answers) => answers.category === '__NEW__',
+        validate: (input) => input.trim().length > 0 || '标题不能为空'
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: '请输入网站描述:',
+        default: siteInfo.description || '',
+        validate: (input) => input.trim().length > 0 || '描述不能为空'
+      }
+    ]);
+
+    // 确定分类
+    categoryName = addAnswers.category;
+    categoryTitle = '';
+    
+    if (categoryName === '__NEW__') {
+      categoryName = addAnswers.newCategory.trim();
+      categoryTitle = addAnswers.newCategoryTitle.trim();
+    } else {
+      // 查找现有分类的 title
+      const existingCategory = navData.find(cat => cat.name === categoryName);
+      categoryTitle = existingCategory ? existingCategory.title : categoryName;
+    }
+
+    description = addAnswers.description.trim();
   }
 
-  // 询问分类和描述
-  const addAnswers = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'category',
-      message: '选择分类:',
-      choices: [
-        ...categories,
-        new inquirer.Separator(),
-        { name: '+ 创建新分类', value: '__NEW__' }
-      ]
-    },
-    {
-      type: 'input',
-      name: 'newCategory',
-      message: '请输入新分类名称:',
-      when: (answers) => answers.category === '__NEW__',
-      validate: (input) => {
-        if (!input.trim()) {
-          return '分类名称不能为空';
-        }
-        if (categories.includes(input.trim())) {
-          return '该分类已存在';
-        }
-        return true;
-      }
-    },
-    {
-      type: 'input',
-      name: 'newCategoryTitle',
-      message: '请输入新分类英文标题:',
-      when: (answers) => answers.category === '__NEW__',
-      validate: (input) => input.trim().length > 0 || '标题不能为空'
-    },
-    {
-      type: 'input',
-      name: 'description',
-      message: '请输入网站描述:',
-      default: siteInfo.description || '',
-      validate: (input) => input.trim().length > 0 || '描述不能为空'
-    }
-  ]);
-
-  // 确定分类
-  let categoryName = addAnswers.category;
-  let categoryTitle = '';
+  // 获取网站信息（非交互模式也需要）
+  const siteInfo = await fetchWebsiteInfo(url);
   
-  if (categoryName === '__NEW__') {
-    categoryName = addAnswers.newCategory.trim();
-    categoryTitle = addAnswers.newCategoryTitle.trim();
+  if (isNonInteractive) {
+    console.log(`\n📋 网站信息:`);
+    console.log(`   标题: ${siteInfo.title}`);
+    console.log(`   图标: ${siteInfo.icon}`);
+    if (siteInfo.description) {
+      console.log(`   描述: ${siteInfo.description}`);
+    }
+    // 如果非交互模式没有描述，使用网站信息中的描述
+    if (!description || !description.trim()) {
+      description = siteInfo.description || '';
+      if (!description || !description.trim()) {
+        throw new Error('描述不能为空（请设置 INPUT_DESCRIPTION 或 NAV_DESCRIPTION 环境变量，或确保网站有描述信息）');
+      }
+    }
   } else {
-    // 查找现有分类的 title
-    const existingCategory = navData.find(cat => cat.name === categoryName);
-    categoryTitle = existingCategory ? existingCategory.title : categoryName;
+    console.log(`\n📋 网站信息:`);
+    console.log(`   标题: ${siteInfo.title}`);
+    console.log(`   图标: ${siteInfo.icon}`);
+    if (siteInfo.description) {
+      console.log(`   描述: ${siteInfo.description}`);
+    }
   }
 
   // 提取网站名称
@@ -341,7 +423,7 @@ async function main() {
     name: siteName,
     icon: siteInfo.icon,
     link: siteInfo.url,
-    desc: addAnswers.description.trim()
+    desc: description.trim()
   };
 
   // 查找或创建分类
