@@ -388,3 +388,47 @@
 .vp-doc .footnote-backref:hover {
   text-decoration: underline;
 }
+
+/* 导航链接样式 */
+.VPTeamMembers .VPTeamMember,
+.VPTeamMembers > div > div,
+[class*="VPTeamMember"] {
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.VPTeamMembers .VPTeamMember:hover,
+.VPTeamMembers > div > div:hover,
+[class*="VPTeamMember"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.VPTeamMembers .VPTeamMember a,
+.VPTeamMembers > div > div a,
+[class*="VPTeamMember"] a {
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+.VPTeamMembers .VPTeamMember a:hover,
+.VPTeamMembers > div > div a:hover,
+[class*="VPTeamMember"] a:hover {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+/* 确保卡片内的所有内容都可以触发点击 */
+.VPTeamMembers .VPTeamMember > *,
+.VPTeamMembers > div > div > *,
+[class*="VPTeamMember"] > * {
+  pointer-events: auto;
+}
+
+/* 确保链接可点击 */
+.VPTeamMembers a[href] {
+  cursor: pointer;
+  display: inline-block;
+}

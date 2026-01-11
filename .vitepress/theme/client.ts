@@ -326,3 +326,105 @@ if (typeof window !== 'undefined') {
     subtree: true
   })
 }
+
+// 处理导航链接点击
+function setupNavLinks() {
+  // 查找所有团队成员卡片 - 使用更通用的选择器
+  const teamMemberCards = document.querySelectorAll('.VPTeamMember, [class*="VPTeamMember"], .VPTeamMembers > div > div')
+  
+  teamMemberCards.forEach((card) => {
+    const cardElement = card as HTMLElement
+    
+    // 查找卡片中的所有链接
+    const links = card.querySelectorAll('a[href]')
+    
+    if (links.length === 0) {
+      return
+    }
+    
+    // 处理所有链接，确保外部链接在新标签页打开
+    links.forEach((link) => {
+      const href = link.getAttribute('href')
+      
+      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+        link.setAttribute('target', '_blank')
+        link.setAttribute('rel', 'noopener noreferrer')
+      }
+    })
+    
+    // 如果卡片还没有添加点击处理器，添加一个
+    if (!cardElement.dataset.clickHandlerAdded) {
+      cardElement.style.cursor = 'pointer'
+      cardElement.dataset.clickHandlerAdded = 'true'
+      
+      // 找到主要的链接（通常是第一个有效的链接）
+      const mainLink = links[0] as HTMLAnchorElement
+      
+      if (mainLink) {
+        const mainHref = mainLink.getAttribute('href')
+        
+        // 为整个卡片添加点击事件
+        cardElement.addEventListener('click', (e) => {
+          // 如果点击的是链接本身或链接内的元素，不处理（让默认行为执行）
+          const target = e.target as HTMLElement
+          if (target.tagName === 'A' || target.closest('a')) {
+            return
+          }
+          
+          // 点击卡片其他区域时，触发主链接跳转
+          e.preventDefault()
+          e.stopPropagation()
+          
+          if (mainHref) {
+            if (mainHref.startsWith('http://') || mainHref.startsWith('https://')) {
+              window.open(mainHref, '_blank', 'noopener,noreferrer')
+            } else {
+              window.location.href = mainHref
+            }
+          }
+        })
+      }
+    }
+  })
+  
+  // 额外处理：确保所有在 VPTeamMembers 容器内的链接都可以点击
+  const teamMembersContainer = document.querySelector('.VPTeamMembers')
+  if (teamMembersContainer) {
+    const allLinks = teamMembersContainer.querySelectorAll('a[href]')
+    allLinks.forEach((link) => {
+      const href = link.getAttribute('href')
+      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+        link.setAttribute('target', '_blank')
+        link.setAttribute('rel', 'noopener noreferrer')
+      }
+    })
+  }
+}
+
+// 初始化导航链接
+if (typeof window !== 'undefined') {
+  const initNavLinks = () => {
+    setTimeout(() => {
+      setupNavLinks()
+    }, 100)
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavLinks)
+  } else {
+    initNavLinks()
+  }
+  
+  // 监听路由变化
+  window.addEventListener('load', initNavLinks)
+  
+  // 使用 MutationObserver 监听 DOM 变化
+  const navObserver = new MutationObserver(() => {
+    setupNavLinks()
+  })
+  
+  navObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
+}
