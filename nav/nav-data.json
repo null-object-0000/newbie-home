@@ -215,6 +215,12 @@
         "icon": "/icons/1ms_run.ico",
         "link": "https://1ms.run/",
         "desc": "国内专线拉取镜像！国内专业的镜像仓库解决方案商，简单配置即可享受极速下载，提升容器部署效率。"
+      },
+      {
+        "name": "Mojie",
+        "icon": "mojie",
+        "link": "https://www.mojie.me/",
+        "desc": "支持流媒体播放，不限制使用人数，不限制到期时间，不限制网络速度"
       }
     ]
   }
