@@ -97,7 +97,7 @@
         "name": "Notebooklm",
         "icon": "/icons/notebooklm_google.svg",
         "link": "https://notebooklm.google/",
-        "desc": "Meet NotebookLM, the AI research tool and thinking partner that can analyze your sources, turn compl"
+        "desc": "认识 NotebookLM：给力的 AI 研究工具与思考伙伴，可以帮助您分析来源、理清复杂的资料及转换内容。"
       },
       {
         "name": "Coze",
@@ -136,13 +136,13 @@
     "title": "API API",
     "links": [
       {
-        "name": "Aihubmix",
+        "name": "推理时代",
         "icon": "/icons/aihubmix_com.ico",
         "link": "https://aihubmix.com/",
-        "desc": "Access every major LLM through a single, unified interface. Connect to ChatGPT, Claude, Gemini, Deep"
+        "desc": "一个接口，无限模型，一站式对接各种大模型。让开发更智能、更高效。"
       },
       {
-        "name": "Yunwu",
+        "name": "云雾 API",
         "icon": "yunwu",
         "link": "https://yunwu.ai/",
         "desc": "提供稳定可靠的API中转服务，支持ChatGPT、Claude等多种AI模型，国内直连无需代理，低延迟高并发，按量计费更经济。"
@@ -211,10 +211,16 @@
         "desc": "Roxybrowser指纹浏览器是跨境电商领域专业的电商浏览器，完美替代vps、超级浏览器，虚拟机等，一键实现多账号多开，完美实现多账号安全隔离，支持跨境电商和社媒多账号安全运营。"
       },
       {
-        "name": "1ms",
+        "name": "毫秒镜像",
         "icon": "/icons/1ms_run.ico",
         "link": "https://1ms.run/",
         "desc": "国内专线拉取镜像！国内专业的镜像仓库解决方案商，简单配置即可享受极速下载，提升容器部署效率。"
+      },
+      {
+        "name": "魔戒.net",
+        "icon": "mojie",
+        "link": "https://www.mojie.me/",
+        "desc": "支持流媒体播放，不限制使用人数，不限制到期时间，不限制网络速度"
       }
     ]
   }
