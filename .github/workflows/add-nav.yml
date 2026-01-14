@@ -13,12 +13,13 @@ on:
         type: choice
         options:
           - '常用工具'
-          - 'AI Chat'
-          - 'AI Agent'
-          - 'AI Code'
           - '开放平台'
           - '云服务商'
           - '网络代理'
+          - 'AI 对话'
+          - 'AI 代理'
+          - 'AI 编程'
+          - 'AI 服务'
         default: '常用工具'
       description:
         description: '网站描述（可选，会自动从网站获取）'

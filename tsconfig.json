@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "vue": [
+        "./node_modules/vue",
+        "./node_modules/.pnpm/vue@3.5.26/node_modules/vue"
+      ]
+    }
+  },
+  "include": [
+    ".vitepress/**/*.ts",
+    ".vitepress/**/*.vue",
+    ".vitepress/**/*.mts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

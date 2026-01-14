@@ -5,6 +5,7 @@ import ImageGallery from './components/ImageGallery.vue'
 import Timeline from './components/Timeline.vue'
 import TimelineItem from './components/TimelineItem.vue'
 import NavGrid from './components/NavGrid.vue'
+import NavDashboard from './components/NavDashboard.vue'
 import './style.css'
 import './client'
 
@@ -17,5 +18,6 @@ export default {
     app.component('Timeline', Timeline)
     app.component('TimelineItem', TimelineItem)
     app.component('NavGrid', NavGrid)
+    app.component('NavDashboard', NavDashboard)
   }
 }

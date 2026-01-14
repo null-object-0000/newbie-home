@@ -1,0 +1,67 @@
+name: Deploy to S3-compatible OSS
+
+# 需要在 GitHub Secrets 中配置以下变量：
+# OSS_ACCESS_KEY_ID: OSS 访问密钥 ID
+# OSS_SECRET_ACCESS_KEY: OSS 访问密钥 Secret
+# OSS_ENDPOINT: OSS 端点地址（如：https://oss-cn-hangzhou.aliyuncs.com）
+# OSS_BUCKET: OSS 存储桶名称
+# OSS_REGION: OSS 区域（可选，默认为 us-east-1）
+# OSS_PATH: OSS 存储路径（可选，如：docs/）
+
+on:
+  push:
+    branches:
+      - main  # 可以根据需要修改分支名
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run docs:build
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install
+
+      - name: Upload to S3-compatible OSS
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.OSS_REGION || 'us-east-1' }}
+        run: |
+          # 构建上传路径
+          OSS_BUCKET="${{ secrets.OSS_BUCKET }}"
+          OSS_PATH="${{ secrets.OSS_PATH || '' }}"
+          OSS_ENDPOINT="${{ secrets.OSS_ENDPOINT }}"
+          
+          if [ -n "$OSS_PATH" ]; then
+            S3_PATH="s3://${OSS_BUCKET}/${OSS_PATH}"
+          else
+            S3_PATH="s3://${OSS_BUCKET}"
+          fi
+          
+          # 上传文件到 S3 兼容的 OSS
+          # --endpoint-url 参数用于指定 S3 兼容的 OSS 端点
+          # --delete 参数会删除目标中不存在的文件
+          # --acl public-read 可选，如果需要公开访问
+          aws s3 sync .vitepress/dist/ ${S3_PATH} \
+            --endpoint-url ${OSS_ENDPOINT} \
+            --delete \
+            --region ${AWS_DEFAULT_REGION}
