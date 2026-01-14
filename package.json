@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/markdown-it-container": "^2.0.11",
     "@types/node": "^25.0.8",
     "axios": "^1.13.2",
     "cheerio": "^1.1.2",
