@@ -21,15 +21,19 @@
 
       <!-- Navigation Links -->
       <nav class="sidebar-nav">
-        <button v-for="cat in rawData" :key="cat.name" class="nav-button"
+        <button v-for="cat in displayData" :key="cat.name" class="nav-button"
           :class="{ 'nav-button-active': activeCategory === cat.name }" @click="scrollToCategory(cat.name)">
           <component :is="getIconComponent(cat.iconName)" :size="18" class="nav-icon" />
           <span>{{ cat.name }}</span>
         </button>
       </nav>
 
-      <!-- Sidebar Footer (Theme Toggle) -->
+      <!-- Sidebar Footer (Theme Toggle & Recent Toggle) -->
       <div class="sidebar-footer">
+        <button v-if="hasClickRecords" class="recent-toggle" @click="toggleRecentUsed">
+          <component :is="showRecentUsed ? EyeOff : Eye" :size="16" class="theme-icon" />
+          <span class="theme-text">{{ showRecentUsed ? '隐藏近期使用' : '显示近期使用' }}</span>
+        </button>
         <button class="theme-toggle" @click="toggleDark()">
           <component :is="isDark ? Sun : Moon" :size="16" class="theme-icon" />
           <span class="theme-text">{{ isDark ? 'Light Mode' : 'Dark Mode' }}</span>
@@ -42,11 +46,7 @@
       <!-- 顶部移动端 Header -->
       <div class="mobile-header">
         <button class="mobile-menu-btn" @click="isMobileMenuOpen = true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+          <Menu :size="20" />
         </button>
         <span class="mobile-title">{{ activeCategory }}</span>
         <div class="mobile-spacer"></div>
@@ -85,10 +85,7 @@
               <div class="search-divider"></div>
               <input v-model="searchQuery" type="text" placeholder="Search..." class="search-input" autofocus />
               <button type="submit" class="search-button">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.35-4.35"></path>
-                </svg>
+                <Search :size="20" />
               </button>
             </form>
           </div>
@@ -96,7 +93,7 @@
 
         <!-- Categories Sections -->
         <div class="categories-container">
-          <section v-for="category in rawData" :key="category.name" :ref="el => setCategoryRef(category.name, el)"
+          <section v-for="category in displayData" :key="category.name" :ref="el => setCategoryRef(category.name, el)"
             class="category-section">
             <!-- Section Title -->
             <div class="section-title">
@@ -109,35 +106,33 @@
 
             <!-- Cards Grid -->
             <div class="cards-grid">
-              <a v-for="(link, idx) in category.links" :key="idx" :href="link.link" target="_blank"
-                rel="noopener noreferrer" class="card-link">
-                <div class="card-icon-row">
-                  <div class="card-icon-wrapper">
-                    <img v-if="getIconUrl(link)" :src="getIconUrl(link)" :alt="link.name" class="card-icon"
-                      @error="handleIconError" />
-                    <div v-else class="card-icon-fallback">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path
-                          d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                        </path>
-                      </svg>
+              <div v-for="(link, idx) in category.links" :key="idx" class="card-wrapper"
+                :class="{ 'recent-card': category.name === '近期使用' }">
+                <a :href="link.link" target="_blank" rel="noopener noreferrer" class="card-link"
+                  @click="incrementClickCount(link.link)">
+                  <div class="card-icon-row">
+                    <div class="card-icon-wrapper">
+                      <!-- 如果是 lucide 图标名称，使用 lucide 组件 -->
+                      <component v-if="isLucideIcon(link.icon)" :is="getIconComponent(link.icon)" :size="24"
+                        class="card-icon-lucide" />
+                      <!-- 如果是图片路径或 URL，使用图片 -->
+                      <img v-else-if="getIconUrl(link)" :src="getIconUrl(link)" :alt="link.name" class="card-icon"
+                        @error="handleIconError" />
+                      <!-- 默认回退图标 -->
+                      <Globe v-else :size="24" class="card-icon-lucide" />
                     </div>
+                    <ExternalLink :size="14" class="card-external-icon" />
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    class="card-external-icon">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                </div>
-                <div class="card-content">
-                  <h3 class="card-title">{{ link.name }}</h3>
-                  <p class="card-desc">{{ link.desc || "No description available." }}</p>
-                </div>
-              </a>
+                  <div class="card-content">
+                    <h3 class="card-title">{{ link.name }}</h3>
+                    <p class="card-desc">{{ link.desc || "No description available." }}</p>
+                  </div>
+                </a>
+                <button v-if="category.name === '近期使用'" class="card-delete-btn" @click.stop="removeFromRecent(link.link)"
+                  :title="'删除 ' + link.name">
+                  <Trash2 :size="14" />
+                </button>
+              </div>
             </div>
           </section>
         </div>
@@ -151,11 +146,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, h } from 'vue'
+import { ref, computed, onMounted, onUnmounted, h, createApp } from 'vue'
 import { useData } from 'vitepress'
 import navData from '../../../nav/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
-import { Sun, Moon, MapPin, X } from 'lucide-vue-next'
+import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink } from 'lucide-vue-next'
 
 // 处理数据，从配置中读取图标名称
 const rawData = navData.map((cat: any) => {
@@ -174,6 +169,11 @@ const toggleDark = () => {
   isDark.value = !isDark.value
 }
 
+// 本地存储键名
+const STORAGE_KEY_CLICKS = 'nav-click-counts'
+const STORAGE_KEY_SHOW_RECENT = 'nav-show-recent'
+const TOP_N = 10 // 显示 TOP N 个链接
+
 // 状态
 const activeCategory = ref(rawData[0].name)
 const searchEngine = ref('google')
@@ -182,6 +182,112 @@ const currentTime = ref(new Date())
 const isMobileMenuOpen = ref(false)
 const categoryRefs = ref<Record<string, HTMLElement>>({})
 const ipData = ref<any>(null)
+const showRecentUsed = ref(true) // 默认显示近期使用分类
+const clickCounts = ref<Record<string, number>>({}) // 链接点击次数统计
+
+// 本地存储相关函数
+const loadClickCounts = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_CLICKS)
+    if (stored) {
+      clickCounts.value = JSON.parse(stored)
+    }
+  } catch (e) {
+    console.error('Failed to load click counts:', e)
+    clickCounts.value = {}
+  }
+}
+
+const saveClickCounts = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY_CLICKS, JSON.stringify(clickCounts.value))
+  } catch (e) {
+    console.error('Failed to save click counts:', e)
+  }
+}
+
+const incrementClickCount = (linkUrl: string) => {
+  clickCounts.value[linkUrl] = (clickCounts.value[linkUrl] || 0) + 1
+  saveClickCounts()
+}
+
+const removeFromRecent = (linkUrl: string) => {
+  if (clickCounts.value[linkUrl]) {
+    delete clickCounts.value[linkUrl]
+    saveClickCounts()
+  }
+}
+
+const loadShowRecentSetting = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_SHOW_RECENT)
+    if (stored !== null) {
+      showRecentUsed.value = JSON.parse(stored)
+    }
+  } catch (e) {
+    console.error('Failed to load show recent setting:', e)
+  }
+}
+
+const saveShowRecentSetting = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY_SHOW_RECENT, JSON.stringify(showRecentUsed.value))
+  } catch (e) {
+    console.error('Failed to save show recent setting:', e)
+  }
+}
+
+// 获取所有链接的扁平列表
+const getAllLinks = () => {
+  return rawData.flatMap(cat => 
+    cat.links.map(link => ({
+      ...link,
+      categoryName: cat.name,
+      categoryIcon: cat.iconName
+    }))
+  )
+}
+
+// 计算"近期使用"分类
+const recentUsedCategory = computed(() => {
+  if (!showRecentUsed.value) return null
+
+  const allLinks = getAllLinks()
+  const linksWithCounts = allLinks
+    .map(link => ({
+      ...link,
+      clickCount: clickCounts.value[link.link] || 0
+    }))
+    .filter(link => link.clickCount > 0) // 只显示被点击过的链接
+    .sort((a, b) => b.clickCount - a.clickCount) // 按点击次数降序排序
+    .slice(0, TOP_N) // 只取 TOP N
+
+  if (linksWithCounts.length === 0) return null
+
+  return {
+    name: '近期使用',
+    title: 'Recent Used',
+    icon: 'clock',
+    iconName: 'clock',
+    links: linksWithCounts.map(({ categoryName, categoryIcon, clickCount, ...link }) => link)
+  }
+})
+
+// 检查是否有任何点击记录
+const hasClickRecords = computed(() => {
+  return Object.keys(clickCounts.value).length > 0 && 
+    Object.values(clickCounts.value).some(count => count > 0)
+})
+
+// 合并后的分类数据（包含近期使用）
+const displayData = computed(() => {
+  const categories = []
+  if (recentUsedCategory.value) {
+    categories.push(recentUsedCategory.value)
+  }
+  categories.push(...rawData)
+  return categories
+})
 
 // 计算属性
 const formattedTime = computed(() => {
@@ -193,8 +299,8 @@ const formattedDate = computed(() => {
 })
 
 // 方法
-const setCategoryRef = (name: string, el: HTMLElement | null) => {
-  if (el) {
+const setCategoryRef = (name: string, el: any) => {
+  if (el && el instanceof HTMLElement) {
     categoryRefs.value[name] = el
   }
 }
@@ -205,6 +311,15 @@ const scrollToCategory = (name: string) => {
   const element = categoryRefs.value[name]
   if (element) {
     element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
+
+const toggleRecentUsed = () => {
+  showRecentUsed.value = !showRecentUsed.value
+  saveShowRecentSetting()
+  // 如果隐藏了近期使用分类，切换到第一个普通分类
+  if (!showRecentUsed.value && activeCategory.value === '近期使用') {
+    activeCategory.value = rawData[0].name
   }
 }
 
@@ -235,8 +350,24 @@ const getDomain = (link: string) => {
   }
 }
 
+// 判断是否是 lucide 图标名称
+const isLucideIcon = (icon: any): boolean => {
+  if (!icon || typeof icon !== 'string') return false
+  // 如果是路径（以 / 开头）或 URL（以 http:// 或 https:// 开头），不是 lucide 图标
+  if (icon.startsWith('/') || icon.startsWith('http://') || icon.startsWith('https://')) {
+    return false
+  }
+  // 其他情况认为是 lucide 图标名称
+  return true
+}
+
 // 获取图标 URL
 const getIconUrl = (link: any) => {
+  // 如果是 lucide 图标，返回 null
+  if (isLucideIcon(link.icon)) {
+    return null
+  }
+  
   // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
   if (link.icon && typeof link.icon === 'string') {
     if (link.icon.startsWith('/')) {
@@ -307,11 +438,16 @@ const handleIconError = (e: Event) => {
       }
     }
 
-    // 如果所有回退都失败，显示默认图标
+    // 如果所有回退都失败，显示默认图标（使用 lucide Globe 图标）
+    // 使用 Vue 的 createApp 来创建并挂载 Globe 组件
     target.style.display = 'none'
     const fallback = document.createElement('div')
     fallback.className = 'card-icon-fallback'
-    fallback.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+    // 创建临时 Vue 应用来渲染 Globe 组件
+    const app = createApp({
+      render: () => h(Globe, { size: 24, class: 'card-icon-lucide' })
+    })
+    app.mount(fallback)
     target.parentNode?.replaceChild(fallback, target)
   }
 }
@@ -349,6 +485,17 @@ const fetchIpData = async () => {
 onMounted(() => {
   // 设置 body overflow 为 hidden，让 NavDashboard 内部的滚动容器处理滚动
   document.body.style.overflow = 'hidden'
+  
+  // 加载本地存储的数据
+  loadClickCounts()
+  loadShowRecentSetting()
+  
+  // 初始化 activeCategory
+  if (showRecentUsed.value && recentUsedCategory.value) {
+    activeCategory.value = '近期使用'
+  } else {
+    activeCategory.value = rawData[0].name
+  }
   
   timer = setInterval(() => {
     currentTime.value = new Date()
@@ -636,6 +783,40 @@ onUnmounted(() => {
   background-color: #cbd5e1;
 }
 
+.recent-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  margin-bottom: 8px;
+}
+
+.dark-mode .recent-toggle {
+  background-color: #1e293b;
+}
+
+.dark-mode .recent-toggle:hover {
+  background-color: #334155;
+}
+
+.light-mode .recent-toggle {
+  background-color: #e2e8f0;
+}
+
+.light-mode .recent-toggle:hover {
+  background-color: #cbd5e1;
+}
+
 .theme-icon {
   display: flex;
   align-items: center;
@@ -785,6 +966,8 @@ onUnmounted(() => {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
   user-select: none;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .ip-location-widget:hover {
@@ -827,6 +1010,9 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .ip-location-divider {
@@ -845,10 +1031,45 @@ onUnmounted(() => {
 .ip-location-ip {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .ip-location-loading {
   opacity: 0.7;
+}
+
+/* 移动端 IP Location Widget 响应式调整 */
+@media (max-width: 768px) {
+  .ip-location-widget {
+    padding: 6px 12px;
+    font-size: 11px;
+    max-width: calc(100vw - 32px);
+  }
+
+  .ip-location-content {
+    gap: 6px;
+  }
+
+  /* 在小屏幕上，如果空间不足，隐藏IP地址 */
+  .ip-location-ip {
+    display: none;
+  }
+
+  .ip-location-divider {
+    display: none;
+  }
+}
+
+/* 在中等屏幕上，如果空间仍然不足，也隐藏IP地址 */
+@media (max-width: 480px) {
+  .ip-location-widget {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
 }
 
 /* Search Bar */
@@ -1136,6 +1357,14 @@ onUnmounted(() => {
   }
 }
 
+.card-wrapper {
+  position: relative;
+}
+
+.recent-card {
+  position: relative;
+}
+
 .card-link {
   position: relative;
   display: flex;
@@ -1202,6 +1431,13 @@ onUnmounted(() => {
   display: block;
 }
 
+.card-icon-lucide {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
 .card-icon-fallback {
   width: 24px;
   height: 24px;
@@ -1220,6 +1456,50 @@ onUnmounted(() => {
 
 .card-link:hover .card-external-icon {
   opacity: 0.5;
+}
+
+.card-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.recent-card:hover .card-delete-btn {
+  opacity: 1;
+}
+
+.dark-mode .card-delete-btn {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+.dark-mode .card-delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  transform: scale(1.1);
+}
+
+.light-mode .card-delete-btn {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.light-mode .card-delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+  color: #b91c1c;
+  transform: scale(1.1);
 }
 
 .card-content {
