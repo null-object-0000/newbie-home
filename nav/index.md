@@ -5,9 +5,3 @@ sidebar: false
 ---
 
 <NavDashboard />
-
-<style>
-body {
-  overflow: hidden;
-}
-</style>

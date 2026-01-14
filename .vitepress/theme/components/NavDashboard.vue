@@ -338,6 +338,9 @@ const fetchIpData = async () => {
 }
 
 onMounted(() => {
+  // 设置 body overflow 为 hidden，让 NavDashboard 内部的滚动容器处理滚动
+  document.body.style.overflow = 'hidden'
+  
   timer = setInterval(() => {
     currentTime.value = new Date()
   }, 1000)
@@ -345,6 +348,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // 恢复 body overflow
+  document.body.style.overflow = ''
+  
   if (timer) {
     clearInterval(timer)
   }
