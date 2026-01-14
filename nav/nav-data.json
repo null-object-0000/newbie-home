@@ -8,6 +8,12 @@
         "icon": "/icons/json_cn.ico",
         "link": "https://www.json.cn/",
         "desc": "Json中文网致力于在中国推广Json,并提供相关的Json解析、验证、格式化、压缩、编辑器以及Json与XML相互转换等服务"
+      },
+      {
+        "name": "Excalidraw Whiteboard",
+        "icon": "/icons/excalidraw_com.png",
+        "link": "https://excalidraw.com/",
+        "desc": "Excalidraw is a virtual collaborative whiteboard tool that lets you easily sketch diagrams that have"
       }
     ]
   },
