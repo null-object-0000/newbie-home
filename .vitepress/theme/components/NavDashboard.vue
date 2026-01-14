@@ -62,15 +62,17 @@
           </div>
 
           <!-- IP Location Widget -->
-          <div class="ip-location-widget">
+          <div ref="ipLocationWidgetRef" class="ip-location-widget">
             <MapPin :size="12" class="ip-location-icon" />
-            <div v-if="ipData" class="ip-location-content">
-              <span v-if="ipData.city === (ipData.country_name || ipData.country)">{{ ipData.city || 'Unknown' }}</span>
-              <span v-else>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || ipData.country || 'Unknown' }}</span>
-              <span class="ip-location-divider"></span>
-              <span class="ip-location-ip">{{ ipData.ip }}</span>
-            </div>
-            <span v-else class="ip-location-loading">Locating...</span>
+            <Transition name="location-fade" mode="out-in">
+              <div v-if="ipData" key="content" class="ip-location-content">
+                <span v-if="ipData.city === (ipData.country_name || ipData.country)">{{ ipData.city || 'Unknown' }}</span>
+                <span v-else>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || ipData.country || 'Unknown' }}</span>
+                <span class="ip-location-divider"></span>
+                <span class="ip-location-ip">{{ ipData.ip }}</span>
+              </div>
+              <span v-else key="loading" class="ip-location-loading">定位中...</span>
+            </Transition>
           </div>
 
           <!-- Large Search Bar -->
@@ -107,27 +109,12 @@
             <!-- Cards Grid -->
             <div class="cards-grid">
               <div v-for="(link, idx) in category.links" :key="idx" class="card-wrapper"
-                :class="{ 'recent-card': category.name === '近期使用' }">
-                <a :href="link.link" target="_blank" rel="noopener noreferrer" class="card-link"
-                  @click="incrementClickCount(link.link)">
-                  <div class="card-icon-row">
-                    <div class="card-icon-wrapper">
-                      <!-- 如果是 lucide 图标名称，使用 lucide 组件 -->
-                      <component v-if="isLucideIcon(link.icon)" :is="getIconComponent(link.icon)" :size="24"
-                        class="card-icon-lucide" />
-                      <!-- 如果是图片路径或 URL，使用图片 -->
-                      <img v-else-if="getIconUrl(link)" :src="getIconUrl(link)" :alt="link.name" class="card-icon"
-                        @error="handleIconError" />
-                      <!-- 默认回退图标 -->
-                      <Globe v-else :size="24" class="card-icon-lucide" />
-                    </div>
-                    <ExternalLink :size="14" class="card-external-icon" />
-                  </div>
-                  <div class="card-content">
-                    <h3 class="card-title">{{ link.name }}</h3>
-                    <p class="card-desc">{{ link.desc || "No description available." }}</p>
-                  </div>
-                </a>
+                :class="{ 
+                  'recent-card': category.name === '近期使用'
+                }">
+                <div class="card-link-container">
+                  <CardLink :link="link" @click="incrementClickCount" />
+                </div>
                 <button v-if="category.name === '近期使用'" class="card-delete-btn" @click.stop="removeFromRecent(link.link)"
                   :title="'删除 ' + link.name">
                   <Trash2 :size="14" />
@@ -146,11 +133,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, h, createApp } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick, h, createApp } from 'vue'
 import { useData } from 'vitepress'
 import navData from '../../../nav/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
 import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink } from 'lucide-vue-next'
+import CardLink from './CardLink.vue'
 
 // 处理数据，从配置中读取图标名称
 const rawData = navData.map((cat: any) => {
@@ -172,7 +160,7 @@ const toggleDark = () => {
 // 本地存储键名
 const STORAGE_KEY_CLICKS = 'nav-click-counts'
 const STORAGE_KEY_SHOW_RECENT = 'nav-show-recent'
-const TOP_N = 10 // 显示 TOP N 个链接
+const TOP_N = 4 // 显示 TOP N 个链接
 
 // 状态
 const activeCategory = ref(rawData[0].name)
@@ -181,6 +169,7 @@ const searchQuery = ref('')
 const currentTime = ref(new Date())
 const isMobileMenuOpen = ref(false)
 const categoryRefs = ref<Record<string, HTMLElement>>({})
+const ipLocationWidgetRef = ref<HTMLElement | null>(null)
 const ipData = ref<any>(null)
 const showRecentUsed = ref(true) // 默认显示近期使用分类
 const clickCounts = ref<Record<string, number>>({}) // 链接点击次数统计
@@ -217,6 +206,7 @@ const removeFromRecent = (linkUrl: string) => {
     saveClickCounts()
   }
 }
+
 
 const loadShowRecentSetting = () => {
   try {
@@ -502,6 +492,46 @@ onMounted(() => {
   }, 1000)
   fetchIpData()
 })
+
+// 监听 ipData 变化，实现外框宽度平滑过渡
+watch(ipData, async (newData, oldData) => {
+  if (!ipLocationWidgetRef.value) return
+  
+  // 如果从无数据到有数据，或从有数据到无数据，触发宽度过渡
+  if ((!oldData && newData) || (oldData && !newData)) {
+    // 先获取当前宽度
+    const currentWidth = ipLocationWidgetRef.value.offsetWidth
+    
+    // 等待 DOM 更新
+    await nextTick()
+    
+    // 获取新内容的宽度
+    const newWidth = ipLocationWidgetRef.value.scrollWidth
+    
+    // 如果宽度不同，设置过渡
+    if (Math.abs(newWidth - currentWidth) > 1) {
+      // 临时设置固定宽度以实现过渡
+      ipLocationWidgetRef.value.style.width = `${currentWidth}px`
+      
+      // 强制重排
+      ipLocationWidgetRef.value.offsetHeight
+      
+      // 设置新宽度，触发过渡
+      requestAnimationFrame(() => {
+        if (ipLocationWidgetRef.value) {
+          ipLocationWidgetRef.value.style.width = `${newWidth}px`
+          
+          // 过渡完成后，恢复自动宽度
+          setTimeout(() => {
+            if (ipLocationWidgetRef.value) {
+              ipLocationWidgetRef.value.style.width = ''
+            }
+          }, 500)
+        }
+      })
+    }
+  }
+}, { flush: 'post' })
 
 onUnmounted(() => {
   // 恢复 body overflow
@@ -954,7 +984,7 @@ onUnmounted(() => {
 
 /* IP Location Widget */
 .ip-location-widget {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
@@ -964,10 +994,17 @@ onUnmounted(() => {
   backdrop-filter: blur(12px);
   border: 1px solid;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: all 0.3s;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s, 
+              background-color 0.3s, 
+              border-color 0.3s;
   user-select: none;
   max-width: 100%;
   overflow: hidden;
+  width: auto;
+  min-width: 0;
+  will-change: width;
 }
 
 .ip-location-widget:hover {
@@ -1013,6 +1050,8 @@ onUnmounted(() => {
   min-width: 0;
   flex: 1;
   overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .ip-location-divider {
@@ -1040,6 +1079,34 @@ onUnmounted(() => {
 
 .ip-location-loading {
   opacity: 0.7;
+  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: inline-block;
+}
+
+/* 定位信息切换过渡动画 */
+.location-fade-enter-active {
+  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+}
+
+.location-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.location-fade-enter-from {
+  opacity: 0;
+  transform: translateX(-8px) scale(0.95);
+}
+
+.location-fade-leave-to {
+  opacity: 0;
+  transform: translateX(8px) scale(0.95);
+}
+
+.location-fade-enter-to,
+.location-fade-leave-from {
+  opacity: 1;
+  transform: translateX(0) scale(1);
 }
 
 /* 移动端 IP Location Widget 响应式调整 */
@@ -1365,97 +1432,10 @@ onUnmounted(() => {
   position: relative;
 }
 
-.card-link {
+.card-link-container {
   position: relative;
   display: flex;
-  flex-direction: column;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid;
-  transition: all 0.3s;
-  text-decoration: none;
-  color: inherit;
-}
-
-.card-link:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.dark-mode .card-link {
-  background-color: rgba(30, 41, 59, 0.4);
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-.dark-mode .card-link:hover {
-  background-color: rgba(30, 41, 59, 0.8);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.light-mode .card-link {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(226, 232, 240, 0.6);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.light-mode .card-link:hover {
-  background-color: white;
-  border-color: rgba(147, 197, 253, 0.5);
-}
-
-.card-icon-row {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.card-icon-wrapper {
-  padding: 8px;
-  border-radius: 12px;
-}
-
-.dark-mode .card-icon-wrapper {
-  background-color: rgba(15, 23, 42, 0.5);
-}
-
-.light-mode .card-icon-wrapper {
-  background-color: #f1f5f9;
-}
-
-.card-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: contain;
-  display: block;
-}
-
-.card-icon-lucide {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  color: inherit;
-}
-
-.card-icon-fallback {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.5;
-  color: inherit;
-}
-
-.card-external-icon {
-  opacity: 0;
-  transition: opacity 0.2s;
-  color: inherit;
-}
-
-.card-link:hover .card-external-icon {
-  opacity: 0.5;
 }
 
 .card-delete-btn {
@@ -1500,40 +1480,6 @@ onUnmounted(() => {
   background-color: rgba(239, 68, 68, 0.3);
   color: #b91c1c;
   transform: scale(1.1);
-}
-
-.card-content {
-  flex: 1;
-}
-
-.card-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 8px;
-  line-height: 1.5;
-}
-
-.card-desc {
-  font-size: 12px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0;
-}
-
-.dark-mode .card-desc {
-  color: #94a3b8;
-}
-
-.light-mode .card-desc {
-  color: #64748b;
 }
 
 .footer {
