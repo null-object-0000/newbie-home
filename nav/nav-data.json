@@ -8,13 +8,13 @@
         "name": "JSON 中文网",
         "icon": "/icons/json_cn.ico",
         "link": "https://www.json.cn/",
-        "desc": "Json中文网致力于在中国推广Json,并提供相关的Json解析、验证、格式化、压缩、编辑器以及Json与XML相互转换等服务"
+        "desc": "Json中文网致力于在中国推广Json,并提供相关的Json解析、验证、格式化、压缩、编辑器以及Json与XML相互转换等服务。"
       },
       {
         "name": "Excalidraw Whiteboard",
         "icon": "/icons/excalidraw_com.png",
         "link": "https://excalidraw.com/",
-        "desc": "Excalidraw is a virtual collaborative whiteboard tool that lets you easily sketch diagrams that have"
+        "desc": "Excalidraw是一款虚拟协作白板工具，能让你轻松绘制出具有手绘风格的图表。"
       }
     ]
   },
@@ -117,7 +117,7 @@
         "name": "Gemini",
         "icon": "/icons/gemini_google_com.svg",
         "link": "https://gemini.google.com/",
-        "desc": "Meet Gemini, Google's AI assistant. Get help with writing, planning, brainstorming, and more. Experi"
+        "desc": "认识 Gemini：Google 旗下的 AI 助理。在写作、规划和开展头脑风暴等方面获得帮助。体验生成式 AI 的强大功能。"
       },
       {
         "name": "天工",
@@ -153,7 +153,7 @@
         "name": "LongCat",
         "icon": "/icons/longcat_chat.svg",
         "link": "https://longcat.chat/",
-        "desc": "我分享了【LongCat AI】，快来看吧！"
+        "desc": "LongCat，不止更快"
       }
     ]
   },

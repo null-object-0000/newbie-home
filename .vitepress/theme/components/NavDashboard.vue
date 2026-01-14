@@ -11,6 +11,14 @@
 
     <!-- 左侧边栏 -->
     <aside class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }">
+      <!-- Sidebar Header (Logo / Brand) -->
+      <div class="sidebar-header">
+        <h1 class="sidebar-title">Newbie Home</h1>
+        <button class="sidebar-close-btn" @click="isMobileMenuOpen = false">
+          <X :size="20" />
+        </button>
+      </div>
+
       <!-- Navigation Links -->
       <nav class="sidebar-nav">
         <button v-for="cat in rawData" :key="cat.name" class="nav-button"
@@ -57,7 +65,8 @@
           <div class="ip-location-widget">
             <MapPin :size="12" class="ip-location-icon" />
             <div v-if="ipData" class="ip-location-content">
-              <span>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || 'Location' }}</span>
+              <span v-if="ipData.city === (ipData.country_name || ipData.country)">{{ ipData.city || 'Unknown' }}</span>
+              <span v-else>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || ipData.country || 'Unknown' }}</span>
               <span class="ip-location-divider"></span>
               <span class="ip-location-ip">{{ ipData.ip }}</span>
             </div>
@@ -146,7 +155,7 @@ import { ref, computed, onMounted, onUnmounted, h } from 'vue'
 import { useData } from 'vitepress'
 import navData from '../../../nav/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
-import { Sun, Moon, MapPin } from 'lucide-vue-next'
+import { Sun, Moon, MapPin, X } from 'lucide-vue-next'
 
 // 处理数据，从配置中读取图标名称
 const rawData = navData.map((cat: any) => {
@@ -493,11 +502,17 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 8px;
   color: inherit;
   background: none;
   border: none;
   cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.sidebar-close-btn:hover {
+  background-color: rgba(148, 163, 184, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -906,6 +921,29 @@ onUnmounted(() => {
   border: none;
   cursor: pointer;
   color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.dark-mode .search-select {
+  color: #e2e8f0 !important;
+  background-color: transparent;
+}
+
+.dark-mode .search-select option {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.light-mode .search-select {
+  color: #1e293b !important;
+  background-color: transparent;
+}
+
+.light-mode .search-select option {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
 }
 
 .search-divider {
@@ -947,6 +985,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  min-width: 44px;
 }
 
 .search-button:active {
@@ -967,6 +1007,34 @@ onUnmounted(() => {
 
 .light-mode .search-button:hover {
   background-color: #60a5fa;
+}
+
+/* 移动端响应式调整 */
+@media (max-width: 768px) {
+  .search-form {
+    padding: 4px;
+  }
+
+  .search-select {
+    padding: 8px 4px 8px 12px;
+    font-size: 12px;
+  }
+
+  .search-input {
+    padding: 6px 4px;
+    font-size: 16px;
+    min-width: 0;
+  }
+
+  .search-button {
+    padding: 8px;
+    min-width: 40px;
+  }
+
+  .search-divider {
+    height: 20px;
+    margin: 0 4px;
+  }
 }
 
 /* Categories */
