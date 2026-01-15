@@ -13,13 +13,10 @@
     <aside class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }">
       <!-- Sidebar Header (Logo / Brand) -->
       <div class="sidebar-header">
-        <div class="sidebar-brand">
+        <div class="sidebar-brand" @click="goHome" style="cursor: pointer;">
           <img :src="`${base}logo.png`" alt="Newbie Home" class="sidebar-logo" />
           <h1 class="sidebar-title">Newbie Home</h1>
         </div>
-        <button class="sidebar-close-btn" @click="isMobileMenuOpen = false">
-          <X :size="20" />
-        </button>
       </div>
 
       <!-- Navigation Links -->
@@ -31,33 +28,75 @@
         </button>
       </nav>
 
-      <!-- Sidebar Footer (Theme Toggle & Recent Toggle) -->
+      <!-- Sidebar Footer (Home & Recent Toggle) -->
       <div class="sidebar-footer">
-        <button v-if="hasClickRecords" class="recent-toggle" @click="toggleRecentUsed">
+        <button class="home-button" @click="goHome">
+          <Home :size="16" class="theme-icon" />
+          <span class="theme-text">返回首页</span>
+        </button>
+        <button v-if="hasClickRecords && !isMobile" class="recent-toggle" @click="toggleRecentUsed">
           <component :is="showRecentUsed ? EyeOff : Eye" :size="16" class="theme-icon" />
           <span class="theme-text">{{ showRecentUsed ? '隐藏近期使用' : '显示近期使用' }}</span>
-        </button>
-        <button class="theme-toggle" @click="toggleDark()">
-          <component :is="isDark ? Sun : Moon" :size="16" class="theme-icon" />
-          <span class="theme-text">{{ isDark ? 'Light Mode' : 'Dark Mode' }}</span>
         </button>
       </div>
     </aside>
 
     <!-- 右侧主内容区域 -->
     <main class="main-content">
-      <!-- 顶部移动端 Header -->
-      <div class="mobile-header">
-        <button class="mobile-menu-btn" @click="isMobileMenuOpen = true">
-          <Menu :size="20" />
-        </button>
-        <span class="mobile-title">{{ activeCategory }}</span>
-        <div class="mobile-spacer"></div>
-      </div>
+      <!-- 右上角主题切换按钮（桌面端） -->
+      <button class="desktop-theme-toggle" @click="toggleDark()" title="切换主题">
+        <component :is="isDark ? Sun : Moon" :size="20" />
+      </button>
 
-      <div class="content-wrapper">
+      <!-- 移动端入口按钮（头部隐藏时显示） -->
+      <Transition name="mobile-entry-fade">
+        <div v-if="!showMobileHeader && !showCompactHeader && !isMobileMenuOpen" class="mobile-entry-buttons">
+          <button class="mobile-entry-menu-btn" @click="isMobileMenuOpen = true" title="打开菜单">
+            <Menu :size="20" />
+          </button>
+          <button class="mobile-entry-theme-btn" @click="toggleDark()" title="切换主题">
+            <component :is="isDark ? Sun : Moon" :size="20" />
+          </button>
+        </div>
+      </Transition>
+
+      <!-- 顶部移动端 Header -->
+      <Transition name="mobile-header-fade">
+        <div v-if="showMobileHeader && !isMobileMenuOpen" class="mobile-header">
+          <button class="mobile-menu-btn" @click="isMobileMenuOpen = true">
+            <Menu :size="20" />
+          </button>
+          <span class="mobile-title">{{ activeCategory }}</span>
+          <div class="mobile-header-actions">
+            <button class="mobile-theme-toggle" @click="toggleDark()" title="切换主题">
+              <component :is="isDark ? Sun : Moon" :size="20" />
+            </button>
+          </div>
+        </div>
+      </Transition>
+
+      <!-- 移动端紧凑头部（滚动时显示） -->
+      <Transition name="compact-header-slide">
+        <div v-if="showCompactHeader && !isMobileMenuOpen" class="mobile-compact-header">
+          <button class="compact-menu-btn" @click="isMobileMenuOpen = true">
+            <Menu :size="18" />
+          </button>
+          <div class="compact-header-content">
+            <div class="compact-time">{{ formattedTime }}</div>
+            <div class="compact-location" v-if="ipData">
+              <MapPin :size="10" />
+              <span>{{ ipData.city || 'Unknown' }}</span>
+            </div>
+          </div>
+          <button class="compact-theme-toggle" @click="toggleDark()" title="切换主题">
+            <component :is="isDark ? Sun : Moon" :size="18" />
+          </button>
+        </div>
+      </Transition>
+
+      <div class="content-wrapper" style="position: relative;">
         <!-- Header Area: Time & Search -->
-        <div class="header-area">
+        <div ref="headerAreaRef" class="header-area">
           <!-- Time -->
           <div class="time-display">
             <h1 class="time-text">{{ formattedTime }}</h1>
@@ -140,7 +179,7 @@ import { ref, computed, onMounted, onUnmounted, watch, nextTick, h, createApp } 
 import { useData } from 'vitepress'
 import navData from '../../../nav/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
-import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink } from 'lucide-vue-next'
+import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home } from 'lucide-vue-next'
 import CardLink from './CardLink.vue'
 
 // 处理数据，从配置中读取图标名称
@@ -173,9 +212,14 @@ const currentTime = ref(new Date())
 const isMobileMenuOpen = ref(false)
 const categoryRefs = ref<Record<string, HTMLElement>>({})
 const ipLocationWidgetRef = ref<HTMLElement | null>(null)
+const headerAreaRef = ref<HTMLElement | null>(null)
 const ipData = ref<any>(null)
 const showRecentUsed = ref(true) // 默认显示近期使用分类
 const clickCounts = ref<Record<string, number>>({}) // 链接点击次数统计
+const showMobileHeader = ref(false) // 移动端头部显示状态（默认隐藏）
+const showCompactHeader = ref(false) // 紧凑头部显示状态
+const scrollY = ref(0)
+const isMobile = ref(false) // 是否为移动端
 
 // 本地存储相关函数
 const loadClickCounts = () => {
@@ -243,6 +287,8 @@ const getAllLinks = () => {
 
 // 计算"近期使用"分类
 const recentUsedCategory = computed(() => {
+  // 移动端不显示近期使用
+  if (isMobile.value) return null
   if (!showRecentUsed.value) return null
 
   const allLinks = getAllLinks()
@@ -298,12 +344,40 @@ const setCategoryRef = (name: string, el: any) => {
   }
 }
 
+const goHome = () => {
+  const homePath = base === '/' ? '/' : base
+  window.location.href = homePath
+}
+
 const scrollToCategory = (name: string) => {
   activeCategory.value = name
   isMobileMenuOpen.value = false
   const element = categoryRefs.value[name]
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // 计算头部高度偏移量（移动端需要考虑头部占位）
+    const headerOffset = isMobile.value ? 76 : 0 // 移动端头部高度约 56px，加上一些间距
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const offsetPosition = elementPosition - headerOffset
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
+    
+    // 如果是在 main-content 内滚动，需要调整
+    const mainContent = document.querySelector('.main-content') as HTMLElement
+    if (mainContent && isMobile.value) {
+      const scrollTop = mainContent.scrollTop
+      const elementRelativeTop = element.getBoundingClientRect().top - mainContent.getBoundingClientRect().top
+      const targetScrollTop = scrollTop + elementRelativeTop - headerOffset
+      
+      mainContent.scrollTo({
+        top: Math.max(0, targetScrollTop),
+        behavior: 'smooth'
+      })
+    } else {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 }
 
@@ -475,16 +549,74 @@ const fetchIpData = async () => {
   console.error('All IP APIs failed')
 }
 
+// 检查位置信息是否在视野中
+const checkHeaderVisibility = () => {
+  if (!ipLocationWidgetRef.value) return
+  
+  const locationWidget = ipLocationWidgetRef.value
+  const rect = locationWidget.getBoundingClientRect()
+  const mainContent = locationWidget.closest('.main-content') as HTMLElement
+  
+  if (!mainContent) return
+  
+  // 检查位置信息是否完全滚出视野
+  const isLocationOutOfView = rect.bottom < 0
+  
+  // 检查是否在顶部（滚动位置很小）
+  const isAtTop = mainContent.scrollTop < 50
+  
+  // 移动端才应用这个逻辑
+  if (window.innerWidth <= 768) {
+    if (isAtTop) {
+      // 在顶部时，隐藏所有头部（默认状态）
+      showMobileHeader.value = false
+      showCompactHeader.value = false
+    } else if (isLocationOutOfView) {
+      // 位置信息滚出视野时，隐藏普通头部，显示紧凑头部
+      showMobileHeader.value = false
+      showCompactHeader.value = true
+    } else {
+      // 位置信息还在视野中时，隐藏所有头部
+      showMobileHeader.value = false
+      showCompactHeader.value = false
+    }
+  } else {
+    // 桌面端始终显示普通头部
+    showMobileHeader.value = true
+    showCompactHeader.value = false
+  }
+}
+
+// 滚动事件处理
+const handleScroll = () => {
+  checkHeaderVisibility()
+}
+
+// 窗口大小变化处理
+const handleResize = () => {
+  checkHeaderVisibility()
+}
+
+let mainContentElement: HTMLElement | null = null
+
+// 检测是否为移动端
+const checkIsMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
 onMounted(() => {
   // 设置 body overflow 为 hidden，让 NavDashboard 内部的滚动容器处理滚动
   document.body.style.overflow = 'hidden'
+  
+  // 检测是否为移动端
+  checkIsMobile()
   
   // 加载本地存储的数据
   loadClickCounts()
   loadShowRecentSetting()
   
-  // 初始化 activeCategory
-  if (showRecentUsed.value && recentUsedCategory.value) {
+  // 初始化 activeCategory（移动端不显示近期使用）
+  if (!isMobile.value && showRecentUsed.value && recentUsedCategory.value) {
     activeCategory.value = '近期使用'
   } else {
     activeCategory.value = rawData[0].name
@@ -494,6 +626,22 @@ onMounted(() => {
     currentTime.value = new Date()
   }, 1000)
   fetchIpData()
+  
+  // 添加滚动监听（移动端）
+  mainContentElement = document.querySelector('.main-content') as HTMLElement
+  if (mainContentElement) {
+    mainContentElement.addEventListener('scroll', handleScroll, { passive: true })
+    // 初始检查
+    nextTick(() => {
+      checkHeaderVisibility()
+    })
+  }
+  
+  // 监听窗口大小变化
+  window.addEventListener('resize', () => {
+    checkIsMobile()
+    handleResize()
+  }, { passive: true })
 })
 
 // 监听 ipData 变化，实现外框宽度平滑过渡
@@ -543,6 +691,14 @@ onUnmounted(() => {
   if (timer) {
     clearInterval(timer)
   }
+  
+  // 移除滚动监听
+  if (mainContentElement) {
+    mainContentElement.removeEventListener('scroll', handleScroll)
+  }
+  
+  // 移除窗口大小监听
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -692,29 +848,6 @@ onUnmounted(() => {
   margin: 0;
 }
 
-.sidebar-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  color: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-}
-
-.sidebar-close-btn:hover {
-  background-color: rgba(148, 163, 184, 0.1);
-}
-
-@media (min-width: 768px) {
-  .sidebar-close-btn {
-    display: none;
-  }
-}
-
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
@@ -830,6 +963,40 @@ onUnmounted(() => {
   background-color: #cbd5e1;
 }
 
+.home-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+  margin-bottom: 8px;
+}
+
+.dark-mode .home-button {
+  background-color: #1e293b;
+}
+
+.dark-mode .home-button:hover {
+  background-color: #334155;
+}
+
+.light-mode .home-button {
+  background-color: #e2e8f0;
+}
+
+.light-mode .home-button:hover {
+  background-color: #cbd5e1;
+}
+
 .recent-toggle {
   width: 100%;
   display: flex;
@@ -883,16 +1050,64 @@ onUnmounted(() => {
   scroll-behavior: smooth;
 }
 
+/* 桌面端右上角主题切换按钮 */
+.desktop-theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .desktop-theme-toggle {
+  background-color: rgba(30, 41, 59, 0.8);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.dark-mode .desktop-theme-toggle:hover {
+  background-color: rgba(30, 41, 59, 0.95);
+  transform: scale(1.05);
+}
+
+.light-mode .desktop-theme-toggle {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.light-mode .desktop-theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  transform: scale(1.05);
+}
+
+@media (max-width: 767px) {
+  .desktop-theme-toggle {
+    display: none;
+  }
+}
+
 .mobile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 12px 16px;
   position: sticky;
   top: 0;
   z-index: 30;
   backdrop-filter: blur(12px);
   border-bottom: 1px solid;
+  min-height: 56px;
 }
 
 .dark-mode .mobile-header {
@@ -911,24 +1126,313 @@ onUnmounted(() => {
   }
 }
 
-.mobile-menu-btn {
-  padding: 8px;
-  background-color: rgba(148, 163, 184, 0.1);
-  border-radius: 8px;
+/* 移动端入口按钮（头部隐藏时显示） */
+.mobile-entry-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-entry-buttons {
+    display: none;
+  }
+}
+
+.mobile-entry-menu-btn,
+.mobile-entry-theme-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   color: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
+  pointer-events: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .mobile-entry-menu-btn,
+.dark-mode .mobile-entry-theme-btn {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.light-mode .mobile-entry-menu-btn,
+.light-mode .mobile-entry-theme-btn {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.mobile-entry-menu-btn:hover,
+.mobile-entry-theme-btn:hover {
+  transform: scale(1.05);
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .mobile-entry-menu-btn:hover,
+.dark-mode .mobile-entry-theme-btn:hover {
+  background-color: rgba(30, 41, 59, 0.95);
+}
+
+.light-mode .mobile-entry-menu-btn:hover,
+.light-mode .mobile-entry-theme-btn:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* 入口按钮过渡动画 */
+.mobile-entry-fade-enter-active,
+.mobile-entry-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.mobile-entry-fade-enter-from,
+.mobile-entry-fade-leave-to {
+  opacity: 0;
+}
+
+/* 移动端紧凑头部（滚动时显示） */
+.mobile-compact-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid;
+  min-height: 56px;
+}
+
+.dark-mode .mobile-compact-header {
+  background-color: rgba(15, 23, 42, 0.95);
+  border-bottom-color: rgba(148, 163, 184, 0.1);
+}
+
+.light-mode .mobile-compact-header {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .mobile-compact-header {
+    display: none;
+  }
+}
+
+.compact-menu-btn,
+.compact-theme-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .compact-menu-btn,
+.dark-mode .compact-theme-toggle {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.light-mode .compact-menu-btn,
+.light-mode .compact-theme-toggle {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.compact-menu-btn:hover,
+.compact-theme-toggle:hover {
+  transform: scale(1.05);
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .compact-menu-btn:hover,
+.dark-mode .compact-theme-toggle:hover {
+  background-color: rgba(30, 41, 59, 0.95);
+}
+
+.light-mode .compact-menu-btn:hover,
+.light-mode .compact-theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.compact-header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+}
+
+.compact-time {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  white-space: nowrap;
+}
+
+.compact-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* 头部过渡动画 */
+.mobile-header-fade-enter-active,
+.mobile-header-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.mobile-header-fade-enter-from {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.mobile-header-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.compact-header-slide-enter-active,
+.compact-header-slide-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.compact-header-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.compact-header-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.mobile-menu-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .mobile-menu-btn {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.light-mode .mobile-menu-btn {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.mobile-menu-btn:hover {
+  transform: scale(1.05);
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .mobile-menu-btn:hover {
+  background-color: rgba(30, 41, 59, 0.95);
+}
+
+.light-mode .mobile-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .mobile-title {
+  font-size: 16px;
   font-weight: 700;
+  flex: 1;
+  text-align: center;
 }
 
-.mobile-spacer {
-  width: 32px;
+.mobile-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-theme-toggle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .mobile-theme-toggle {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.light-mode .mobile-theme-toggle {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.mobile-theme-toggle:hover {
+  transform: scale(1.05);
+  background-color: rgba(148, 163, 184, 0.25);
+}
+
+.dark-mode .mobile-theme-toggle:hover {
+  background-color: rgba(30, 41, 59, 0.95);
+}
+
+.light-mode .mobile-theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .content-wrapper {

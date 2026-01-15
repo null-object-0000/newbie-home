@@ -15,6 +15,12 @@
         "icon": "/icons/excalidraw_com.png",
         "link": "https://excalidraw.com/",
         "desc": "Excalidraw是一款虚拟协作白板工具，能让你轻松绘制出具有手绘风格的图表。"
+      },
+      {
+        "name": "NewsNow",
+        "icon": "/icons/newsnow_busiyi_world.svg",
+        "link": "https://newsnow.busiyi.world/",
+        "desc": "NewsNow - 实时新闻聚合阅读器，汇集全球热点新闻，提供优雅的阅读体验"
       }
     ]
   },
