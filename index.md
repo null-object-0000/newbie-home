@@ -6,6 +6,9 @@ hero:
   name: "Newbie Home"
   text: "我的个人导航与博客"
   tagline: "收集灵感，记录成长，分享技术"
+  image:
+    src: /logo.png
+    alt: Newbie Home Logo
   actions:
     - theme: brand
       text: 查看导航

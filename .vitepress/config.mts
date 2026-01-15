@@ -6,6 +6,11 @@ export default defineConfig({
   base: process.env.VITEPRESS_BASE || '/',
   title: "Newbie Home",
   description: "我的个人导航与博客",
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
+    ['link', { rel: 'apple-touch-icon', href: '/logo.png' }],
+    ['link', { rel: 'shortcut icon', href: '/logo.png' }],
+  ],
   markdown: {
     config(md) {
       // 注册 images 容器
@@ -41,6 +46,7 @@ export default defineConfig({
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/logo.png',
     nav: [
       { text: '🏠 首页', link: '/' },
       { text: '🧭 导航', link: '/nav/' },

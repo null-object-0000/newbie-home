@@ -13,7 +13,10 @@
     <aside class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }">
       <!-- Sidebar Header (Logo / Brand) -->
       <div class="sidebar-header">
-        <h1 class="sidebar-title">Newbie Home</h1>
+        <div class="sidebar-brand">
+          <img :src="`${base}logo.png`" alt="Newbie Home" class="sidebar-logo" />
+          <h1 class="sidebar-title">Newbie Home</h1>
+        </div>
         <button class="sidebar-close-btn" @click="isMobileMenuOpen = false">
           <X :size="20" />
         </button>
@@ -665,6 +668,19 @@ onUnmounted(() => {
   justify-content: space-between;
 }
 
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .sidebar-title {
   font-size: 24px;
   font-weight: 700;
@@ -673,6 +689,7 @@ onUnmounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin: 0;
 }
 
 .sidebar-close-btn {
