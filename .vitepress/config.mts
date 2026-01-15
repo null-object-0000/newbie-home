@@ -2,14 +2,17 @@ import { defineConfig } from 'vitepress'
 import container from 'markdown-it-container'
 
 // https://vitepress.dev/reference/site-config
+const base = process.env.VITEPRESS_BASE || '/'
+const logoPath = base.endsWith('/') ? `${base}logo.png` : `${base}/logo.png`
+
 export default defineConfig({
-  base: process.env.VITEPRESS_BASE || '/',
+  base,
   title: "Newbie Home",
   description: "我的个人导航与博客",
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
-    ['link', { rel: 'apple-touch-icon', href: '/logo.png' }],
-    ['link', { rel: 'shortcut icon', href: '/logo.png' }],
+    ['link', { rel: 'icon', type: 'image/png', href: logoPath }],
+    ['link', { rel: 'apple-touch-icon', href: logoPath }],
+    ['link', { rel: 'shortcut icon', href: logoPath }],
   ],
   markdown: {
     config(md) {
@@ -46,7 +49,7 @@ export default defineConfig({
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    logo: '/logo.png',
+    logo: logoPath,
     nav: [
       { text: '🏠 首页', link: '/' },
       { text: '🧭 导航', link: '/nav/' },
