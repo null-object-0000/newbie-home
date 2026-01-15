@@ -7,29 +7,29 @@ sidebar: false
 <NavDashboard />
 
 <style>
-/* 隐藏 VitePress 默认头部导航栏 */
-.VPNav,
-.VPNavBar,
-.vp-nav,
-header[class*="VPNav"],
-nav[class*="VPNav"] {
+/* 只在导航页面隐藏 VitePress 默认头部导航栏 */
+:has(.nav-dashboard) .VPNav,
+:has(.nav-dashboard) .VPNavBar,
+:has(.nav-dashboard) .vp-nav,
+:has(.nav-dashboard) header[class*="VPNav"],
+:has(.nav-dashboard) nav[class*="VPNav"] {
   display: none !important;
 }
 
-/* 调整页面布局，去除头部后的间距 */
-.vp-page {
+/* 只在导航页面调整页面布局，去除头部后的间距 */
+:has(.nav-dashboard) .vp-page {
   padding-top: 0 !important;
 }
 
-/* 确保 NavDashboard 能够全屏显示 */
-.vp-page .vp-doc {
+/* 只在导航页面确保 NavDashboard 能够全屏显示 */
+:has(.nav-dashboard) .vp-page .vp-doc {
   padding: 0 !important;
   max-width: 100% !important;
   margin: 0 !important;
 }
 
-/* 移除页面容器的边距 */
-.vp-page > div {
+/* 只在导航页面移除页面容器的边距 */
+:has(.nav-dashboard) .vp-page > div {
   margin: 0 !important;
   padding: 0 !important;
 }
