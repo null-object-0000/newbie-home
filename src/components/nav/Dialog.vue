@@ -44,8 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useData } from 'vitepress'
+import { useData } from '@/composables/useTheme'
 
 interface Props {
   modelValue: boolean

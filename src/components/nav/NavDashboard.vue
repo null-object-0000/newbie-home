@@ -189,8 +189,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, h, createApp } from 'vue'
-import { useData } from 'vitepress'
-import navData from '../../../../nav/nav-data.json'
+import { useRouter } from 'vue-router'
+import { useTheme, useData } from '@/composables/useTheme'
+import navData from '@/data/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
 import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home, AlertTriangle } from 'lucide-vue-next'
 import CardLink from './CardLink.vue'
@@ -205,13 +206,11 @@ const rawData = navData.map((cat: any) => {
   }
 })
 
-// 使用 VitePress 的主题模式
-const { isDark, site } = useData()
+// 使用自定义主题管理
+const { isDark, toggleDark } = useTheme()
+const { site } = useData()
 const base = site.value.base || '/'
-
-const toggleDark = () => {
-  isDark.value = !isDark.value
-}
+const router = useRouter()
 
 // 本地存储键名
 const STORAGE_KEY_CLICKS = 'nav-click-counts'
@@ -240,6 +239,7 @@ const pendingLinkName = ref<string>('') // 待跳转的链接名称
 
 // 本地存储相关函数
 const loadClickCounts = () => {
+  if (typeof localStorage === 'undefined') return
   try {
     const stored = localStorage.getItem(STORAGE_KEY_CLICKS)
     if (stored) {
@@ -252,6 +252,7 @@ const loadClickCounts = () => {
 }
 
 const saveClickCounts = () => {
+  if (typeof localStorage === 'undefined') return
   try {
     localStorage.setItem(STORAGE_KEY_CLICKS, JSON.stringify(clickCounts.value))
   } catch (e) {
@@ -360,6 +361,7 @@ const removeFromRecent = (linkUrl: string) => {
 
 
 const loadShowRecentSetting = () => {
+  if (typeof localStorage === 'undefined') return
   try {
     const stored = localStorage.getItem(STORAGE_KEY_SHOW_RECENT)
     if (stored !== null) {
@@ -371,6 +373,7 @@ const loadShowRecentSetting = () => {
 }
 
 const saveShowRecentSetting = () => {
+  if (typeof localStorage === 'undefined') return
   try {
     localStorage.setItem(STORAGE_KEY_SHOW_RECENT, JSON.stringify(showRecentUsed.value))
   } catch (e) {
@@ -449,8 +452,7 @@ const setCategoryRef = (name: string, el: any) => {
 }
 
 const goHome = () => {
-  const homePath = base === '/' ? '/' : base
-  window.location.href = homePath
+  router.push('/')
 }
 
 const scrollToCategory = (name: string) => {
@@ -624,7 +626,7 @@ const handleIconError = (e: Event) => {
 }
 
 // 时间更新
-let timer: NodeJS.Timeout | null = null
+let timer: ReturnType<typeof setInterval> | null = null
 
 // IP 获取
 // IP 获取 - 支持多个备用 API
@@ -670,7 +672,7 @@ const checkHeaderVisibility = () => {
   const isAtTop = mainContent.scrollTop < 50
   
   // 移动端才应用这个逻辑
-  if (window.innerWidth <= 768) {
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     if (isAtTop) {
       // 在顶部时，隐藏所有头部（默认状态）
       showMobileHeader.value = false
@@ -705,6 +707,7 @@ let mainContentElement: HTMLElement | null = null
 
 // 检测是否为移动端
 const checkIsMobile = () => {
+  if (typeof window === 'undefined') return
   isMobile.value = window.innerWidth <= 768
 }
 
@@ -790,7 +793,9 @@ watch(ipData, async (newData, oldData) => {
 
 onUnmounted(() => {
   // 恢复 body overflow
-  document.body.style.overflow = ''
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
   
   if (timer) {
     clearInterval(timer)
@@ -802,7 +807,9 @@ onUnmounted(() => {
   }
   
   // 移除窗口大小监听
-  window.removeEventListener('resize', handleResize)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleResize)
+  }
 })
 </script>
 

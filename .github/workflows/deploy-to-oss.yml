@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run docs:build
+        run: npm run build
 
       - name: Install tools
         run: |
@@ -81,7 +81,7 @@ jobs:
             # -e 指定 endpoint
             # -i 指定 AccessKey ID
             # -k 指定 AccessKey Secret
-            ossutil sync .vitepress/dist/ ${OSS_TARGET} \
+            ossutil sync dist/ ${OSS_TARGET} \
               --update \
               --delete \
               -e ${OSS_ENDPOINT} \
@@ -100,7 +100,7 @@ jobs:
             # 上传文件到 S3 兼容的 OSS
             # --endpoint-url 使用基础端点（不包含 bucket 名称）
             # --delete 参数会删除目标中不存在的文件
-            aws s3 sync .vitepress/dist/ ${S3_PATH} \
+            aws s3 sync dist/ ${S3_PATH} \
               --endpoint-url ${OSS_ENDPOINT} \
               --delete \
               --region ${AWS_DEFAULT_REGION}

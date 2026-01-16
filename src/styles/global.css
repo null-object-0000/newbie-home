@@ -1,0 +1,175 @@
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family-base);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--c-text-1);
+  background-color: var(--c-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+a {
+  color: var(--c-brand);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--c-brand-light);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-bg-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-divider);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-text-3);
+}
+
+/* Selection */
+::selection {
+  background: var(--c-brand);
+  color: white;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Code blocks in markdown */
+pre {
+  background: var(--c-bg-soft);
+  border-radius: var(--radius);
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: var(--font-family-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+code {
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+  background: var(--c-bg-soft);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Image gallery wrapper for markdown */
+.image-gallery-wrapper {
+  display: flex !important;
+  gap: 10px !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  margin: 20px 0 !important;
+  align-items: flex-start !important;
+}
+
+.image-gallery-wrapper img {
+  max-height: 300px;
+  width: auto;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform var(--transition-normal);
+}
+
+.image-gallery-wrapper img:hover {
+  transform: scale(1.02);
+}
+
+/* Timeline wrapper for markdown */
+.timeline-wrapper {
+  position: relative;
+  padding-left: 24px;
+  margin: 20px 0;
+}
+
+.timeline-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--c-brand);
+}
+
+.timeline-wrapper li,
+.timeline-wrapper p {
+  position: relative;
+  margin-bottom: 12px;
+  list-style: none;
+}
+
+.timeline-wrapper li::before,
+.timeline-wrapper p::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  background: var(--c-brand);
+  border-radius: 50%;
+  border: 2px solid var(--c-bg);
+}

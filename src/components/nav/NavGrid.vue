@@ -80,8 +80,8 @@ const getIconText = (icon?: string) => {
   flex-direction: column;
   padding: 16px;
   border-radius: 12px;
-  background: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
+  background: var(--c-bg-soft);
+  border: 1px solid var(--c-divider);
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -91,8 +91,8 @@ const getIconText = (icon?: string) => {
 .nav-item:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: var(--vp-c-brand);
-  background: var(--vp-c-bg);
+  border-color: var(--c-brand);
+  background: var(--c-bg);
 }
 
 .nav-header {
@@ -110,15 +110,15 @@ const getIconText = (icon?: string) => {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: var(--vp-c-bg);
-  border: 1px solid var(--vp-c-divider);
+  background: var(--c-bg);
+  border: 1px solid var(--c-divider);
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .nav-item:hover .nav-icon-wrapper {
   transform: scale(1.05);
-  border-color: var(--vp-c-brand);
+  border-color: var(--c-brand);
 }
 
 .nav-icon {
@@ -137,7 +137,7 @@ const getIconText = (icon?: string) => {
 .nav-name {
   font-size: 15px;
   font-weight: 600;
-  color: var(--vp-c-text-1);
+  color: var(--c-text-1);
   line-height: 1.4;
   word-break: break-word;
   flex: 1;
@@ -146,7 +146,7 @@ const getIconText = (icon?: string) => {
 
 .nav-desc {
   font-size: 12px;
-  color: var(--vp-c-text-2);
+  color: var(--c-text-2);
   line-height: 1.5;
   word-break: break-word;
   display: -webkit-box;

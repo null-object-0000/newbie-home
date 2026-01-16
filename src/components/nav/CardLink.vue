@@ -82,8 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, h, createApp } from 'vue'
-import { useData } from 'vitepress'
+import { ref, computed, onMounted, onUnmounted, watch, h, createApp } from 'vue'
+import { useData } from '@/composables/useTheme'
 import * as lucideIcons from 'lucide-vue-next'
 import { Globe, ExternalLink, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
@@ -129,7 +129,7 @@ const isHovered = ref(false)
 const isExpanded = ref(false)
 const isMobile = ref(false)
 const sublinksMenuStyle = ref<{ top?: string; left?: string; right?: string; bottom?: string }>({})
-let hideMenuTimer: NodeJS.Timeout | null = null
+let hideMenuTimer: ReturnType<typeof setTimeout> | null = null
 let isMenuHovered = false
 
 const hasSublinks = computed(() => {
@@ -138,6 +138,7 @@ const hasSublinks = computed(() => {
 
 // 检测是否为移动端
 const checkIsMobile = () => {
+  if (typeof window === 'undefined') return
   isMobile.value = window.innerWidth < 768 || 'ontouchstart' in window
 }
 
@@ -364,6 +365,7 @@ const handleResize = () => {
 let globalMouseMoveHandler: ((event: MouseEvent) => void) | null = null
 
 const setupGlobalMouseListener = () => {
+  if (typeof window === 'undefined') return
   if (isMobile.value) return
   
   if (!globalMouseMoveHandler) {
@@ -398,7 +400,6 @@ const removeGlobalMouseListener = () => {
 }
 
 // 监听 isHovered 变化，动态添加/移除全局监听器
-import { watch } from 'vue'
 watch(isHovered, (newVal) => {
   if (newVal && !isMobile.value) {
     setupGlobalMouseListener()
@@ -409,11 +410,15 @@ watch(isHovered, (newVal) => {
 
 onMounted(() => {
   checkIsMobile()
-  window.addEventListener('resize', handleResize)
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleResize)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleResize)
+  }
   removeGlobalMouseListener()
   if (hideMenuTimer) {
     clearTimeout(hideMenuTimer)

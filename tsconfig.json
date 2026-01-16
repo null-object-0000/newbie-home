@@ -15,17 +15,17 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "vue": [
-        "./node_modules/vue",
-      ]
+      "@/*": ["src/*"]
     }
   },
   "include": [
-    ".vitepress/**/*.ts",
-    ".vitepress/**/*.vue",
-    ".vitepress/**/*.mts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "vite.config.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".vitepress"
   ]
 }
