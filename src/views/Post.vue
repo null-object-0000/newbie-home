@@ -1,89 +1,216 @@
 <template>
   <div class="post-page" :class="{ 'dark-mode': isDark, 'light-mode': !isDark }">
-    <!-- Header -->
-    <header class="post-header">
-      <div class="header-content">
-        <router-link to="/" class="logo-link">
-          <img :src="`${base}logo.png`" alt="Newbie Space" class="logo" />
-          <span class="site-title">Newbie Space</span>
-        </router-link>
-        
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link">首页</router-link>
-          <router-link to="/nav/" class="nav-link">导航</router-link>
-          <button class="theme-toggle" @click="toggleDark()" :title="isDark ? '切换到亮色模式' : '切换到暗色模式'">
-            <component :is="isDark ? Sun : Moon" :size="18" />
-          </button>
-        </nav>
-      </div>
-    </header>
+    <!-- 公共导航栏 -->
+    <AppHeader />
 
     <!-- Main Content -->
     <main class="post-main">
-      <article class="post-article">
-        <div class="post-meta">
-          <span class="post-date">{{ postMeta?.date }}</span>
+      <div class="post-container animate-slide-up">
+        <!-- 面包屑导航 -->
+        <div class="post-breadcrumb">
+          <button @click="goBack" class="back-button">
+            <ArrowLeft :size="16" />
+            <span>返回文章列表</span>
+          </button>
         </div>
-        
-        <MarkdownRenderer v-if="content" :content="content" />
-        
-        <div v-else class="loading">
-          <p>加载中...</p>
+
+        <div class="post-grid">
+          <!-- 左侧：主要内容 -->
+          <div class="post-content-wrapper">
+            <!-- 文章头部 -->
+            <header class="post-header">
+              <div class="post-tags" v-if="postMeta?.tags && postMeta.tags.length > 0">
+                <span 
+                  v-for="tag in postMeta.tags" 
+                  :key="tag" 
+                  class="post-tag"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+              <h1 class="post-title">{{ postMeta?.title || '加载中...' }}</h1>
+              <div class="post-meta-info">
+                <div class="meta-item">
+                  <Calendar :size="16" />
+                  <span>{{ postMeta?.date || '' }}</span>
+                </div>
+                <div class="meta-item" v-if="postMeta?.readTime">
+                  <Clock :size="16" />
+                  <span>{{ postMeta.readTime }} min read</span>
+                </div>
+                <div class="meta-item">
+                  <User :size="16" />
+                  <span>Newbie Space</span>
+                </div>
+              </div>
+            </header>
+
+            <!-- 文章封面（如果有） -->
+            <div v-if="postMeta?.cover" class="post-cover">
+              <img :src="postMeta.cover" :alt="postMeta.title" />
+            </div>
+
+            <!-- 文章正文内容 -->
+            <div class="post-body">
+              <MarkdownRenderer v-if="content" :content="content" />
+              <div v-else class="loading">
+                <p>加载中...</p>
+              </div>
+            </div>
+            
+            <!-- 文章底部 -->
+            <div class="post-footer-actions">
+              <div class="footer-meta">
+                <span class="footer-text">最后编辑于 {{ postMeta?.date || '' }}</span>
+              </div>
+              <div class="footer-buttons">
+                <button class="action-button">
+                  <ThumbsUp :size="16" />
+                  <span>点赞</span>
+                </button>
+                <button class="action-button">
+                  <Share2 :size="16" />
+                  <span>分享</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧：目录 (Sticky Sidebar) -->
+          <aside class="post-sidebar">
+            <div class="sidebar-sticky">
+              <h3 class="sidebar-title">目录</h3>
+              <ul class="toc-list">
+                <!-- 目录项将从 Markdown 内容中提取 -->
+                <li v-for="heading in tocItems" :key="heading.id" class="toc-item">
+                  <a 
+                    :href="`#${heading.id}`" 
+                    class="toc-link"
+                    :class="{ active: activeHeading === heading.id }"
+                    @click.prevent="scrollToHeading(heading.id)"
+                  >
+                    {{ heading.text }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </aside>
         </div>
-      </article>
-      
-      <!-- Sidebar -->
-      <aside class="post-sidebar">
-        <div class="sidebar-card">
-          <h3 class="sidebar-title">最新文章</h3>
-          <ul class="post-list">
-            <li v-for="post in allPosts" :key="post.slug">
-              <router-link :to="`/posts/${post.slug}`" class="post-link">
-                <span class="post-name">{{ post.title }}</span>
-                <span class="post-date-small">{{ post.date }}</span>
-              </router-link>
-            </li>
-          </ul>
-        </div>
-      </aside>
+      </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="post-footer">
-      <p>© 2026 Newbie Space. Built with Vue 3.</p>
-    </footer>
+    <!-- 页脚 -->
+    <AppFooter />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useTheme, useData } from '@/composables/useTheme'
-import { Sun, Moon } from 'lucide-vue-next'
+import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
+import { ArrowLeft, Calendar, Clock, User, ThumbsUp, Share2 } from 'lucide-vue-next'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer.vue'
-import { posts, getPostBySlug, getAllPosts } from '@/data/posts'
+import { getPostBySlug } from '@/data/posts'
+import AppHeader from '@/components/AppHeader.vue'
+import AppFooter from '@/components/AppFooter.vue'
 
 const route = useRoute()
-const { isDark, toggleDark } = useTheme()
-const { site } = useData()
-const base = site.value.base || '/'
+const router = useRouter()
+const { isDark } = useTheme()
 
 const content = ref('')
 const postMeta = computed(() => getPostBySlug(route.params.slug as string))
-const allPosts = getAllPosts()
+const tocItems = ref<Array<{ id: string; text: string; level: number }>>([])
+const activeHeading = ref('')
+
+const goBack = () => {
+  router.push('/posts')
+}
+
+// 提取目录
+const extractToc = () => {
+  const markdownBody = document.querySelector('.markdown-body')
+  if (!markdownBody) return
+  
+  const headings = markdownBody.querySelectorAll('h1, h2, h3, h4, h5, h6')
+  const items: Array<{ id: string; text: string; level: number }> = []
+  const postTitle = postMeta.value?.title || ''
+  
+  headings.forEach((heading, index) => {
+    const id = heading.id
+    const text = heading.textContent || ''
+    const level = parseInt(heading.tagName.charAt(1))
+    
+    // 跳过第一个 h1 标题（通常是文章标题，与页面标题重复）
+    if (level === 1 && index === 0) {
+      return
+    }
+    
+    // 或者如果标题文本与文章标题相同，也跳过
+    if (level === 1 && text === postTitle) {
+      return
+    }
+    
+    if (id && text) {
+      items.push({
+        id,
+        text,
+        level
+      })
+    }
+  })
+  
+  tocItems.value = items
+}
+
+// 监听滚动，更新激活的标题
+const handleScroll = () => {
+  const headings = document.querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]')
+  // 导航栏高度 + 额外偏移量
+  const headerHeight = 64
+  const offset = 20
+  const scrollPosition = window.scrollY + headerHeight + offset
+  
+  for (let i = headings.length - 1; i >= 0; i--) {
+    const heading = headings[i] as HTMLElement
+    if (heading.offsetTop <= scrollPosition) {
+      activeHeading.value = heading.id
+      break
+    }
+  }
+}
+
+const scrollToHeading = (id: string) => {
+  const element = document.getElementById(id)
+  if (element) {
+    // 获取导航栏高度（4rem = 64px）
+    const headerHeight = 64
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const offsetPosition = elementPosition - headerHeight - 20 // 额外 20px 的间距
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
+    activeHeading.value = id
+  }
+}
 
 // 动态加载文章内容
 const loadPost = async (slug: string) => {
   try {
     // 使用 Vite 的 import.meta.glob 来加载 markdown 文件
     const modules = import.meta.glob('@/content/posts/*.md', { query: '?raw', import: 'default' })
-    const path = `/src/content/posts/${slug}.md`
     
     // 查找匹配的模块
     for (const [key, loader] of Object.entries(modules)) {
       if (key.includes(slug)) {
         const rawContent = await loader() as string
         content.value = rawContent
+        
+        // 等待 DOM 更新后提取目录
+        await new Promise(resolve => setTimeout(resolve, 300))
+        extractToc()
         return
       }
     }
@@ -100,11 +227,24 @@ onMounted(() => {
   if (slug) {
     loadPost(slug)
   }
+  window.addEventListener('scroll', handleScroll)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 
 watch(() => route.params.slug, (newSlug) => {
   if (newSlug) {
     loadPost(newSlug as string)
+  }
+})
+
+// 监听 Markdown 渲染完成
+watch(() => content.value, async () => {
+  if (content.value) {
+    await new Promise(resolve => setTimeout(resolve, 300))
+    extractToc()
   }
 })
 </script>
@@ -114,252 +254,344 @@ watch(() => route.params.slug, (newSlug) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ========== 深色主题 ========== */
 .dark-mode {
-  background-color: #0f172a;
-  color: #e2e8f0;
+  --bg-main: #09090b;
+  --bg-surface: #18181b;
+  --bg-elevated: #27272a;
+  --border-color: #27272a;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  background-color: var(--bg-main);
+  color: var(--text-primary);
 }
 
+/* ========== 浅色主题 ========== */
 .light-mode {
-  background-color: #f8fafc;
-  color: #1e293b;
+  --bg-main: #f9fafb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f3f4f6;
+  --border-color: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+
+  background-color: var(--bg-main);
+  color: var(--text-primary);
 }
 
-/* Header */
-.post-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid;
-}
-
-.dark-mode .post-header {
-  background-color: rgba(15, 23, 42, 0.8);
-  border-bottom-color: rgba(148, 163, 184, 0.1);
-}
-
-.light-mode .post-header {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-bottom-color: rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: inherit;
-}
-
-.logo {
-  width: 32px;
-  height: 32px;
-}
-
-.site-title {
-  font-size: 20px;
-  font-weight: 700;
-  background: linear-gradient(to right, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.nav-link {
-  color: inherit;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.nav-link:hover {
-  opacity: 1;
-}
-
-.nav-link.router-link-active {
-  color: var(--c-brand);
-  opacity: 1;
-}
-
-.theme-toggle {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: inherit;
-}
-
-.dark-mode .theme-toggle {
-  background-color: rgba(148, 163, 184, 0.1);
-}
-
-.dark-mode .theme-toggle:hover {
-  background-color: rgba(148, 163, 184, 0.2);
-}
-
-.light-mode .theme-toggle {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.light-mode .theme-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-/* Main */
+/* ========== 主内容区域 ========== */
 .post-main {
   flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 48px 24px;
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 48px;
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 640px) {
   .post-main {
-    grid-template-columns: 1fr;
-  }
-  
-  .post-sidebar {
-    display: none;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
-.post-article {
+@media (min-width: 1024px) {
+  .post-main {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.post-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========== 面包屑导航 ========== */
+.post-breadcrumb {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.back-button:hover {
+  color: var(--brand-500, #3b82f6);
+  background-color: var(--bg-elevated);
+}
+
+/* ========== 文章网格布局 ========== */
+.post-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .post-grid {
+    grid-template-columns: 3fr 1fr;
+  }
+}
+
+/* ========== 文章内容区域 ========== */
+.post-content-wrapper {
   min-width: 0;
 }
 
-.post-meta {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--c-divider);
+/* ========== 文章头部 ========== */
+.post-header {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.post-date {
-  font-size: 14px;
-  color: var(--c-text-2);
-  font-family: var(--font-family-mono);
+.post-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.post-tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--brand-600, #2563eb);
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+}
+
+.dark-mode .post-tag {
+  color: var(--brand-400, #60a5fa);
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.post-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .post-title {
+    font-size: 2.25rem;
+  }
+}
+
+.post-meta-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ========== 文章封面 ========== */
+.post-cover {
+  margin-bottom: 2.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background: var(--bg-elevated);
+}
+
+.dark-mode .post-cover {
+  box-shadow: none;
+}
+
+.post-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========== 文章正文 ========== */
+.post-body {
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.dark-mode .post-body {
+  color: var(--text-primary);
 }
 
 .loading {
   text-align: center;
-  padding: 48px;
-  color: var(--c-text-2);
+  padding: 3rem;
+  color: var(--text-muted);
 }
 
-/* Sidebar */
+/* ========== 文章底部操作 ========== */
+.post-footer-actions {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-meta {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.action-button:hover {
+  color: var(--brand-500, #3b82f6);
+  background-color: var(--bg-elevated);
+}
+
+/* ========== 侧边栏（目录） ========== */
 .post-sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .post-sidebar {
+    display: block;
+  }
+}
+
+.sidebar-sticky {
   position: sticky;
-  top: 100px;
+  top: 7rem;
   height: fit-content;
 }
 
-.sidebar-card {
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid;
-}
-
-.dark-mode .sidebar-card {
-  background-color: rgba(30, 41, 59, 0.4);
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-.light-mode .sidebar-card {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(226, 232, 240, 0.6);
-}
-
 .sidebar-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
 }
 
-.post-list {
+.toc-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border-color);
 }
 
-.post-list li {
-  margin-bottom: 12px;
+.toc-item {
+  margin-bottom: 0.75rem;
 }
 
-.post-list li:last-child {
-  margin-bottom: 0;
-}
-
-.post-link {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.toc-link {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-muted);
   text-decoration: none;
-  color: inherit;
-  padding: 8px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: color 0.2s;
+  padding-left: 1rem;
+  margin-left: -1rem;
+  border-left: 2px solid transparent;
 }
 
-.dark-mode .post-link:hover {
-  background-color: rgba(148, 163, 184, 0.1);
+.toc-link:hover {
+  color: var(--text-primary);
 }
 
-.light-mode .post-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.dark-mode .toc-link:hover {
+  color: var(--text-primary);
 }
 
-.post-name {
-  font-size: 14px;
+.toc-link.active {
+  color: var(--brand-500, #3b82f6);
+  border-left-color: var(--brand-500, #3b82f6);
   font-weight: 500;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
-.post-date-small {
-  font-size: 12px;
-  color: var(--c-text-3);
-  font-family: var(--font-family-mono);
+/* ========== 动画 ========== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Footer */
-.post-footer {
-  padding: 24px;
-  text-align: center;
-  border-top: 1px solid var(--c-divider);
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
 }
 
-.post-footer p {
-  font-size: 14px;
-  color: var(--c-text-3);
-  margin: 0;
+/* ========== 滚动条 ========== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+/* ========== 文字选中效果 ========== */
+::selection {
+  background: var(--brand-500, #3b82f6);
+  color: white;
 }
 </style>

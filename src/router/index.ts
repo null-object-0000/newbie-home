@@ -13,6 +13,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Nav.vue')
   },
   {
+    path: '/posts',
+    name: 'blog',
+    component: () => import('@/views/Blog.vue')
+  },
+  {
     path: '/posts/:slug',
     name: 'post',
     component: () => import('@/views/Post.vue')
@@ -29,6 +34,7 @@ export function getStaticRoutes(): string[] {
   const staticRoutes = [
     '/',
     '/nav/',
+    '/posts',
     '/projects'
   ]
   

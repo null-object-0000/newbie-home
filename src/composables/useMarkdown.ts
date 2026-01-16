@@ -39,6 +39,39 @@ md.use(container, 'timeline', {
   }
 })
 
+// 注册 details 容器
+md.use(container, 'details', {
+  validate: (params: string) => {
+    return params.trim().startsWith('details')
+  },
+  render: (tokens: any[], idx: number) => {
+    const token = tokens[idx]
+    const info = token.info.trim()
+    const m = info.match(/^details\s+(.+)$/)
+    
+    if (token.nesting === 1) {
+      // 开始标签，提取标题
+      const title = m ? m[1] : '详情'
+      return `<div class="details-wrapper" data-title="${escapeHtml(title)}">\n`
+    } else {
+      // 结束标签
+      return '</div>\n'
+    }
+  }
+})
+
+// HTML 转义函数
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }
+  return text.replace(/[&<>"']/g, (m) => map[m])
+}
+
 // 简单的 frontmatter 解析（不使用 gray-matter 以避免 Node.js 依赖）
 function parseFrontmatter(content: string): { frontmatter: Record<string, any>; body: string } {
   const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/

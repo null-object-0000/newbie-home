@@ -17,8 +17,9 @@
             导航
             <span class="nav-indicator" v-if="$route.path === '/nav/'"></span>
           </router-link>
-          <router-link to="/posts/2025-04" class="nav-item">
+          <router-link to="/posts" class="nav-item" :class="{ active: $route.path.startsWith('/posts') }">
             文章
+            <span class="nav-indicator" v-if="$route.path.startsWith('/posts')"></span>
           </router-link>
           <router-link to="/projects" class="nav-item" :class="{ active: $route.path === '/projects' }">
             项目
@@ -46,7 +47,7 @@
       <div v-if="mobileMenuOpen" class="mobile-menu">
         <router-link to="/" class="mobile-nav-item" @click="mobileMenuOpen = false">首页</router-link>
         <router-link to="/nav/" class="mobile-nav-item" @click="mobileMenuOpen = false">导航</router-link>
-        <router-link to="/posts/2025-04" class="mobile-nav-item" @click="mobileMenuOpen = false">文章</router-link>
+        <router-link to="/posts" class="mobile-nav-item" @click="mobileMenuOpen = false">文章</router-link>
         <router-link to="/projects" class="mobile-nav-item" @click="mobileMenuOpen = false">项目</router-link>
       </div>
     </Transition>
@@ -55,11 +56,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import { Sun, Moon, Github, Menu } from 'lucide-vue-next'
 
-const router = useRouter()
 const { isDark, toggleDark } = useTheme()
 const mobileMenuOpen = ref(false)
 </script>

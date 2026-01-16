@@ -1,5 +1,5 @@
 <template>
-  <div class="image-gallery">
+  <div class="image-gallery" :class="galleryClass">
     <div 
       v-for="(image, index) in images" 
       :key="index" 
@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { X, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 interface ImageItem {
@@ -52,6 +52,16 @@ const props = defineProps<Props>()
 
 const viewerOpen = ref(false)
 const currentIndex = ref(0)
+
+// 根据图片数量计算布局类名
+const galleryClass = computed(() => {
+  const count = props.images.length
+  if (count === 1) return 'gallery-count-1'
+  if (count === 2) return 'gallery-count-2'
+  if (count === 3) return 'gallery-count-3'
+  if (count === 4) return 'gallery-count-4'
+  return 'gallery-count-many'
+})
 
 const openViewer = (index: number) => {
   currentIndex.value = index
@@ -102,6 +112,7 @@ if (typeof window !== 'undefined') {
   border-radius: var(--radius);
   overflow: hidden;
   transition: transform 0.3s;
+  flex-shrink: 0;
 }
 
 .gallery-item:hover {
@@ -112,6 +123,34 @@ if (typeof window !== 'undefined') {
   max-height: 300px;
   width: auto;
   display: block;
+}
+
+/* 根据图片数量自动调整布局 */
+.gallery-count-1 .gallery-item {
+  width: 100%;
+}
+
+.gallery-count-2 .gallery-item {
+  width: calc(50% - 5px);
+}
+
+.gallery-count-3 .gallery-item {
+  width: calc(33.333% - 7px);
+}
+
+.gallery-count-4 .gallery-item {
+  width: calc(50% - 5px);
+}
+
+.gallery-count-many .gallery-item {
+  width: calc(33.333% - 7px);
+}
+
+/* 响应式：移动端单列布局 */
+@media (max-width: 768px) {
+  .gallery-item {
+    width: 100% !important;
+  }
 }
 
 /* Viewer Overlay */
