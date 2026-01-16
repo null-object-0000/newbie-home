@@ -1,139 +1,167 @@
 <template>
   <div class="home-page" :class="{ 'dark-mode': isDark, 'light-mode': !isDark }">
-    <!-- Header -->
-    <header class="home-header">
-      <div class="header-content">
-        <div class="logo-area">
-          <img :src="`${base}logo.png`" alt="Newbie Space" class="logo" />
+    <!-- 毛玻璃导航栏 -->
+    <nav class="glass-nav">
+      <div class="nav-container">
+        <div class="logo-area" @click="$router.push('/')">
+          <div class="logo-icon">N</div>
           <span class="site-title">Newbie Space</span>
         </div>
-        
-        <nav class="header-nav">
-          <router-link to="/" class="nav-link active">首页</router-link>
-          <router-link to="/nav/" class="nav-link">导航</router-link>
-          <router-link to="/posts/2025-04" class="nav-link">博客</router-link>
-          <button class="theme-toggle" @click="toggleDark()" :title="isDark ? '切换到亮色模式' : '切换到暗色模式'">
-            <component :is="isDark ? Sun : Moon" :size="18" />
-          </button>
-        </nav>
-      </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1 class="hero-name">Newbie Space</h1>
-          <p class="hero-tagline">我的个人导航与博客</p>
-          <p class="hero-desc">收集灵感，记录成长，分享技术</p>
-          <div class="hero-actions">
-            <router-link to="/nav/" class="hero-btn hero-btn-primary">
-              <Compass :size="18" />
-              <span>查看导航</span>
-            </router-link>
-            <router-link to="/posts/2025-04" class="hero-btn hero-btn-secondary">
-              <BookOpen :size="18" />
-              <span>阅读博客</span>
-            </router-link>
+        <div class="nav-links">
+          <router-link to="/" class="nav-item" :class="{ active: $route.path === '/' }">
+            首页
+            <span class="nav-indicator" v-if="$route.path === '/'"></span>
+          </router-link>
+          <router-link to="/nav/" class="nav-item" :class="{ active: $route.path === '/nav/' }">
+            导航
+            <span class="nav-indicator" v-if="$route.path === '/nav/'"></span>
+          </router-link>
+          <router-link to="/posts/2025-04" class="nav-item">
+            文章
+          </router-link>
+        </div>
+
+        <div class="nav-actions">
+          <a href="https://github.com/null-object-0000" target="_blank" class="action-btn">
+            <Github :size="20" />
+          </a>
+          <button @click="toggleDark()" class="action-btn">
+            <Sun v-if="isDark" :size="20" />
+            <Moon v-else :size="20" />
+          </button>
+          <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
+            <Menu :size="24" />
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <Transition name="fade">
+      <div v-if="mobileMenuOpen" class="mobile-menu">
+        <router-link to="/" class="mobile-nav-item" @click="mobileMenuOpen = false">首页</router-link>
+        <router-link to="/nav/" class="mobile-nav-item" @click="mobileMenuOpen = false">导航</router-link>
+        <router-link to="/posts/2025-04" class="mobile-nav-item" @click="mobileMenuOpen = false">文章</router-link>
+      </div>
+    </Transition>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+      <!-- Hero 区域 -->
+      <section class="hero-section">
+        <h1 class="hero-title">
+          构建代码，记录思考。
+        </h1>
+        <p class="hero-desc">
+          欢迎来到我的数字花园。这里有我的技术文章、精选的开发工具导航，以及我正在折腾的开源项目。
+        </p>
+      </section>
+
+      <!-- 仪表板卡片网格 - 完全按照 test.html 布局 -->
+      <div class="dashboard-grid">
+        <!-- 第一行: 最新文章卡片 (2列) + 关于我卡片 (1列) -->
+        
+        <!-- 最新文章卡片 -->
+        <div class="card card-article" @click="goToLatestPost">
+          <div class="card-badge">
+            <PenTool :size="14" />
+            <span>最新发布</span>
+          </div>
+          <h3 class="card-title">{{ latestPost?.title || '暂无文章' }}</h3>
+          <p class="card-desc">{{ latestPost?.excerpt || '敬请期待更多内容...' }}</p>
+          <div class="card-tags" v-if="latestPost">
+            <span class="tag">#技术</span>
+            <span class="tag">#排查</span>
           </div>
         </div>
-        <div class="hero-image">
-          <img :src="`${base}logo.png`" alt="Newbie Space Logo" />
-        </div>
-      </div>
-      
-      <!-- Background decorations -->
-      <div class="hero-bg">
-        <div class="hero-bg-circle hero-bg-circle-1"></div>
-        <div class="hero-bg-circle hero-bg-circle-2"></div>
-      </div>
-    </section>
 
-    <!-- Quick Nav Section -->
-    <section class="section quick-nav-section">
-      <div class="section-container">
-        <h2 class="section-title">
-          <Rocket :size="24" />
-          <span>快速导航</span>
-        </h2>
-        
-        <div class="quick-nav-grid">
-          <router-link to="/nav/" class="quick-nav-card">
-            <div class="quick-nav-icon">
-              <Bot :size="32" />
-            </div>
-            <h3>AI 助手</h3>
-            <p>访问常用的 AI 对话工具</p>
-            <span class="quick-nav-link">
-              前往 <ArrowRight :size="14" />
-            </span>
-          </router-link>
-          
-          <router-link to="/nav/" class="quick-nav-card">
-            <div class="quick-nav-icon">
-              <Wrench :size="32" />
-            </div>
-            <h3>常用工具</h3>
-            <p>开发与调试必备工具</p>
-            <span class="quick-nav-link">
-              前往 <ArrowRight :size="14" />
-            </span>
-          </router-link>
-          
-          <router-link to="/nav/" class="quick-nav-card">
-            <div class="quick-nav-icon">
-              <Zap :size="32" />
-            </div>
-            <h3>AI Agent</h3>
-            <p>智能自动化工具集合</p>
-            <span class="quick-nav-link">
-              前往 <ArrowRight :size="14" />
-            </span>
-          </router-link>
-        </div>
-      </div>
-    </section>
-
-    <!-- Latest Posts Section -->
-    <section class="section posts-section">
-      <div class="section-container">
-        <h2 class="section-title">
-          <FileText :size="24" />
-          <span>最新文章</span>
-        </h2>
-        
-        <div class="posts-list">
-          <router-link 
-            v-for="post in latestPosts" 
-            :key="post.slug" 
-            :to="`/posts/${post.slug}`" 
-            class="post-card"
-          >
-            <div class="post-badge">最新</div>
-            <h3 class="post-title">{{ post.title }}</h3>
-            <p class="post-excerpt">{{ post.excerpt }}</p>
-            <div class="post-meta">
-              <span class="post-date">
-                <Calendar :size="14" />
-                {{ post.date }}
-              </span>
-              <span class="post-link">
-                阅读全文 <ArrowRight :size="14" />
-              </span>
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="home-footer">
-      <div class="footer-content">
-        <p>© 2026 Newbie Space. Built with Vue 3 + Vite.</p>
-        <div class="footer-links">
-          <a href="https://github.com/null-object-0000/newbie-space" target="_blank" rel="noopener noreferrer">
-            <Github :size="18" />
+        <!-- 关于我卡片 -->
+        <div class="card card-about">
+          <div class="about-avatar">
+            <User :size="24" />
+          </div>
+          <h3 class="about-title">About Me</h3>
+          <p class="about-desc">全栈开发者，热爱开源，目前专注于 WebGL 和可视化领域。</p>
+          <a href="https://github.com/null-object-0000" target="_blank" class="about-link">
+            了解更多 →
           </a>
+        </div>
+
+        <!-- 第二行: 开源项目卡片 (1列) + 常用导航卡片 (2列) -->
+        
+        <!-- 开源项目卡片 -->
+        <a 
+          href="https://github.com/null-object-0000/newbie-home" 
+          target="_blank" 
+          class="card card-project"
+        >
+          <div class="project-badge">
+            <Box :size="14" />
+            <span>Featured Project</span>
+          </div>
+          <div class="project-screenshot">
+            <span>Newbie Space</span>
+          </div>
+          <h3 class="project-title">Newbie-Home</h3>
+          <div class="project-stats">
+            <span class="stat-item">
+              <Star :size="14" />
+              <span>New</span>
+            </span>
+            <span class="stat-item">
+              <GitFork :size="14" />
+              <span>Fork</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- 常用导航卡片 -->
+        <div class="card card-nav">
+          <div class="nav-header">
+            <div class="nav-badge">
+              <Compass :size="14" />
+              <span>常用导航</span>
+            </div>
+            <router-link to="/nav/" class="view-all">查看全部 →</router-link>
+          </div>
+          <div class="quick-links">
+            <a 
+              v-for="link in featuredLinks" 
+              :key="link.name" 
+              :href="link.link" 
+              target="_blank"
+              class="quick-link-card"
+            >
+              <div class="quick-link-header">
+                <div class="quick-link-title-row">
+                  <div class="quick-link-icon-wrapper">
+                    <img 
+                      :src="getIconUrl(link)" 
+                      :alt="link.name"
+                      class="quick-link-icon"
+                      @error="handleIconError"
+                    />
+                  </div>
+                  <h4 class="quick-link-title">{{ link.name }}</h4>
+                </div>
+                <ExternalLink :size="14" class="quick-link-external" />
+              </div>
+              <p class="quick-link-desc">{{ link.desc || 'No description available.' }}</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <p>© 2026 Newbie Space. Built with Vue 3 & Vite.</p>
+        <div class="footer-links">
+          <a href="#" class="footer-link">RSS</a>
+          <a href="https://github.com/null-object-0000" target="_blank" class="footer-link">GitHub</a>
+          <a href="mailto:contact@example.com" class="footer-link">Email</a>
         </div>
       </div>
     </footer>
@@ -141,594 +169,922 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useTheme, useData } from '@/composables/useTheme'
 import { getAllPosts } from '@/data/posts'
+import navData from '@/data/nav-data.json'
 import { 
-  Sun, Moon, Compass, BookOpen, Rocket, Bot, Wrench, Zap, 
-  FileText, Calendar, ArrowRight, Github 
+  Sun, Moon, Github, Menu, PenTool, User, Compass,
+  Box, Star, GitFork, ExternalLink
 } from 'lucide-vue-next'
 
+const router = useRouter()
 const { isDark, toggleDark } = useTheme()
 const { site } = useData()
 const base = site.value.base || '/'
 
-const latestPosts = getAllPosts().slice(0, 3)
+const mobileMenuOpen = ref(false)
+
+// 获取最新文章
+const posts = getAllPosts()
+const latestPost = posts[0]
+
+// 近期使用 - 从 localStorage 读取点击记录
+const STORAGE_KEY_CLICKS = 'nav-click-counts'
+const clickCounts = ref<Record<string, number>>({})
+
+const loadClickCounts = () => {
+  if (typeof localStorage === 'undefined') return
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_CLICKS)
+    if (stored) {
+      clickCounts.value = JSON.parse(stored)
+    }
+  } catch (e) {
+    console.error('Failed to load click counts:', e)
+    clickCounts.value = {}
+  }
+}
+
+onMounted(() => {
+  loadClickCounts()
+})
+
+// 获取所有链接的扁平列表
+const getAllLinks = () => {
+  return navData.flatMap((cat: any) => 
+    cat.links.map((link: any) => ({
+      ...link,
+      categoryName: cat.name
+    }))
+  )
+}
+
+// 默认常用工具列表（当近期使用不足时用于填充）
+const defaultCategories = ['AI 对话', '常用工具', 'AI 编码', 'AI 代理']
+
+const getDefaultLinks = () => {
+  const links: any[] = []
+  for (const catName of defaultCategories) {
+    const category = navData.find((c: any) => c.name === catName)
+    if (category && category.links && category.links.length > 0) {
+      links.push(category.links[0])
+    }
+  }
+  return links.slice(0, 4)
+}
+
+// 精选导航链接 - 优先使用近期使用，不足时用默认工具填充
+const featuredLinks = computed(() => {
+  const allLinks = getAllLinks()
+  const MAX_LINKS = 4
+  
+  // 1. 获取近期使用的链接（按点击次数排序）
+  const recentLinks = allLinks
+    .map(link => ({
+      ...link,
+      clickCount: clickCounts.value[link.link] || 0
+    }))
+    .filter(link => link.clickCount > 0)
+    .sort((a, b) => b.clickCount - a.clickCount)
+    .slice(0, MAX_LINKS)
+    .map(({ clickCount, categoryName, ...link }) => link)
+
+  // 2. 如果近期使用的链接足够，直接返回
+  if (recentLinks.length >= MAX_LINKS) {
+    return recentLinks
+  }
+
+  // 3. 不足时用默认工具填充
+  const defaultLinks = getDefaultLinks()
+  const recentUrls = new Set(recentLinks.map(l => l.link))
+  
+  // 过滤掉已在近期使用中的默认链接
+  const fillLinks = defaultLinks.filter(l => !recentUrls.has(l.link))
+  
+  // 合并并限制数量
+  return [...recentLinks, ...fillLinks].slice(0, MAX_LINKS)
+})
+
+const goToLatestPost = () => {
+  if (latestPost) {
+    router.push(`/posts/${latestPost.slug}`)
+  }
+}
+
+// 获取域名
+const getDomain = (link: string) => {
+  try {
+    return new URL(link).hostname
+  } catch (e) {
+    return ''
+  }
+}
+
+// 获取图标 URL
+const getIconUrl = (link: any) => {
+  // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
+  if (link.icon && typeof link.icon === 'string') {
+    if (link.icon.startsWith('/')) {
+      // 处理 base 路径
+      return base.endsWith('/') ? base + link.icon.substring(1) : base + link.icon
+    } else if (link.icon.startsWith('http://') || link.icon.startsWith('https://')) {
+      // 如果是完整的 URL，直接使用
+      return link.icon
+    }
+  }
+  // 如果没有本地图标，回退到 Google Favicon 服务
+  return `https://www.google.com/s2/favicons?domain=${getDomain(link.link)}&sz=64`
+}
+
+const handleIconError = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  // 尝试使用 Google Favicon 作为回退
+  const linkCard = img.closest('.quick-link-card') as HTMLElement
+  if (linkCard) {
+    const linkUrl = linkCard.getAttribute('href')
+    if (linkUrl && !img.src.includes('google.com/s2/favicons')) {
+      img.src = `https://www.google.com/s2/favicons?domain=${getDomain(linkUrl)}&sz=64`
+      return
+    }
+  }
+  img.style.display = 'none'
+}
 </script>
 
 <style scoped>
+/* ========== 基础样式 ========== */
 .home-page {
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --accent-500: #06b6d4;
+  --accent-600: #0891b2;
+  
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ========== 深色主题 (完全匹配 test.html) ========== */
 .dark-mode {
-  background-color: #0f172a;
-  color: #e2e8f0;
+  --bg-main: #09090b;
+  --bg-surface: #18181b;
+  --bg-elevated: #27272a;
+  --border-color: #27272a;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  
+  background-color: var(--bg-main);
+  color: var(--text-primary);
 }
 
+/* ========== 浅色主题 ========== */
 .light-mode {
-  background-color: #f8fafc;
-  color: #1e293b;
+  --bg-main: #f9fafb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f3f4f6;
+  --border-color: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  background-color: var(--bg-main);
+  color: var(--text-primary);
 }
 
-/* Header */
-.home-header {
-  position: sticky;
+/* ========== 毛玻璃导航栏 (完全匹配 test.html .glass-panel) ========== */
+.glass-nav {
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.3s;
+}
+
+.light-mode .glass-nav {
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid;
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(229, 231, 235, 1);
 }
 
-.dark-mode .home-header {
-  background-color: rgba(15, 23, 42, 0.8);
-  border-bottom-color: rgba(148, 163, 184, 0.1);
+.dark-mode .glass-nav {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
-.light-mode .home-header {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-bottom-color: rgba(0, 0, 0, 0.1);
-}
-
-.header-content {
-  max-width: 1200px;
+.nav-container {
+  max-width: 72rem;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 0 1rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+@media (min-width: 640px) {
+  .nav-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-container {
+    padding: 0 2rem;
+  }
 }
 
 .logo-area {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.5rem;
+  cursor: pointer;
 }
 
-.logo {
-  width: 32px;
-  height: 32px;
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(to bottom right, var(--brand-500), var(--accent-600));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .site-title {
-  font-size: 20px;
+  font-size: 1.125rem;
   font-weight: 700;
-  background: linear-gradient(to right, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.025em;
 }
 
-.header-nav {
-  display: flex;
+.nav-links {
+  display: none;
   align-items: center;
-  gap: 24px;
+  gap: 2rem;
 }
 
-.nav-link {
-  color: inherit;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  opacity: 1;
-}
-
-.nav-link.router-link-exact-active {
-  color: var(--c-brand);
-}
-
-.theme-toggle {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: inherit;
-}
-
-.dark-mode .theme-toggle {
-  background-color: rgba(148, 163, 184, 0.1);
-}
-
-.dark-mode .theme-toggle:hover {
-  background-color: rgba(148, 163, 184, 0.2);
-}
-
-.light-mode .theme-toggle {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.light-mode .theme-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-/* Hero Section */
-.hero-section {
-  position: relative;
-  padding: 80px 24px;
-  overflow: hidden;
-}
-
-.hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 48px;
-  position: relative;
-  z-index: 1;
-}
-
-@media (max-width: 768px) {
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
   }
 }
 
-.hero-text {
-  flex: 1;
+.nav-item {
+  position: relative;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
 }
 
-.hero-name {
-  font-size: 56px;
-  font-weight: 800;
-  margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.nav-item:hover {
+  color: var(--brand-500);
+}
+
+.nav-item.active {
+  color: var(--brand-500);
+}
+
+.nav-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--brand-500);
+  border-radius: 9999px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-mode .action-btn:hover {
+  background: rgba(229, 231, 235, 1);
+}
+
+.dark-mode .action-btn:hover {
+  background: rgba(39, 39, 42, 1);
+}
+
+.mobile-menu-btn {
+  display: block;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+/* ========== 移动端菜单 ========== */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  padding-top: 5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.light-mode .mobile-menu {
+  background: #ffffff;
+}
+
+.dark-mode .mobile-menu {
+  background: var(--bg-main);
+}
+
+@media (min-width: 768px) {
+  .mobile-menu {
+    display: none;
+  }
+}
+
+.mobile-nav-item {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  text-align: left;
+}
+
+.mobile-nav-item:hover {
+  color: var(--brand-500);
+}
+
+/* ========== 主内容区域 ========== */
+.main-content {
+  flex: 1;
+  padding-top: 6rem;
+  padding-bottom: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .main-content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* ========== Hero 区域 ========== */
+.hero-section {
+  text-align: center;
+  padding: 2.5rem 0;
+  animation: slideUp 0.5s ease-out;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
   line-height: 1.2;
 }
 
-@media (max-width: 768px) {
-  .hero-name {
-    font-size: 40px;
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3.75rem;
   }
 }
 
-.hero-tagline {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 12px 0;
-  opacity: 0.9;
+.light-mode .hero-title {
+  background: linear-gradient(to right, #111827, #4b5563);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark-mode .hero-title {
+  background: linear-gradient(to right, #ffffff, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-desc {
-  font-size: 16px;
-  margin: 0 0 32px 0;
-  opacity: 0.7;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 42rem;
+  margin: 0 auto;
+  line-height: 1.75;
 }
 
-.hero-actions {
-  display: flex;
-  gap: 16px;
+/* ========== 仪表板卡片网格 ========== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  animation: slideUp 0.5s ease-out;
 }
 
-@media (max-width: 768px) {
-  .hero-actions {
-    justify-content: center;
-    flex-wrap: wrap;
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.hero-btn {
+/* ========== 通用卡片样式 ========== */
+.card {
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.light-mode .card {
+  background: var(--bg-surface);
+}
+
+.dark-mode .card {
+  background: var(--bg-surface);
+}
+
+.card:hover {
+  border-color: var(--brand-500);
+}
+
+/* ========== 文章卡片 (占2列) ========== */
+.card-article {
+  grid-column: 1;
+}
+
+@media (min-width: 768px) {
+  .card-article {
+    grid-column: span 2;
+  }
+}
+
+.card-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.hero-btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-}
-
-.hero-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-}
-
-.hero-btn-secondary {
-  border: 2px solid;
-}
-
-.dark-mode .hero-btn-secondary {
-  border-color: rgba(148, 163, 184, 0.3);
-  color: #e2e8f0;
-}
-
-.dark-mode .hero-btn-secondary:hover {
-  background-color: rgba(148, 163, 184, 0.1);
-  border-color: rgba(148, 163, 184, 0.5);
-}
-
-.light-mode .hero-btn-secondary {
-  border-color: rgba(0, 0, 0, 0.2);
-  color: #1e293b;
-}
-
-.light-mode .hero-btn-secondary:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.3);
-}
-
-.hero-image {
-  flex-shrink: 0;
-}
-
-.hero-image img {
-  width: 200px;
-  height: 200px;
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-@media (max-width: 768px) {
-  .hero-image img {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-/* Hero Background */
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.hero-bg-circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-}
-
-.hero-bg-circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -200px;
-  right: -100px;
-  background: #3b82f6;
-}
-
-.hero-bg-circle-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -150px;
-  left: -100px;
-  background: #8b5cf6;
-}
-
-/* Sections */
-.section {
-  padding: 64px 24px;
-}
-
-.section-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 28px;
+  gap: 0.5rem;
+  color: var(--brand-500);
+  font-size: 0.75rem;
   font-weight: 700;
-  margin: 0 0 32px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
 }
 
-.dark-mode .section-title {
-  color: #60a5fa;
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  transition: color 0.2s;
 }
 
-.light-mode .section-title {
-  color: #3b82f6;
+.card:hover .card-title {
+  color: var(--brand-500);
 }
 
-/* Quick Nav */
-.quick-nav-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+.card-desc {
+  color: var(--text-muted);
+  line-height: 1.625;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.quick-nav-card {
+.card-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tag {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.light-mode .tag {
+  background: #f3f4f6;
+}
+
+.dark-mode .tag {
+  background: rgba(39, 39, 42, 1);
+}
+
+/* ========== 关于我卡片 ========== */
+.card-about {
+  background: linear-gradient(to bottom right, var(--brand-500), var(--accent-600)) !important;
+  color: white;
   display: flex;
   flex-direction: column;
-  padding: 32px 24px;
-  border-radius: 16px;
-  border: 1px solid;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
+  justify-content: space-between;
+  border: none !important;
 }
 
-.quick-nav-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--c-brand), var(--c-brand-light));
-  transform: scaleX(0);
-  transition: transform 0.3s;
+.card-about:hover {
+  border: none !important;
 }
 
-.quick-nav-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-.quick-nav-card:hover::before {
-  transform: scaleX(1);
-}
-
-.dark-mode .quick-nav-card {
-  background-color: rgba(30, 41, 59, 0.4);
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-.dark-mode .quick-nav-card:hover {
-  background-color: rgba(30, 41, 59, 0.6);
-  border-color: var(--c-brand);
-}
-
-.light-mode .quick-nav-card {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(226, 232, 240, 0.6);
-}
-
-.light-mode .quick-nav-card:hover {
-  background-color: white;
-  border-color: var(--c-brand);
-}
-
-.quick-nav-icon {
-  width: 64px;
-  height: 64px;
+.about-avatar {
+  width: 3rem;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
 }
 
-.dark-mode .quick-nav-icon {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-  color: #60a5fa;
+.about-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
 }
 
-.light-mode .quick-nav-icon {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  color: #3b82f6;
+.about-desc {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin: 0.5rem 0 0;
+  line-height: 1.5;
 }
 
-.quick-nav-card h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-}
-
-.quick-nav-card p {
-  font-size: 14px;
-  margin: 0 0 16px 0;
-  opacity: 0.7;
-  flex: 1;
-}
-
-.quick-nav-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
+.about-link {
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--c-brand);
-  transition: transform 0.2s;
+  color: white;
+  text-decoration: none;
+  margin-top: 1rem;
+  align-self: flex-start;
 }
 
-.quick-nav-card:hover .quick-nav-link {
-  transform: translateX(4px);
+.about-link:hover {
+  text-decoration: underline;
 }
 
-/* Posts Section */
-.posts-section {
-  border-top: 1px solid;
-}
-
-.dark-mode .posts-section {
-  background-color: rgba(15, 23, 42, 0.5);
-  border-top-color: rgba(148, 163, 184, 0.1);
-}
-
-.light-mode .posts-section {
-  background-color: rgba(255, 255, 255, 0.5);
-  border-top-color: rgba(0, 0, 0, 0.05);
-}
-
-.posts-list {
+/* ========== 开源项目卡片 ========== */
+.card-project {
+  text-decoration: none;
+  color: inherit;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
-.post-card {
-  display: block;
-  padding: 28px;
-  border-radius: 16px;
+.card-project:hover {
+  transform: translateY(-4px);
+}
+
+.project-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-500);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.project-screenshot {
+  width: 100%;
+  height: 8rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.light-mode .project-screenshot {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.dark-mode .project-screenshot {
+  background: rgba(39, 39, 42, 1);
+  color: #71717a;
+}
+
+.project-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.project-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ========== 常用导航卡片 (占2列) ========== */
+.card-nav {
+  grid-column: 1;
+}
+
+@media (min-width: 768px) {
+  .card-nav {
+    grid-column: span 2;
+  }
+}
+
+.nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #22c55e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.view-all {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.view-all:hover {
+  color: var(--brand-500);
+}
+
+.quick-links {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .quick-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 卡片样式 - 与导航页保持一致 */
+.quick-link-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 0.75rem;
   border: 1px solid;
   text-decoration: none;
   color: inherit;
   transition: all 0.3s;
-  position: relative;
 }
 
-.post-card:hover {
+.light-mode .quick-link-card {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(226, 232, 240, 0.6);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .quick-link-card:hover {
+  background-color: white;
+  border-color: rgba(147, 197, 253, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.dark-mode .post-card {
+.dark-mode .quick-link-card {
   background-color: rgba(30, 41, 59, 0.4);
   border-color: rgba(71, 85, 105, 0.5);
 }
 
-.dark-mode .post-card:hover {
-  background-color: rgba(30, 41, 59, 0.6);
-  border-color: var(--c-brand);
+.dark-mode .quick-link-card:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }
 
-.light-mode .post-card {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(226, 232, 240, 0.6);
-}
-
-.light-mode .post-card:hover {
-  background-color: white;
-  border-color: var(--c-brand);
-}
-
-.post-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, var(--c-brand), var(--c-brand-light));
-  color: white;
-}
-
-.post-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0 0 12px 0;
-  line-height: 1.4;
-}
-
-.post-excerpt {
-  font-size: 15px;
-  margin: 0 0 20px 0;
-  opacity: 0.7;
-  line-height: 1.7;
-}
-
-.post-meta {
+.quick-link-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid var(--c-divider);
+  margin-bottom: 0.5rem;
 }
 
-.post-date {
+.quick-link-title-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  opacity: 0.6;
-  font-family: var(--font-family-mono);
+  gap: 0.625rem;
+  flex: 1;
+  min-width: 0;
 }
 
-.post-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--c-brand);
-  transition: transform 0.2s;
+.quick-link-icon-wrapper {
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 
-.post-card:hover .post-link {
-  transform: translateX(4px);
+.light-mode .quick-link-icon-wrapper {
+  background-color: #f1f5f9;
 }
 
-/* Footer */
-.home-footer {
+.dark-mode .quick-link-icon-wrapper {
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
+.quick-link-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  object-fit: contain;
+  display: block;
+}
+
+.quick-link-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-link-external {
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.quick-link-card:hover .quick-link-external {
+  opacity: 1;
+}
+
+.quick-link-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ========== 页脚 ========== */
+.site-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 2rem 1rem;
   margin-top: auto;
-  padding: 24px;
-  border-top: 1px solid var(--c-divider);
 }
 
-.footer-content {
-  max-width: 1200px;
+.footer-container {
+  max-width: 72rem;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
-  .footer-content {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
+@media (min-width: 768px) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
 
-.footer-content p {
-  font-size: 14px;
+.footer-container p {
   margin: 0;
-  opacity: 0.6;
 }
 
-.footer-links a {
-  color: inherit;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
 }
 
-.footer-links a:hover {
-  opacity: 1;
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: var(--brand-500);
+}
+
+/* ========== 动画 ========== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ========== 滚动条 ========== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+/* ========== 文字选中效果 ========== */
+::selection {
+  background: var(--brand-500);
+  color: white;
 }
 </style>
+
+

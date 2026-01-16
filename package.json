@@ -9,6 +9,8 @@
     "add-nav": "node scripts/add-nav.js"
   },
   "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.2.9",
+    "@fontsource/outfit": "^5.2.8",
     "axios": "^1.13.2",
     "lucide-vue-next": "^0.562.0",
     "vue": "^3.4.0",
