@@ -57,11 +57,21 @@ jobs:
             S3_PATH="s3://${OSS_BUCKET}"
           fi
           
+          # 从 endpoint 中提取协议和域名
+          # 例如：https://oss-cn-hangzhou.aliyuncs.com -> https://bucket-name.oss-cn-hangzhou.aliyuncs.com
+          if [[ "$OSS_ENDPOINT" =~ ^(https?://)(.+)$ ]]; then
+            PROTOCOL="${BASH_REMATCH[1]}"
+            DOMAIN="${BASH_REMATCH[2]}"
+            VIRTUAL_HOSTED_ENDPOINT="${PROTOCOL}${OSS_BUCKET}.${DOMAIN}"
+          else
+            VIRTUAL_HOSTED_ENDPOINT="${OSS_BUCKET}.${OSS_ENDPOINT}"
+          fi
+          
           # 上传文件到 S3 兼容的 OSS
-          # --endpoint-url 参数用于指定 S3 兼容的 OSS 端点
+          # 使用虚拟主机样式的 endpoint-url（将 bucket 名称包含在 URL 中）
           # --delete 参数会删除目标中不存在的文件
-          # --acl public-read 可选，如果需要公开访问
+          # --no-verify-ssl 可选，如果 OSS 使用自签名证书
           aws s3 sync .vitepress/dist/ ${S3_PATH} \
-            --endpoint-url ${OSS_ENDPOINT} \
+            --endpoint-url ${VIRTUAL_HOSTED_ENDPOINT} \
             --delete \
             --region ${AWS_DEFAULT_REGION}
