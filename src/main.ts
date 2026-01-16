@@ -16,6 +16,11 @@ import '@fontsource/noto-sans-sc/700.css'
 import './styles/variables.css'
 import './styles/global.css'
 
+// 导入全局组件
+import AppHeader from './components/AppHeader.vue'
+import AppFooter from './components/AppFooter.vue'
+import CardLink from './components/nav/CardLink.vue'
+
 export const createApp = ViteSSG(
   App,
   { 
@@ -26,6 +31,9 @@ export const createApp = ViteSSG(
     getRoutes: getStaticRoutes
   },
   ({ app, router, isClient }) => {
-    // 可以在这里注册全局组件或插件
+    // 注册全局组件
+    app.component('AppHeader', AppHeader)
+    app.component('AppFooter', AppFooter)
+    app.component('CardLink', CardLink)
   }
 )

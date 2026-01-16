@@ -194,7 +194,6 @@ import { useTheme, useData } from '@/composables/useTheme'
 import navData from '@/data/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
 import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home, AlertTriangle } from 'lucide-vue-next'
-import CardLink from './CardLink.vue'
 import Dialog from '../Dialog.vue'
 
 // 处理数据，从配置中读取图标名称

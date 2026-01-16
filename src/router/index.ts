@@ -16,6 +16,11 @@ export const routes: RouteRecordRaw[] = [
     path: '/posts/:slug',
     name: 'post',
     component: () => import('@/views/Post.vue')
+  },
+  {
+    path: '/projects',
+    name: 'projects',
+    component: () => import('@/views/Projects.vue')
   }
 ]
 
@@ -23,7 +28,8 @@ export const routes: RouteRecordRaw[] = [
 export function getStaticRoutes(): string[] {
   const staticRoutes = [
     '/',
-    '/nav/'
+    '/nav/',
+    '/projects'
   ]
   
   // 添加所有博客文章路由

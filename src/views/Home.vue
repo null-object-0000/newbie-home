@@ -1,50 +1,7 @@
 <template>
   <div class="home-page" :class="{ 'dark-mode': isDark, 'light-mode': !isDark }">
-    <!-- 毛玻璃导航栏 -->
-    <nav class="glass-nav">
-      <div class="nav-container">
-        <div class="logo-area" @click="$router.push('/')">
-          <div class="logo-icon">N</div>
-          <span class="site-title">Newbie Space</span>
-        </div>
-
-        <div class="nav-links">
-          <router-link to="/" class="nav-item" :class="{ active: $route.path === '/' }">
-            首页
-            <span class="nav-indicator" v-if="$route.path === '/'"></span>
-          </router-link>
-          <router-link to="/nav/" class="nav-item" :class="{ active: $route.path === '/nav/' }">
-            导航
-            <span class="nav-indicator" v-if="$route.path === '/nav/'"></span>
-          </router-link>
-          <router-link to="/posts/2025-04" class="nav-item">
-            文章
-          </router-link>
-        </div>
-
-        <div class="nav-actions">
-          <a href="https://github.com/null-object-0000" target="_blank" class="action-btn">
-            <Github :size="20" />
-          </a>
-          <button @click="toggleDark()" class="action-btn">
-            <Sun v-if="isDark" :size="20" />
-            <Moon v-else :size="20" />
-          </button>
-          <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
-            <Menu :size="24" />
-          </button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- 移动端菜单 -->
-    <Transition name="fade">
-      <div v-if="mobileMenuOpen" class="mobile-menu">
-        <router-link to="/" class="mobile-nav-item" @click="mobileMenuOpen = false">首页</router-link>
-        <router-link to="/nav/" class="mobile-nav-item" @click="mobileMenuOpen = false">导航</router-link>
-        <router-link to="/posts/2025-04" class="mobile-nav-item" @click="mobileMenuOpen = false">文章</router-link>
-      </div>
-    </Transition>
+    <!-- 公共导航栏 -->
+    <AppHeader />
 
     <!-- 主内容区域 -->
     <main class="main-content">
@@ -61,7 +18,7 @@
       <!-- 仪表板卡片网格 - 完全按照 test.html 布局 -->
       <div class="dashboard-grid">
         <!-- 第一行: 最新文章卡片 (2列) + 关于我卡片 (1列) -->
-        
+
         <!-- 最新文章卡片 -->
         <div class="card card-article" @click="goToLatestPost">
           <div class="card-badge">
@@ -89,13 +46,9 @@
         </div>
 
         <!-- 第二行: 开源项目卡片 (1列) + 常用导航卡片 (2列) -->
-        
+
         <!-- 开源项目卡片 -->
-        <a 
-          href="https://github.com/null-object-0000/newbie-home" 
-          target="_blank" 
-          class="card card-project"
-        >
+        <div @click="$router.push('/projects')" class="card card-project">
           <div class="project-badge">
             <Box :size="14" />
             <span>Featured Project</span>
@@ -114,7 +67,7 @@
               <span>Fork</span>
             </span>
           </div>
-        </a>
+        </div>
 
         <!-- 常用导航卡片 -->
         <div class="card card-nav">
@@ -126,63 +79,30 @@
             <router-link to="/nav/" class="view-all">查看全部 →</router-link>
           </div>
           <div class="quick-links">
-            <a 
-              v-for="link in featuredLinks" 
-              :key="link.name" 
-              :href="link.link" 
-              target="_blank"
-              class="quick-link-card"
-            >
-              <div class="quick-link-header">
-                <div class="quick-link-title-row">
-                  <div class="quick-link-icon-wrapper">
-                    <img 
-                      :src="getIconUrl(link)" 
-                      :alt="link.name"
-                      class="quick-link-icon"
-                      @error="handleIconError"
-                    />
-                  </div>
-                  <h4 class="quick-link-title">{{ link.name }}</h4>
-                </div>
-                <ExternalLink :size="14" class="quick-link-external" />
-              </div>
-              <p class="quick-link-desc">{{ link.desc || 'No description available.' }}</p>
-            </a>
+            <CardLink v-for="link in featuredLinks" :key="link.name" :link="link" @click="handleLinkClick" />
           </div>
         </div>
       </div>
     </main>
 
     <!-- 页脚 -->
-    <footer class="site-footer">
-      <div class="footer-container">
-        <p>© 2026 Newbie Space. Built with Vue 3 & Vite.</p>
-        <div class="footer-links">
-          <a href="https://github.com/null-object-0000" target="_blank" class="footer-link">GitHub</a>
-        </div>
-      </div>
-    </footer>
+    <AppFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTheme, useData } from '@/composables/useTheme'
+import { useTheme } from '@/composables/useTheme'
 import { getAllPosts } from '@/data/posts'
 import navData from '@/data/nav-data.json'
-import { 
-  Sun, Moon, Github, Menu, PenTool, User, Compass,
-  Box, Star, GitFork, ExternalLink
+import {
+  PenTool, User, Compass,
+  Box, Star, GitFork
 } from 'lucide-vue-next'
 
 const router = useRouter()
-const { isDark, toggleDark } = useTheme()
-const { site } = useData()
-const base = site.value.base || '/'
-
-const mobileMenuOpen = ref(false)
+const { isDark } = useTheme()
 
 // 获取最新文章
 const posts = getAllPosts()
@@ -211,7 +131,7 @@ onMounted(() => {
 
 // 获取所有链接的扁平列表
 const getAllLinks = () => {
-  return navData.flatMap((cat: any) => 
+  return navData.flatMap((cat: any) =>
     cat.links.map((link: any) => ({
       ...link,
       categoryName: cat.name
@@ -237,7 +157,7 @@ const getDefaultLinks = () => {
 const featuredLinks = computed(() => {
   const allLinks = getAllLinks()
   const MAX_LINKS = 4
-  
+
   // 1. 获取近期使用的链接（按点击次数排序）
   const recentLinks = allLinks
     .map(link => ({
@@ -257,10 +177,10 @@ const featuredLinks = computed(() => {
   // 3. 不足时用默认工具填充
   const defaultLinks = getDefaultLinks()
   const recentUrls = new Set(recentLinks.map(l => l.link))
-  
+
   // 过滤掉已在近期使用中的默认链接
   const fillLinks = defaultLinks.filter(l => !recentUrls.has(l.link))
-  
+
   // 合并并限制数量
   return [...recentLinks, ...fillLinks].slice(0, MAX_LINKS)
 })
@@ -271,43 +191,16 @@ const goToLatestPost = () => {
   }
 }
 
-// 获取域名
-const getDomain = (link: string) => {
-  try {
-    return new URL(link).hostname
-  } catch (e) {
-    return ''
-  }
-}
-
-// 获取图标 URL
-const getIconUrl = (link: any) => {
-  // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
-  if (link.icon && typeof link.icon === 'string') {
-    if (link.icon.startsWith('/')) {
-      // 处理 base 路径
-      return base.endsWith('/') ? base + link.icon.substring(1) : base + link.icon
-    } else if (link.icon.startsWith('http://') || link.icon.startsWith('https://')) {
-      // 如果是完整的 URL，直接使用
-      return link.icon
+// 处理链接点击（记录点击次数）
+const handleLinkClick = (linkUrl: string) => {
+  clickCounts.value[linkUrl] = (clickCounts.value[linkUrl] || 0) + 1
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY_CLICKS, JSON.stringify(clickCounts.value))
+    } catch (e) {
+      console.error('Failed to save click counts:', e)
     }
   }
-  // 如果没有本地图标，回退到 Google Favicon 服务
-  return `https://www.google.com/s2/favicons?domain=${getDomain(link.link)}&sz=64`
-}
-
-const handleIconError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  // 尝试使用 Google Favicon 作为回退
-  const linkCard = img.closest('.quick-link-card') as HTMLElement
-  if (linkCard) {
-    const linkUrl = linkCard.getAttribute('href')
-    if (linkUrl && !img.src.includes('google.com/s2/favicons')) {
-      img.src = `https://www.google.com/s2/favicons?domain=${getDomain(linkUrl)}&sz=64`
-      return
-    }
-  }
-  img.style.display = 'none'
 }
 </script>
 
@@ -318,7 +211,7 @@ const handleIconError = (e: Event) => {
   --brand-600: #2563eb;
   --accent-500: #06b6d4;
   --accent-600: #0891b2;
-  
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -336,7 +229,7 @@ const handleIconError = (e: Event) => {
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
-  
+
   background-color: var(--bg-main);
   color: var(--text-primary);
 }
@@ -350,204 +243,11 @@ const handleIconError = (e: Event) => {
   --text-primary: #111827;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
-  
+
   background-color: var(--bg-main);
   color: var(--text-primary);
 }
 
-/* ========== 毛玻璃导航栏 (完全匹配 test.html .glass-panel) ========== */
-.glass-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  border-bottom: 1px solid var(--border-color);
-  transition: all 0.3s;
-}
-
-.light-mode .glass-nav {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(229, 231, 235, 1);
-}
-
-.dark-mode .glass-nav {
-  background: rgba(24, 24, 27, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.nav-container {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 0 1rem;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-@media (min-width: 640px) {
-  .nav-container {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .nav-container {
-    padding: 0 2rem;
-  }
-}
-
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.logo-icon {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(to bottom right, var(--brand-500), var(--accent-600));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.site-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-.nav-links {
-  display: none;
-  align-items: center;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .nav-links {
-    display: flex;
-  }
-}
-
-.nav-item {
-  position: relative;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-decoration: none;
-  padding: 0.25rem 0;
-  transition: color 0.2s;
-}
-
-.nav-item:hover {
-  color: var(--brand-500);
-}
-
-.nav-item.active {
-  color: var(--brand-500);
-}
-
-.nav-indicator {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--brand-500);
-  border-radius: 9999px;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.action-btn {
-  padding: 0.5rem;
-  border-radius: 9999px;
-  border: none;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.light-mode .action-btn:hover {
-  background: rgba(229, 231, 235, 1);
-}
-
-.dark-mode .action-btn:hover {
-  background: rgba(39, 39, 42, 1);
-}
-
-.mobile-menu-btn {
-  display: block;
-  padding: 0.5rem;
-  border: none;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-@media (min-width: 768px) {
-  .mobile-menu-btn {
-    display: none;
-  }
-}
-
-/* ========== 移动端菜单 ========== */
-.mobile-menu {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  padding-top: 5rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.light-mode .mobile-menu {
-  background: #ffffff;
-}
-
-.dark-mode .mobile-menu {
-  background: var(--bg-main);
-}
-
-@media (min-width: 768px) {
-  .mobile-menu {
-    display: none;
-  }
-}
-
-.mobile-nav-item {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-decoration: none;
-  text-align: left;
-}
-
-.mobile-nav-item:hover {
-  color: var(--brand-500);
-}
 
 /* ========== 主内容区域 ========== */
 .main-content {
@@ -896,154 +596,6 @@ const handleIconError = (e: Event) => {
   }
 }
 
-/* 内部网站卡片样式 - 有边框 */
-.quick-link-card {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s;
-}
-
-.light-mode .quick-link-card {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-color: rgba(226, 232, 240, 0.6);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.light-mode .quick-link-card:hover {
-  background-color: white;
-  border-color: rgba(147, 197, 253, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.dark-mode .quick-link-card {
-  background-color: rgba(30, 41, 59, 0.4);
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-.dark-mode .quick-link-card:hover {
-  background-color: rgba(30, 41, 59, 0.8);
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-}
-
-.quick-link-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.quick-link-title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.quick-link-icon-wrapper {
-  padding: 0.375rem;
-  border-radius: 0.5rem;
-  flex-shrink: 0;
-}
-
-.light-mode .quick-link-icon-wrapper {
-  background-color: #f1f5f9;
-}
-
-.dark-mode .quick-link-icon-wrapper {
-  background-color: rgba(15, 23, 42, 0.5);
-}
-
-.quick-link-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  object-fit: contain;
-  display: block;
-}
-
-.quick-link-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.quick-link-external {
-  color: var(--text-muted);
-  opacity: 0;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
-}
-
-.quick-link-card:hover .quick-link-external {
-  opacity: 1;
-}
-
-.quick-link-desc {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ========== 页脚 ========== */
-.site-footer {
-  border-top: 1px solid var(--border-color);
-  padding: 2rem 1rem;
-  margin-top: auto;
-}
-
-.footer-container {
-  max-width: 72rem;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-@media (min-width: 768px) {
-  .footer-container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-}
-
-.footer-container p {
-  margin: 0;
-}
-
-.footer-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.footer-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.footer-link:hover {
-  color: var(--brand-500);
-}
 
 /* ========== 动画 ========== */
 @keyframes slideUp {
@@ -1051,21 +603,13 @@ const handleIconError = (e: Event) => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 
 /* ========== 滚动条 ========== */
 ::-webkit-scrollbar {
@@ -1091,5 +635,3 @@ const handleIconError = (e: Event) => {
   color: white;
 }
 </style>
-
-
