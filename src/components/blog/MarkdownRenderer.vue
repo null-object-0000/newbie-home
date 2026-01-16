@@ -29,10 +29,14 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, nextTick, watch, onBeforeUnmount } from 'vue'
 import { useMarkdown } from '@/composables/useMarkdown'
+import { useTheme } from '@/composables/useTheme'
 import ImageGallery from './ImageGallery.vue'
 import ImageViewer from './ImageViewer.vue'
 import Details from './Details.vue'
 import { createApp, h } from 'vue'
+// 引入 highlight.js 样式
+// 暗色主题使用 github-dark
+import 'highlight.js/styles/github-dark.css'
 
 interface Props {
   content: string
@@ -41,6 +45,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { parseMarkdown } = useMarkdown()
+const { isDark } = useTheme()
 const markdownRef = ref<HTMLElement | null>(null)
 const galleryApps = ref<Array<{ app: any; container: HTMLElement }>>([])
 const detailsApps = ref<Array<{ app: any; container: HTMLElement }>>([])
@@ -607,6 +612,114 @@ onBeforeUnmount(() => {
   padding: 0;
   color: inherit;
   font-size: inherit;
+}
+
+/* highlight.js 样式覆盖 */
+.markdown-body pre.hljs {
+  padding: 16px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin-bottom: 16px;
+  background: #f6f8fa !important;
+}
+
+.markdown-body pre.hljs code {
+  background: transparent;
+  padding: 0;
+  display: block;
+  overflow-x: auto;
+}
+
+/* 确保代码块中的代码样式正确 */
+.markdown-body pre.hljs code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  background: transparent;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* 浅色主题下的代码高亮增强对比度 */
+.markdown-body:not(.dark) pre.hljs {
+  background: #f6f8fa !important;
+  border: 1px solid #e1e4e8;
+}
+
+.markdown-body:not(.dark) pre.hljs code {
+  color: #24292e;
+}
+
+/* 增强浅色主题下的语法高亮颜色 - 使用 !important 确保覆盖默认样式 */
+.markdown-body:not(.dark) pre.hljs .hljs-keyword,
+.markdown-body:not(.dark) pre.hljs .hljs-selector-tag,
+.markdown-body:not(.dark) pre.hljs .hljs-literal,
+.markdown-body:not(.dark) pre.hljs .hljs-title,
+.markdown-body:not(.dark) pre.hljs .hljs-section,
+.markdown-body:not(.dark) pre.hljs .hljs-doctag,
+.markdown-body:not(.dark) pre.hljs .hljs-type,
+.markdown-body:not(.dark) pre.hljs .hljs-name,
+.markdown-body:not(.dark) pre.hljs .hljs-strong {
+  color: #d73a49 !important;
+  font-weight: 600;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-string,
+.markdown-body:not(.dark) pre.hljs .hljs-attr,
+.markdown-body:not(.dark) pre.hljs .hljs-attribute {
+  color: #032f62 !important;
+  font-weight: 500;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-number,
+.markdown-body:not(.dark) pre.hljs .hljs-symbol,
+.markdown-body:not(.dark) pre.hljs .hljs-bullet {
+  color: #005cc5 !important;
+  font-weight: 500;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-comment,
+.markdown-body:not(.dark) pre.hljs .hljs-quote {
+  color: #6a737d !important;
+  font-style: italic;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-tag,
+.markdown-body:not(.dark) pre.hljs .hljs-name {
+  color: #22863a !important;
+  font-weight: 600;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-meta,
+.markdown-body:not(.dark) pre.hljs .hljs-meta-keyword {
+  color: #6f42c1 !important;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-variable,
+.markdown-body:not(.dark) pre.hljs .hljs-template-variable {
+  color: #e36209 !important;
+}
+
+/* XML/HTML 特定样式 */
+.markdown-body:not(.dark) pre.hljs .hljs-tag .hljs-name {
+  color: #22863a !important;
+  font-weight: 600;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-tag .hljs-attr {
+  color: #005cc5 !important;
+  font-weight: 500;
+}
+
+.markdown-body:not(.dark) pre.hljs .hljs-tag .hljs-string {
+  color: #032f62 !important;
+  font-weight: 500;
+}
+
+/* 暗色主题保持原有样式 */
+.dark .markdown-body pre.hljs {
+  background: #0d1117 !important;
+  border: 1px solid #30363d;
 }
 
 /* 表格 */

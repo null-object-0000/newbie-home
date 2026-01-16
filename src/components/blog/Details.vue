@@ -80,6 +80,7 @@ const toggle = () => {
 }
 
 .details-content {
+  padding-top: 12px;
   overflow: hidden;
 }
 
