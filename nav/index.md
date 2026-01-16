@@ -4,17 +4,24 @@ title: 资源导航
 sidebar: false
 ---
 
-<ClientOnly>
-  <NavDashboard />
-  <template #fallback>
-    <div class="nav-loading">
-      <div class="nav-loading-spinner"></div>
-      <p>加载中...</p>
-    </div>
-  </template>
-</ClientOnly>
+<div class="nav-page-container">
+  <ClientOnly>
+    <NavDashboard />
+    <template #fallback>
+      <div class="nav-loading">
+        <div class="nav-loading-spinner"></div>
+        <p>加载中...</p>
+      </div>
+    </template>
+  </ClientOnly>
+</div>
 
 <style>
+/* 
+ * 关键：使用 .nav-page-container 作为标记，这样 SSR 阶段就能触发样式
+ * 解决了 ClientOnly 导致的页面闪烁问题
+ */
+
 /* 加载占位符样式 */
 .nav-loading {
   position: fixed;
@@ -51,34 +58,31 @@ sidebar: false
   font-size: 14px;
 }
 
-/* 只在导航页面隐藏 VitePress 默认头部导航栏 */
-:has(.nav-dashboard) .VPNav,
-:has(.nav-dashboard) .VPNavBar,
-:has(.nav-dashboard) .vp-nav,
-:has(.nav-dashboard) header[class*="VPNav"],
-:has(.nav-dashboard) nav[class*="VPNav"] {
+/* 使用 .nav-page-container 替代 .nav-dashboard，确保 SSR 阶段样式就能生效 */
+:has(.nav-page-container) .VPNav,
+:has(.nav-page-container) .VPNavBar,
+:has(.nav-page-container) .vp-nav,
+:has(.nav-page-container) header[class*="VPNav"],
+:has(.nav-page-container) nav[class*="VPNav"] {
   display: none !important;
 }
 
-/* 只在导航页面调整页面布局，去除头部后的间距 */
-:has(.nav-dashboard) .vp-page {
+:has(.nav-page-container) .vp-page {
   padding-top: 0 !important;
 }
 
-/* 只在导航页面确保 NavDashboard 能够全屏显示 */
-:has(.nav-dashboard) .vp-page .vp-doc {
+:has(.nav-page-container) .vp-page .vp-doc {
   padding: 0 !important;
   max-width: 100% !important;
   margin: 0 !important;
 }
 
-/* 只在导航页面移除页面容器的边距 */
-:has(.nav-dashboard) .vp-page > div {
+:has(.nav-page-container) .vp-page > div {
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* 确保 NavDashboard 组件占据整个视口 */
+/* NavDashboard 组件样式 */
 .nav-dashboard {
   position: fixed;
   top: 0;
