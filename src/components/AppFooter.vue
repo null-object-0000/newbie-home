@@ -17,19 +17,25 @@
 /* ========== 页脚 ========== */
 .site-footer {
   border-top: 1px solid var(--border-color);
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 12px;
   margin-top: auto;
+}
+
+@media (min-width: 375px) {
+  .site-footer {
+    padding: 1.5rem 16px;
+  }
 }
 
 @media (min-width: 640px) {
   .site-footer {
-    padding: 2rem 1.5rem;
+    padding: 2rem 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .site-footer {
-    padding: 2rem 2rem;
+    padding: 2rem 32px;
   }
 }
 

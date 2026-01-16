@@ -19,12 +19,14 @@ html {
   background-color: var(--c-bg);
   scroll-behavior: smooth;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh; /* 动态视口高度，适配移动端 */
   overflow-x: hidden;
-  width: 100%;
+  max-width: 100%;
 }
 
 img, picture, video, canvas, svg {

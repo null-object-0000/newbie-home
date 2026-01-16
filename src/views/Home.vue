@@ -213,13 +213,14 @@ const handleLinkClick = (linkUrl: string) => {
   --accent-600: #0891b2;
 
   min-height: 100vh;
+  min-height: 100dvh; /* 动态视口高度 */
   display: flex;
   flex-direction: column;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s, color 0.3s;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  width: 100%;
+  max-width: 100%;
 }
 
 /* ========== 深色主题 (完全匹配 test.html) ========== */
@@ -256,19 +257,19 @@ const handleLinkClick = (linkUrl: string) => {
   flex: 1;
   padding-top: 4rem;
   padding-bottom: 1.5rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  padding-left: 12px;
+  padding-right: 12px;
   max-width: 72rem;
-  margin: 0 auto;
-  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   box-sizing: border-box;
 }
 
 @media (min-width: 375px) {
   .main-content {
     padding-top: 4.5rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 
@@ -276,15 +277,37 @@ const handleLinkClick = (linkUrl: string) => {
   .main-content {
     padding-top: 6rem;
     padding-bottom: 4rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .main-content {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+/* 支持安全区域的设备 */
+@supports (padding: env(safe-area-inset-left)) {
+  .main-content {
+    padding-left: calc(12px + env(safe-area-inset-left, 0px));
+    padding-right: calc(12px + env(safe-area-inset-right, 0px));
+  }
+  
+  @media (min-width: 375px) {
+    .main-content {
+      padding-left: calc(16px + env(safe-area-inset-left, 0px));
+      padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    }
+  }
+  
+  @media (min-width: 640px) {
+    .main-content {
+      padding-left: calc(24px + env(safe-area-inset-left, 0px));
+      padding-right: calc(24px + env(safe-area-inset-right, 0px));
+    }
   }
 }
 

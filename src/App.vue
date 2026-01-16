@@ -11,8 +11,9 @@ html, body, #app {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
-  width: 100%;
+  max-width: 100%;
 }
 
 #app {

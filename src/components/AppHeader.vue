@@ -127,35 +127,32 @@ const mobileMenuOpen = ref(false)
 <style scoped>
 
 .nav-container {
-  max-width: 72rem;
   margin: 0 auto;
-  padding: 0 0.75rem;
+  padding: 0 12px;
   height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
 }
 
 @media (min-width: 375px) {
   .nav-container {
-    padding: 0 1rem;
+    padding: 0 16px;
     height: 4rem;
   }
 }
 
 @media (min-width: 640px) {
   .nav-container {
-    padding: 0 1.5rem;
+    padding: 0 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .nav-container {
-    padding: 0 2rem;
+    padding: 0 32px;
     max-width: 72rem;
   }
 }

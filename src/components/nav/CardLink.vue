@@ -429,9 +429,9 @@ onUnmounted(() => {
 <style>
 .card-link-wrapper {
   position: relative;
-  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 .card-link {
@@ -447,6 +447,7 @@ onUnmounted(() => {
   flex: 1;
   box-sizing: border-box;
   max-width: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
