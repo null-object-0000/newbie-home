@@ -65,12 +65,13 @@ jobs:
           # 禁用分块编码（OSS 不支持 aws-chunked encoding）
           # 设置一个很大的 multipart_threshold 值来禁用分块上传
           # 这样所有文件都会使用普通上传而不是分块上传
-          aws configure set default.s3.multipart_threshold 10GB
-          aws configure set default.s3.multipart_chunksize 10GB
+          aws configure set default.s3.multipart_threshold 100GB
+          aws configure set default.s3.multipart_chunksize 100GB
           
-          # 禁用 payload signing（解决分块编码问题）
-          # OSS 不支持 aws-chunked encoding，需要禁用 payload signing
+          # 禁用 payload signing 和校验和计算（解决分块编码问题）
+          # OSS 不支持 aws-chunked encoding，需要禁用这些功能
           aws configure set default.s3.payload_signing_enabled false
+          aws configure set default.s3.request_checksum_calculation when_required
           
           # 上传文件到 S3 兼容的 OSS
           # --endpoint-url 使用基础端点（不包含 bucket 名称）
