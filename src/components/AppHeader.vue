@@ -42,13 +42,26 @@
       </div>
     </nav>
 
-    <!-- 移动端菜单 -->
+    <!-- 移动端菜单遮罩层 -->
     <Transition name="fade">
+      <div v-if="mobileMenuOpen" class="mobile-menu-overlay" @click="mobileMenuOpen = false"></div>
+    </Transition>
+
+    <!-- 移动端菜单 -->
+    <Transition name="slide">
       <div v-if="mobileMenuOpen" class="mobile-menu">
-        <router-link to="/" class="mobile-nav-item" @click="mobileMenuOpen = false">首页</router-link>
-        <router-link to="/nav/" class="mobile-nav-item" @click="mobileMenuOpen = false">导航</router-link>
-        <router-link to="/posts" class="mobile-nav-item" @click="mobileMenuOpen = false">文章</router-link>
-        <router-link to="/projects" class="mobile-nav-item" @click="mobileMenuOpen = false">项目</router-link>
+        <router-link to="/" class="mobile-nav-item" :class="{ active: $route.path === '/' }" @click="mobileMenuOpen = false">
+          首页
+        </router-link>
+        <router-link to="/nav/" class="mobile-nav-item" :class="{ active: $route.path === '/nav/' }" @click="mobileMenuOpen = false">
+          导航
+        </router-link>
+        <router-link to="/posts" class="mobile-nav-item" :class="{ active: $route.path.startsWith('/posts') }" @click="mobileMenuOpen = false">
+          文章
+        </router-link>
+        <router-link to="/projects" class="mobile-nav-item" :class="{ active: $route.path === '/projects' }" @click="mobileMenuOpen = false">
+          项目
+        </router-link>
       </div>
     </Transition>
   </div>
@@ -102,10 +115,12 @@ const mobileMenuOpen = ref(false)
 
 .light-mode .mobile-menu {
   background: #ffffff;
+  border-right: 1px solid var(--border-color, rgba(229, 231, 235, 1));
 }
 
 .dark-mode .mobile-menu {
   background: var(--bg-main, #09090b);
+  border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
 }
 </style>
 
@@ -114,11 +129,22 @@ const mobileMenuOpen = ref(false)
 .nav-container {
   max-width: 72rem;
   margin: 0 auto;
-  padding: 0 1rem;
-  height: 4rem;
+  padding: 0 0.75rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 375px) {
+  .nav-container {
+    padding: 0 1rem;
+    height: 4rem;
+  }
 }
 
 @media (min-width: 640px) {
@@ -130,33 +156,64 @@ const mobileMenuOpen = ref(false)
 @media (min-width: 1024px) {
   .nav-container {
     padding: 0 2rem;
+    max-width: 72rem;
   }
 }
 
 .logo-area {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (min-width: 375px) {
+  .logo-area {
+    gap: 0.5rem;
+  }
 }
 
 .logo-icon {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.375rem;
   background: linear-gradient(to bottom right, var(--brand-500, #3b82f6), var(--accent-600, #0891b2));
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 375px) {
+  .logo-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+  }
 }
 
 .site-title {
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+@media (min-width: 375px) {
+  .site-title {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .site-title {
+    font-size: 1.125rem;
+  }
 }
 
 .nav-links {
@@ -202,11 +259,24 @@ const mobileMenuOpen = ref(false)
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 375px) {
+  .nav-actions {
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .nav-actions {
+    gap: 1rem;
+  }
 }
 
 .action-btn {
-  padding: 0.5rem;
+  padding: 0.375rem;
   border-radius: 9999px;
   border: none;
   background: transparent;
@@ -216,16 +286,44 @@ const mobileMenuOpen = ref(false)
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  touch-action: manipulation;
 }
 
+@media (min-width: 375px) {
+  .action-btn {
+    padding: 0.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .action-btn {
+    min-width: auto;
+    min-height: auto;
+  }
+}
 
 .mobile-menu-btn {
   display: block;
-  padding: 0.5rem;
+  padding: 0.375rem;
   border: none;
   background: transparent;
   color: inherit;
   cursor: pointer;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  touch-action: manipulation;
+}
+
+@media (min-width: 375px) {
+  .mobile-menu-btn {
+    padding: 0.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -234,19 +332,37 @@ const mobileMenuOpen = ref(false)
   }
 }
 
+/* ========== 移动端菜单遮罩层 ========== */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@media (min-width: 768px) {
+  .mobile-menu-overlay {
+    display: none;
+  }
+}
+
 /* ========== 移动端菜单 ========== */
 .mobile-menu {
   position: fixed;
-  inset: 0;
-  z-index: 40;
-  padding-top: 5rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  top: 4rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.75rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
-
 
 @media (min-width: 768px) {
   .mobile-menu {
@@ -255,15 +371,29 @@ const mobileMenuOpen = ref(false)
 }
 
 .mobile-nav-item {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 500;
   color: var(--text-muted, #71717a);
   text-decoration: none;
   text-align: left;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
 }
 
-.mobile-nav-item:hover {
+.mobile-nav-item:hover,
+.mobile-nav-item:active {
   color: var(--brand-500, #3b82f6);
+  background: var(--bg-soft, rgba(0, 0, 0, 0.05));
+}
+
+.mobile-nav-item.active {
+  color: var(--brand-500, #3b82f6);
+  background: var(--bg-soft, rgba(0, 0, 0, 0.05));
 }
 
 /* ========== 动画 ========== */
@@ -274,6 +404,24 @@ const mobileMenuOpen = ref(false)
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
   opacity: 0;
 }
 </style>

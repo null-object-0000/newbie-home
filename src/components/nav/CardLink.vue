@@ -430,19 +430,38 @@ onUnmounted(() => {
 .card-link-wrapper {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .card-link {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  border-radius: 16px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid;
   transition: all 0.3s;
   text-decoration: none;
   color: inherit;
   flex: 1;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@media (min-width: 375px) {
+  .card-link {
+    padding: 14px;
+    border-radius: 14px;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-link {
+    padding: 16px;
+    border-radius: 16px;
+  }
 }
 
 .card-link:hover {
@@ -475,21 +494,42 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+@media (min-width: 375px) {
+  .card-header {
+    margin-bottom: 8px;
+  }
 }
 
 .card-title-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 375px) {
+  .card-title-row {
+    gap: 10px;
+  }
 }
 
 .card-icon-wrapper {
-  padding: 6px;
-  border-radius: 8px;
+  padding: 5px;
+  border-radius: 6px;
   flex-shrink: 0;
+}
+
+@media (min-width: 375px) {
+  .card-icon-wrapper {
+    padding: 6px;
+    border-radius: 8px;
+  }
 }
 
 .dark-mode .card-icon-wrapper {
@@ -501,18 +541,32 @@ onUnmounted(() => {
 }
 
 .card-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   object-fit: contain;
   display: block;
 }
 
+@media (min-width: 375px) {
+  .card-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .card-icon-lucide {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   color: inherit;
+}
+
+@media (min-width: 375px) {
+  .card-icon-lucide {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .card-icon-fallback {
@@ -542,7 +596,7 @@ onUnmounted(() => {
 
 .card-title {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -552,8 +606,20 @@ onUnmounted(() => {
   min-width: 0;
 }
 
+@media (min-width: 375px) {
+  .card-title {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-title {
+    font-size: 16px;
+  }
+}
+
 .card-desc {
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -561,6 +627,14 @@ onUnmounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .card-desc {
+    font-size: 12px;
+  }
 }
 
 .dark-mode .card-desc {
@@ -574,18 +648,28 @@ onUnmounted(() => {
 /* 移动端展开按钮 */
 .card-expand-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
   z-index: 5;
+}
+
+@media (min-width: 375px) {
+  .card-expand-btn {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
 }
 
 .dark-mode .card-expand-btn {

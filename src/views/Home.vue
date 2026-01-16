@@ -218,6 +218,9 @@ const handleLinkClick = (linkUrl: string) => {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s, color 0.3s;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* ========== 深色主题 (完全匹配 test.html) ========== */
@@ -252,17 +255,28 @@ const handleLinkClick = (linkUrl: string) => {
 /* ========== 主内容区域 ========== */
 .main-content {
   flex: 1;
-  padding-top: 6rem;
-  padding-bottom: 4rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-top: 4rem;
+  padding-bottom: 1.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
   max-width: 72rem;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 375px) {
+  .main-content {
+    padding-top: 4.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 @media (min-width: 640px) {
   .main-content {
+    padding-top: 6rem;
+    padding-bottom: 4rem;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
@@ -278,15 +292,49 @@ const handleLinkClick = (linkUrl: string) => {
 /* ========== Hero 区域 ========== */
 .hero-section {
   text-align: center;
-  padding: 2.5rem 0;
+  padding: 1rem 0;
   animation: slideUp 0.5s ease-out;
 }
 
+@media (min-width: 375px) {
+  .hero-section {
+    padding: 1.25rem 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-section {
+    padding: 2rem 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-section {
+    padding: 2.5rem 0;
+  }
+}
+
 .hero-title {
-  font-size: 2.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin: 0 0 1rem;
+  margin: 0 0 0.5rem;
   line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .hero-title {
+    font-size: 1.75rem;
+    margin: 0 0 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-title {
+    font-size: 2.25rem;
+    margin: 0 0 1rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -310,34 +358,101 @@ const handleLinkClick = (linkUrl: string) => {
 }
 
 .hero-desc {
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   max-width: 42rem;
   margin: 0 auto;
-  line-height: 1.75;
+  line-height: 1.5;
+  padding: 0 0.25rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .hero-desc {
+    font-size: 0.9375rem;
+    padding: 0 0.5rem;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-desc {
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-desc {
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
 }
 
 /* ========== 仪表板卡片网格 ========== */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 0.75rem;
   animation: slideUp 0.5s ease-out;
+}
+
+@media (min-width: 375px) {
+  .dashboard-grid {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .dashboard-grid {
+    gap: 1.25rem;
+  }
 }
 
 @media (min-width: 768px) {
   .dashboard-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
   }
 }
 
 /* ========== 通用卡片样式 ========== */
 .card {
-  border-radius: 1rem;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 0.875rem;
   border: 1px solid var(--border-color);
   transition: all 0.2s;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .card {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .card {
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+.card:active {
+  transform: scale(0.98);
 }
 
 .light-mode .card {
@@ -368,19 +483,54 @@ const handleLinkClick = (linkUrl: string) => {
   align-items: center;
   gap: 0.5rem;
   color: var(--brand-500);
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  margin-bottom: 0.625rem;
+}
+
+@media (min-width: 375px) {
+  .card-badge {
+    font-size: 0.6875rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-badge {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.375rem;
   line-height: 1.3;
   transition: color 0.2s;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .card-title {
+    font-size: 1.125rem;
+    margin: 0 0 0.5rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-title {
+    font-size: 1.5rem;
+  }
 }
 
 .card:hover .card-title {
@@ -389,25 +539,55 @@ const handleLinkClick = (linkUrl: string) => {
 
 .card-desc {
   color: var(--text-muted);
-  line-height: 1.625;
+  line-height: 1.5;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-size: 0.75rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .card-desc {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .card-desc {
+    font-size: 0.875rem;
+    line-height: 1.625;
+  }
 }
 
 .card-tags {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .card-tags {
+    margin-top: 1rem;
+  }
 }
 
 .tag {
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--text-muted);
+}
+
+@media (min-width: 640px) {
+  .tag {
+    font-size: 0.75rem;
+  }
 }
 
 .light-mode .tag {
@@ -433,36 +613,93 @@ const handleLinkClick = (linkUrl: string) => {
 }
 
 .about-avatar {
-  width: 3rem;
-  height: 3rem;
+  width: 2.25rem;
+  height: 2.25rem;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.625rem;
+}
+
+@media (min-width: 375px) {
+  .about-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .about-avatar {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .about-title {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .about-title {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .about-title {
+    font-size: 1.25rem;
+  }
 }
 
 .about-desc {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   opacity: 0.8;
-  margin: 0.5rem 0 0;
+  margin: 0.375rem 0 0;
   line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .about-desc {
+    font-size: 0.8125rem;
+    margin: 0.5rem 0 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .about-desc {
+    font-size: 0.875rem;
+  }
 }
 
 .about-link {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: white;
   text-decoration: none;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   align-self: flex-start;
+  padding: 0.25rem 0;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+  .about-link {
+    font-size: 0.875rem;
+    margin-top: 1rem;
+  }
 }
 
 .about-link:hover {
@@ -487,23 +724,60 @@ const handleLinkClick = (linkUrl: string) => {
   align-items: center;
   gap: 0.5rem;
   color: var(--accent-500);
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 375px) {
+  .project-badge {
+    font-size: 0.6875rem;
+    margin-bottom: 0.875rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .project-badge {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .project-screenshot {
   width: 100%;
-  height: 8rem;
+  height: 5rem;
   border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.625rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+}
+
+@media (min-width: 375px) {
+  .project-screenshot {
+    height: 6rem;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .project-screenshot {
+    height: 7rem;
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .project-screenshot {
+    height: 8rem;
+    font-size: 1rem;
+  }
 }
 
 .light-mode .project-screenshot {
@@ -517,18 +791,47 @@ const handleLinkClick = (linkUrl: string) => {
 }
 
 .project-title {
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 375px) {
+  .project-title {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .project-title {
+    font-size: 1.125rem;
+  }
 }
 
 .project-stats {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.625rem;
   margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+@media (min-width: 375px) {
+  .project-stats {
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .project-stats {
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
 }
 
 .stat-item {
@@ -542,11 +845,25 @@ const handleLinkClick = (linkUrl: string) => {
   grid-column: 1;
   background: transparent !important;
   border: none !important;
-  padding: 0.5rem;
+  padding: 0.125rem;
+  cursor: default;
+}
+
+@media (min-width: 375px) {
+  .card-nav {
+    padding: 0.25rem;
+  }
 }
 
 .card-nav:hover {
   border: none !important;
+  transform: none;
+}
+
+@media (min-width: 640px) {
+  .card-nav {
+    padding: 0.5rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -559,7 +876,27 @@ const handleLinkClick = (linkUrl: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (min-width: 375px) {
+  .nav-header {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .nav-header {
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .nav-header {
+    margin-bottom: 1.5rem;
+  }
 }
 
 .nav-badge {
@@ -567,32 +904,63 @@ const handleLinkClick = (linkUrl: string) => {
   align-items: center;
   gap: 0.5rem;
   color: #22c55e;
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+@media (min-width: 375px) {
+  .nav-badge {
+    font-size: 0.6875rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .nav-badge {
+    font-size: 0.75rem;
+  }
+}
+
 .view-all {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
+  padding: 0.25rem 0;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  touch-action: manipulation;
 }
 
-.view-all:hover {
+@media (min-width: 640px) {
+  .view-all {
+    font-size: 0.75rem;
+  }
+}
+
+.view-all:hover,
+.view-all:active {
   color: var(--brand-500);
 }
 
 .quick-links {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: 0.5rem;
+}
+
+@media (min-width: 375px) {
+  .quick-links {
+    gap: 0.625rem;
+  }
 }
 
 @media (min-width: 640px) {
   .quick-links {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
 }
 
