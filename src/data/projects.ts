@@ -12,28 +12,28 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: 1,
-    name: 'Newbie-Home',
+    name: 'Newbie Space',
     stars: 'New',
     desc: '一个基于 Vue 3 的极简个人博客主题，支持暗黑模式和动态路由。',
-    stack: ['vue', 'ts', 'vite'],
-    url: 'https://github.com/null-object-0000/newbie-home',
-    demoUrl: 'https://newbie-home.vercel.app'
+    stack: ['vue'],
+    url: 'https://github.com/null-object-0000/newbie-space',
+    demoUrl: 'https://null-object-0000.github.io/newbie-space/'
   },
   {
     id: 2,
-    name: 'Smart-Admin-Pro',
-    stars: 1200,
-    desc: '通过 JSON 配置自动生成复杂的后台表单，支持多级联动。',
-    stack: ['react', 'ts', 'less'],
-    url: 'https://github.com/null-object-0000/smart-admin-pro'
+    name: 'HTTP Log Snap',
+    stars: 'New',
+    desc: '一个轻量级的 Java HTTP 请求/响应日志记录库，快照式捕获完整的 HTTP 交互。同时支持客户端（如 OkHttp）和服务端（如 Spring MVC）场景。',
+    stack: ['java'],
+    url: 'https://github.com/null-object-0000/http-log-snap'
   },
   {
     id: 3,
-    name: 'Node-Monitor-CLI',
-    stars: 89,
-    desc: '一个轻量级的服务器状态监控命令行工具。',
-    stack: ['node', 'ts'],
-    url: 'https://github.com/null-object-0000/node-monitor-cli'
+    name: 'Web LLM API',
+    stars: 1,
+    desc: '将网页版 LLM 转换为标准的 OpenAI 兼容 API。',
+    stack: ['java', 'vue'],
+    url: 'https://github.com/null-object-0000/newbie-web-llm-api'
   }
 ]
 
