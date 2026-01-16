@@ -155,7 +155,7 @@
                   'recent-card': category.name === '近期使用'
                 }">
                 <div class="card-link-container">
-                  <CardLink :link="link" @click="incrementClickCount" />
+                  <CardLink :link="link" @click="handleLinkClick" />
                 </div>
                 <button v-if="category.name === '近期使用'" class="card-delete-btn" @click.stop="removeFromRecent(link.link)"
                   :title="'删除 ' + link.name">
@@ -171,16 +171,30 @@
         </footer>
       </div>
     </main>
+
+    <!-- 非大陆网络提醒对话框 -->
+    <Dialog
+      v-model="showNetworkWarning"
+      title="需要非大陆网络"
+      message="检测到您当前位于中国大陆，该网站需要非大陆网络才能正常访问。"
+      sub-message="如果您已配置代理或 VPN，可以继续访问；否则可能无法正常使用。"
+      :icon="AlertTriangle"
+      cancel-text="取消"
+      confirm-text="继续访问"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, h, createApp } from 'vue'
 import { useData } from 'vitepress'
-import navData from '../../../nav/nav-data.json'
+import navData from '../../../../nav/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
-import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home } from 'lucide-vue-next'
+import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home, AlertTriangle } from 'lucide-vue-next'
 import CardLink from './CardLink.vue'
+import Dialog from './Dialog.vue'
 
 // 处理数据，从配置中读取图标名称
 const rawData = navData.map((cat: any) => {
@@ -220,6 +234,9 @@ const showMobileHeader = ref(false) // 移动端头部显示状态（默认隐�
 const showCompactHeader = ref(false) // 紧凑头部显示状态
 const scrollY = ref(0)
 const isMobile = ref(false) // 是否为移动端
+const showNetworkWarning = ref(false) // 是否显示网络警告对话框
+const pendingLinkUrl = ref<string | null>(null) // 待跳转的链接
+const pendingLinkName = ref<string>('') // 待跳转的链接名称
 
 // 本地存储相关函数
 const loadClickCounts = () => {
@@ -240,6 +257,93 @@ const saveClickCounts = () => {
   } catch (e) {
     console.error('Failed to save click counts:', e)
   }
+}
+
+// 检查是否在中国大陆
+const isInMainlandChina = (): boolean => {
+  if (!ipData.value) {
+    // 如果 IP 数据还未加载，默认不阻止（避免误判）
+    return false
+  }
+  
+  // 检查国家代码
+  const countryCode = ipData.value.country_code || ipData.value.countryCode || ''
+  const countryName = ipData.value.country_name || ipData.value.country || ''
+  
+  // 检查是否是中国（CN）或中国大陆
+  if (countryCode === 'CN' || countryCode === 'cn') {
+    return true
+  }
+  
+  // 也检查国家名称（作为备用）
+  if (countryName && (
+    countryName.toLowerCase().includes('china') ||
+    countryName.toLowerCase().includes('中国') ||
+    countryName === 'CN'
+  )) {
+    return true
+  }
+  
+  return false
+}
+
+// 处理链接点击
+const handleLinkClick = (linkUrl: string, linkData?: any) => {
+  // 查找链接数据
+  let link: any = linkData
+  if (!link) {
+    // 从所有分类中查找链接
+    for (const cat of rawData) {
+      const found = cat.links.find((l: any) => l.link === linkUrl)
+      if (found) {
+        link = found
+        break
+      }
+      // 也检查子链接
+      for (const l of cat.links) {
+        if (l.subLinks) {
+          const subFound = l.subLinks.find((sl: any) => sl.link === linkUrl)
+          if (subFound) {
+            link = subFound
+            break
+          }
+        }
+      }
+      if (link) break
+    }
+  }
+  
+  // 检查是否需要非大陆网络
+  if (link && link.requiresNonMainlandNetwork) {
+    // 检查是否在中国大陆
+    if (isInMainlandChina()) {
+      // 显示警告对话框
+      pendingLinkUrl.value = linkUrl
+      pendingLinkName.value = link.name || '该网站'
+      showNetworkWarning.value = true
+      return // 阻止默认跳转
+    }
+  }
+  
+  // 正常跳转
+  incrementClickCount(linkUrl)
+  window.open(linkUrl, '_blank', 'noopener,noreferrer')
+}
+
+// 确认导航（继续访问）
+const confirmNavigation = () => {
+  if (pendingLinkUrl.value) {
+    incrementClickCount(pendingLinkUrl.value)
+    window.open(pendingLinkUrl.value, '_blank', 'noopener,noreferrer')
+  }
+  pendingLinkUrl.value = null
+  pendingLinkName.value = ''
+}
+
+// 取消导航
+const cancelNavigation = () => {
+  pendingLinkUrl.value = null
+  pendingLinkName.value = ''
 }
 
 const incrementClickCount = (linkUrl: string) => {
@@ -2009,4 +2113,5 @@ onUnmounted(() => {
   opacity: 0.3;
   padding: 32px 0;
 }
+
 </style>

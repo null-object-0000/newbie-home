@@ -3,7 +3,7 @@
     @mouseenter="!isMobile && handleCardHover($event)" 
     @mouseleave="!isMobile && handleCardLeave($event)">
     <a :href="link.link" target="_blank" rel="noopener noreferrer" class="card-link"
-      @click="$emit('click', link.link)"
+      @click.prevent="handleLinkClick"
       @mouseleave="!isMobile && handleCardLeave($event)">
       <div class="card-header">
         <div class="card-title-row">
@@ -42,7 +42,7 @@
       <div class="sublinks-menu-list">
         <a v-for="(subLink, subIdx) in link.subLinks" :key="subIdx" 
           :href="subLink.link" target="_blank" rel="noopener noreferrer" 
-          class="sublink-item" @click.stop="$emit('click', subLink.link)">
+          class="sublink-item" @click.stop.prevent="handleSubLinkClick(subLink)">
           <div class="sublink-icon-wrapper">
             <component v-if="isLucideIcon(subLink.icon)" :is="getIconComponent(subLink.icon)" :size="16"
               class="sublink-icon-lucide" />
@@ -63,7 +63,7 @@
       <div class="sublinks-inline-list">
         <a v-for="(subLink, subIdx) in link.subLinks" :key="subIdx" 
           :href="subLink.link" target="_blank" rel="noopener noreferrer" 
-          class="sublink-item-inline" @click.stop="$emit('click', subLink.link)">
+          class="sublink-item-inline" @click.stop.prevent="handleSubLinkClick(subLink)">
           <div class="sublink-icon-wrapper">
             <component v-if="isLucideIcon(subLink.icon)" :is="getIconComponent(subLink.icon)" :size="16"
               class="sublink-icon-lucide" />
@@ -107,9 +107,19 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-defineEmits<{
-  click: [linkUrl: string]
+const emit = defineEmits<{
+  click: [linkUrl: string, linkData?: any]
 }>()
+
+// 处理主链接点击
+const handleLinkClick = () => {
+  emit('click', props.link.link, props.link)
+}
+
+// 处理子链接点击
+const handleSubLinkClick = (subLink: SubLink) => {
+  emit('click', subLink.link, subLink)
+}
 
 const { site } = useData()
 const base = site.value.base || '/'

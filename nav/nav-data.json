@@ -140,7 +140,8 @@
         "name": "Gemini",
         "icon": "/icons/gemini_google_com.svg",
         "link": "https://gemini.google.com/",
-        "desc": "认识 Gemini：Google 旗下的 AI 助理。在写作、规划和开展头脑风暴等方面获得帮助。体验生成式 AI 的强大功能。"
+        "desc": "认识 Gemini：Google 旗下的 AI 助理。在写作、规划和开展头脑风暴等方面获得帮助。体验生成式 AI 的强大功能。",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "天工",
@@ -164,7 +165,8 @@
         "name": "ChatGPT",
         "icon": "/icons/chatgpt_com.svg",
         "link": "https://chatgpt.com/",
-        "desc": "‌ChatGPT是由OpenAI开发的先进AI聊天机器人，基于GPT大模型构建，支持多模态交互，广泛应用于对话、编程、医疗等领域‌。"
+        "desc": "‌ChatGPT是由OpenAI开发的先进AI聊天机器人，基于GPT大模型构建，支持多模态交互，广泛应用于对话、编程、医疗等领域‌。",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "Xiaomi MiMo Studio",
@@ -195,19 +197,22 @@
         "name": "AnyGen",
         "icon": "/icons/anygen_io.ico",
         "link": "https://www.anygen.io/",
-        "desc": "超越一键生成。与 AI 深度协同编辑，润色打磨出让你能从容分享给客户和同事的高品质成果。"
+        "desc": "超越一键生成。与 AI 深度协同编辑，润色打磨出让你能从容分享给客户和同事的高品质成果。",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "Google AI Studio",
         "icon": "/icons/aistudio_google_com.png",
         "link": "https://aistudio.google.com/",
-        "desc": "Google AI Studio 使用 Gemini，从提示到生产的最快路径"
+        "desc": "Google AI Studio 使用 Gemini，从提示到生产的最快路径",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "Notebooklm",
         "icon": "/icons/notebooklm_google.svg",
         "link": "https://notebooklm.google/",
-        "desc": "认识 NotebookLM：给力的 AI 研究工具与思考伙伴，可以帮助您分析来源、理清复杂的资料及转换内容。"
+        "desc": "认识 NotebookLM：给力的 AI 研究工具与思考伙伴，可以帮助您分析来源、理清复杂的资料及转换内容。",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "Coze",
@@ -232,13 +237,15 @@
         "name": "Trae",
         "icon": "/icons/trae_ai.png",
         "link": "https://www.trae.ai/",
-        "desc": "TRAE IDE integrates seamlessly into your workflow, collaborating with you to maximize performance an"
+        "desc": "TRAE IDE integrates seamlessly into your workflow, collaborating with you to maximize performance an",
+        "requiresNonMainlandNetwork": true
       },
       {
         "name": "Google Antigravity",
         "icon": "/icons/antigravity_google.png",
         "link": "https://antigravity.google/",
-        "desc": "Google Antigravity - Build the new way"
+        "desc": "Google Antigravity - Build the new way",
+        "requiresNonMainlandNetwork": true
       }
     ]
   },

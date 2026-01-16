@@ -4,9 +4,53 @@ title: 资源导航
 sidebar: false
 ---
 
-<NavDashboard />
+<ClientOnly>
+  <NavDashboard />
+  <template #fallback>
+    <div class="nav-loading">
+      <div class="nav-loading-spinner"></div>
+      <p>加载中...</p>
+    </div>
+  </template>
+</ClientOnly>
 
 <style>
+/* 加载占位符样式 */
+.nav-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--vp-c-bg);
+  z-index: 100;
+}
+
+.nav-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--vp-c-divider);
+  border-top-color: var(--vp-c-brand-1);
+  border-radius: 50%;
+  animation: nav-spin 0.8s linear infinite;
+}
+
+@keyframes nav-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nav-loading p {
+  margin-top: 16px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+}
+
 /* 只在导航页面隐藏 VitePress 默认头部导航栏 */
 :has(.nav-dashboard) .VPNav,
 :has(.nav-dashboard) .VPNavBar,
