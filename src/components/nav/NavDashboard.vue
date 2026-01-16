@@ -14,8 +14,8 @@
       <!-- Sidebar Header (Logo / Brand) -->
       <div class="sidebar-header">
         <div class="sidebar-brand" @click="goHome" style="cursor: pointer;">
-          <img :src="`${base}logo.png`" alt="Newbie Home" class="sidebar-logo" />
-          <h1 class="sidebar-title">Newbie Home</h1>
+          <img :src="`${base}logo.png`" alt="Newbie Space" class="sidebar-logo" />
+          <h1 class="sidebar-title">Newbie Space</h1>
         </div>
       </div>
 
@@ -195,7 +195,7 @@ import navData from '@/data/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
 import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home, AlertTriangle } from 'lucide-vue-next'
 import CardLink from './CardLink.vue'
-import Dialog from './Dialog.vue'
+import Dialog from '../Dialog.vue'
 
 // 处理数据，从配置中读取图标名称
 const rawData = navData.map((cat: any) => {

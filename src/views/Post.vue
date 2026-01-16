@@ -4,8 +4,8 @@
     <header class="post-header">
       <div class="header-content">
         <router-link to="/" class="logo-link">
-          <img :src="`${base}logo.png`" alt="Newbie Home" class="logo" />
-          <span class="site-title">Newbie Home</span>
+          <img :src="`${base}logo.png`" alt="Newbie Space" class="logo" />
+          <span class="site-title">Newbie Space</span>
         </router-link>
         
         <nav class="header-nav">
@@ -50,7 +50,7 @@
 
     <!-- Footer -->
     <footer class="post-footer">
-      <p>© 2026 Newbie Home. Built with Vue 3.</p>
+      <p>© 2026 Newbie Space. Built with Vue 3.</p>
     </footer>
   </div>
 </template>

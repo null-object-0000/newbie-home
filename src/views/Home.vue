@@ -4,8 +4,8 @@
     <header class="home-header">
       <div class="header-content">
         <div class="logo-area">
-          <img :src="`${base}logo.png`" alt="Newbie Home" class="logo" />
-          <span class="site-title">Newbie Home</span>
+          <img :src="`${base}logo.png`" alt="Newbie Space" class="logo" />
+          <span class="site-title">Newbie Space</span>
         </div>
         
         <nav class="header-nav">
@@ -23,7 +23,7 @@
     <section class="hero-section">
       <div class="hero-content">
         <div class="hero-text">
-          <h1 class="hero-name">Newbie Home</h1>
+          <h1 class="hero-name">Newbie Space</h1>
           <p class="hero-tagline">我的个人导航与博客</p>
           <p class="hero-desc">收集灵感，记录成长，分享技术</p>
           <div class="hero-actions">
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="hero-image">
-          <img :src="`${base}logo.png`" alt="Newbie Home Logo" />
+          <img :src="`${base}logo.png`" alt="Newbie Space Logo" />
         </div>
       </div>
       
@@ -129,9 +129,9 @@
     <!-- Footer -->
     <footer class="home-footer">
       <div class="footer-content">
-        <p>© 2026 Newbie Home. Built with Vue 3 + Vite.</p>
+        <p>© 2026 Newbie Space. Built with Vue 3 + Vite.</p>
         <div class="footer-links">
-          <a href="https://github.com/null-object-0000/newbie-home" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/null-object-0000/newbie-space" target="_blank" rel="noopener noreferrer">
             <Github :size="18" />
           </a>
         </div>
