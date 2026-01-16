@@ -45,8 +45,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.OSS_REGION || 'us-east-1' }}
-          # 强制使用虚拟主机样式（OSS 要求）
-          AWS_S3_FORCE_PATH_STYLE: false
         run: |
           # 构建上传路径
           OSS_BUCKET="${{ secrets.OSS_BUCKET }}"
@@ -59,9 +57,14 @@ jobs:
             S3_PATH="s3://${OSS_BUCKET}"
           fi
           
+          # 配置 AWS CLI 使用虚拟主机样式（OSS 要求）
+          # 这会将请求转换为：https://bucket-name.endpoint/path
+          # 而不是：https://endpoint/bucket-name/path
+          aws configure set default.s3.addressing_style virtual
+          
           # 上传文件到 S3 兼容的 OSS
           # --endpoint-url 使用基础端点（不包含 bucket 名称）
-          # AWS_S3_FORCE_PATH_STYLE=false 强制使用虚拟主机样式
+          # addressing_style=virtual 会强制使用虚拟主机样式
           # --delete 参数会删除目标中不存在的文件
           aws s3 sync .vitepress/dist/ ${S3_PATH} \
             --endpoint-url ${OSS_ENDPOINT} \
