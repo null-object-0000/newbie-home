@@ -12,39 +12,24 @@
             <h2 class="blog-title">技术专栏</h2>
             <p class="blog-subtitle">分享代码、架构设计与生活随笔</p>
           </div>
-          <div class="blog-filters">
-            <span 
-              class="filter-tag" 
-              :class="{ active: currentFilter === 'all' }"
-              @click="currentFilter = 'all'"
-            >
+          <!-- <div class="blog-filters">
+            <span class="filter-tag" :class="{ active: currentFilter === 'all' }" @click="currentFilter = 'all'">
               全部
             </span>
-            <span 
-              class="filter-tag" 
-              :class="{ active: currentFilter === 'frontend' }"
-              @click="currentFilter = 'frontend'"
-            >
+            <span class="filter-tag" :class="{ active: currentFilter === 'frontend' }"
+              @click="currentFilter = 'frontend'">
               前端
             </span>
-            <span 
-              class="filter-tag" 
-              :class="{ active: currentFilter === 'backend' }"
-              @click="currentFilter = 'backend'"
-            >
+            <span class="filter-tag" :class="{ active: currentFilter === 'backend' }"
+              @click="currentFilter = 'backend'">
               后端
             </span>
-          </div>
+          </div> -->
         </div>
 
         <!-- 文章列表 -->
         <div class="posts-list">
-          <article 
-            v-for="post in filteredPosts" 
-            :key="post.slug" 
-            class="post-card"
-            @click="goToPost(post.slug)"
-          >
+          <article v-for="post in filteredPosts" :key="post.slug" class="post-card" @click="goToPost(post.slug)">
             <!-- 内容区域 -->
             <div class="post-content">
               <div class="post-meta-info">
@@ -55,21 +40,14 @@
               <h3 class="post-title">{{ post.title }}</h3>
               <p class="post-desc">{{ post.excerpt || '暂无描述' }}</p>
               <div class="post-tags" v-if="post.tags && post.tags.length > 0">
-                <span 
-                  v-for="tag in post.tags" 
-                  :key="tag" 
-                  class="post-tag"
-                >
+                <span v-for="tag in post.tags" :key="tag" class="post-tag">
                   #{{ tag }}
                 </span>
               </div>
             </div>
 
             <!-- 封面图片区域 -->
-            <div 
-              v-if="post.cover" 
-              class="post-cover"
-            >
+            <div v-if="post.cover" class="post-cover">
               <img :src="post.cover" :alt="post.title" />
             </div>
           </article>
@@ -371,6 +349,7 @@ const goToPost = (slug: string) => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

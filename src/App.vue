@@ -12,7 +12,6 @@ html, body, #app {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
-  max-width: 100vw;
   width: 100%;
 }
 

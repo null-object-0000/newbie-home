@@ -220,7 +220,6 @@ const handleLinkClick = (linkUrl: string) => {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   width: 100%;
-  max-width: 100vw;
 }
 
 /* ========== 深色主题 (完全匹配 test.html) ========== */
@@ -394,9 +393,10 @@ const handleLinkClick = (linkUrl: string) => {
 /* ========== 仪表板卡片网格 ========== */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
   animation: slideUp 0.5s ease-out;
+  width: 100%;
 }
 
 @media (min-width: 375px) {
@@ -413,7 +413,7 @@ const handleLinkClick = (linkUrl: string) => {
 
 @media (min-width: 768px) {
   .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.5rem;
   }
 }
@@ -430,6 +430,8 @@ const handleLinkClick = (linkUrl: string) => {
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  min-width: 0;
+  overflow: hidden;
 }
 
 @media (min-width: 375px) {
@@ -947,8 +949,9 @@ const handleLinkClick = (linkUrl: string) => {
 
 .quick-links {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.5rem;
+  width: 100%;
 }
 
 @media (min-width: 375px) {
@@ -959,7 +962,7 @@ const handleLinkClick = (linkUrl: string) => {
 
 @media (min-width: 640px) {
   .quick-links {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
   }
 }
