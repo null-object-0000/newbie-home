@@ -82,7 +82,7 @@
             <User :size="24" />
           </div>
           <h3 class="about-title">About Me</h3>
-          <p class="about-desc">全栈开发者，热爱开源，目前专注于 WebGL 和可视化领域。</p>
+          <p class="about-desc">全栈开发者，热爱开源，目前专注于 AI 和可视化工具链领域。</p>
           <a href="https://github.com/null-object-0000" target="_blank" class="about-link">
             了解更多 →
           </a>
@@ -159,9 +159,7 @@
       <div class="footer-container">
         <p>© 2026 Newbie Space. Built with Vue 3 & Vite.</p>
         <div class="footer-links">
-          <a href="#" class="footer-link">RSS</a>
           <a href="https://github.com/null-object-0000" target="_blank" class="footer-link">GitHub</a>
-          <a href="mailto:contact@example.com" class="footer-link">Email</a>
         </div>
       </div>
     </footer>
@@ -839,9 +837,16 @@ const handleIconError = (e: Event) => {
   gap: 0.25rem;
 }
 
-/* ========== 常用导航卡片 (占2列) ========== */
+/* ========== 常用导航卡片 (占2列，无外边框) ========== */
 .card-nav {
   grid-column: 1;
+  background: transparent !important;
+  border: none !important;
+  padding: 0.5rem;
+}
+
+.card-nav:hover {
+  border: none !important;
 }
 
 @media (min-width: 768px) {
@@ -891,7 +896,7 @@ const handleIconError = (e: Event) => {
   }
 }
 
-/* 卡片样式 - 与导航页保持一致 */
+/* 内部网站卡片样式 - 有边框 */
 .quick-link-card {
   display: flex;
   flex-direction: column;
