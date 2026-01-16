@@ -45,6 +45,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.OSS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.OSS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.OSS_REGION || 'us-east-1' }}
+          # 强制使用虚拟主机样式（OSS 要求）
+          AWS_S3_FORCE_PATH_STYLE: false
         run: |
           # 构建上传路径
           OSS_BUCKET="${{ secrets.OSS_BUCKET }}"
@@ -57,21 +59,11 @@ jobs:
             S3_PATH="s3://${OSS_BUCKET}"
           fi
           
-          # 从 endpoint 中提取协议和域名
-          # 例如：https://oss-cn-hangzhou.aliyuncs.com -> https://bucket-name.oss-cn-hangzhou.aliyuncs.com
-          if [[ "$OSS_ENDPOINT" =~ ^(https?://)(.+)$ ]]; then
-            PROTOCOL="${BASH_REMATCH[1]}"
-            DOMAIN="${BASH_REMATCH[2]}"
-            VIRTUAL_HOSTED_ENDPOINT="${PROTOCOL}${OSS_BUCKET}.${DOMAIN}"
-          else
-            VIRTUAL_HOSTED_ENDPOINT="${OSS_BUCKET}.${OSS_ENDPOINT}"
-          fi
-          
           # 上传文件到 S3 兼容的 OSS
-          # 使用虚拟主机样式的 endpoint-url（将 bucket 名称包含在 URL 中）
+          # --endpoint-url 使用基础端点（不包含 bucket 名称）
+          # AWS_S3_FORCE_PATH_STYLE=false 强制使用虚拟主机样式
           # --delete 参数会删除目标中不存在的文件
-          # --no-verify-ssl 可选，如果 OSS 使用自签名证书
           aws s3 sync .vitepress/dist/ ${S3_PATH} \
-            --endpoint-url ${VIRTUAL_HOSTED_ENDPOINT} \
+            --endpoint-url ${OSS_ENDPOINT} \
             --delete \
             --region ${AWS_DEFAULT_REGION}
