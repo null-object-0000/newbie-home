@@ -627,30 +627,69 @@ const handleIconError = (e: Event) => {
 // 时间更新
 let timer: ReturnType<typeof setInterval> | null = null
 
-// IP 获取
-// IP 获取 - 支持多个备用 API
+// IP 获取 - 并发查询，使用最先响应的结果
 const fetchIpData = async () => {
   const apis = [
     'https://get.geojs.io/v1/ip/geo.json',
     'https://ipapi.co/json/',
     'https://ip-api.com/json/',
-    'https://ipwhois.app/json/'
+    'https://ipwhois.app/json/',
+    'https://ipwho.is/',
+    'https://ipinfo.io/json',
+    'https://reallyfreegeoip.org/json',
+    'https://geoip.vuiz.net/json'
   ]
 
-  for (const api of apis) {
+  // 创建一个包装函数，将每个API请求转换为Promise
+  // 无论成功还是失败都 resolve，以便使用 Promise.race
+  const createRequest = async (api: string): Promise<{ success: boolean; data?: any; error?: any; api: string }> => {
     try {
       const response = await fetch(api)
       if (response.ok) {
         const data = await response.json()
-        ipData.value = data
-        return // 成功获取后退出
+        return { success: true, data, api }
+      } else {
+        return { success: false, error: new Error(`HTTP ${response.status}`), api }
       }
     } catch (error) {
-      console.log(`Failed to fetch from ${api}, trying next...`)
-      continue // 继续尝试下一个
+      return { success: false, error, api }
     }
   }
 
+  // 并发发起所有请求
+  const requests = apis.map(api => createRequest(api))
+  
+  // 使用 Promise.race 循环获取最先完成的请求
+  // 如果最先完成的是成功的，就使用它；否则继续等待下一个
+  const pendingIndices = new Set(requests.map((_, index) => index))
+  
+  while (pendingIndices.size > 0) {
+    // 获取所有待处理的请求
+    const pendingRequests = Array.from(pendingIndices).map(index => 
+      requests[index].then(result => ({ ...result, index }))
+    )
+    
+    try {
+      // 等待最先完成的请求
+      const result = await Promise.race(pendingRequests)
+      
+      if (result.success) {
+        // 找到最先成功的响应，使用它
+        ipData.value = result.data
+        console.log(`IP data fetched from ${result.api}`)
+        return
+      } else {
+        // 这个请求失败了，从待处理列表中移除，继续等待其他请求
+        pendingIndices.delete(result.index)
+      }
+    } catch (error) {
+      // 如果出现错误，继续处理剩余的请求
+      // 由于我们的包装函数不会 reject，这里理论上不会执行
+      break
+    }
+  }
+  
+  // 如果所有请求都失败
   console.error('All IP APIs failed')
 }
 
