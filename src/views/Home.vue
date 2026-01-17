@@ -48,24 +48,34 @@
         <!-- 第二行: 开源项目卡片 (1列) + 常用导航卡片 (2列) -->
 
         <!-- 开源项目卡片 -->
-        <div @click="$router.push('/projects')" class="card card-project">
+        <div @click="$router.push('/projects')" class="card card-project" v-if="featuredProject">
           <div class="project-badge">
             <Box :size="14" />
-            <span>Featured Project</span>
+            <span>精选项目</span>
           </div>
-          <div class="project-screenshot">
-            <span>Newbie Space</span>
+          <div class="project-image">
+            <div class="project-image-placeholder">
+              {{ featuredProject.name }}
+            </div>
           </div>
-          <h3 class="project-title">Newbie-Home</h3>
-          <div class="project-stats">
-            <span class="stat-item">
-              <Star :size="14" />
-              <span>New</span>
-            </span>
-            <span class="stat-item">
-              <GitFork :size="14" />
-              <span>Fork</span>
-            </span>
+          <h3 class="project-title">{{ featuredProject.name }}</h3>
+          <p class="project-desc">{{ featuredProject.desc }}</p>
+          <div class="project-footer">
+            <div class="project-stats">
+              <span class="stat-item">
+                <Star :size="14" />
+                <span>{{ featuredProject.stars }}</span>
+              </span>
+            </div>
+            <div class="project-stack">
+              <span 
+                v-for="tech in featuredProject.stack" 
+                :key="tech"
+                class="tech-dot" 
+                :class="getTechColor(tech)"
+                :title="tech"
+              ></span>
+            </div>
           </div>
         </div>
 
@@ -95,10 +105,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import { getAllPosts } from '@/data/posts'
+import { projects } from '@/data/projects'
 import navData from '@/data/nav-data.json'
 import {
   PenTool, User, Compass,
-  Box, Star, GitFork
+  Box, Star
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -107,6 +118,27 @@ const { isDark } = useTheme()
 // 获取最新文章
 const posts = getAllPosts()
 const latestPost = posts[0]
+
+// 获取 stars 最多的项目
+const featuredProject = computed(() => {
+  if (projects.length === 0) return null
+  
+  // 将 stars 转换为数字进行比较，字符串（如 "New"）视为 0
+  const getStarsValue = (stars: number | string): number => {
+    if (typeof stars === 'number') return stars
+    if (typeof stars === 'string') {
+      const num = parseInt(stars, 10)
+      return isNaN(num) ? 0 : num
+    }
+    return 0
+  }
+  
+  return projects.reduce((max, project) => {
+    const maxStars = getStarsValue(max.stars)
+    const currentStars = getStarsValue(project.stars)
+    return currentStars > maxStars ? project : max
+  })
+})
 
 // 近期使用 - 从 localStorage 读取点击记录
 const STORAGE_KEY_CLICKS = 'nav-click-counts'
@@ -201,6 +233,20 @@ const handleLinkClick = (linkUrl: string) => {
       console.error('Failed to save click counts:', e)
     }
   }
+}
+
+// 获取技术栈颜色类
+const getTechColor = (tech: string) => {
+  const map: Record<string, string> = {
+    vue: 'tech-vue',
+    react: 'tech-react',
+    ts: 'tech-ts',
+    vite: 'tech-vite',
+    node: 'tech-node',
+    less: 'tech-less',
+    java: 'tech-java'
+  }
+  return map[tech] || 'tech-default'
 }
 </script>
 
@@ -737,6 +783,7 @@ const handleLinkClick = (linkUrl: string) => {
   color: inherit;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   transition: transform 0.2s, border-color 0.2s;
 }
 
@@ -753,13 +800,13 @@ const handleLinkClick = (linkUrl: string) => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.625rem;
 }
 
 @media (min-width: 375px) {
   .project-badge {
     font-size: 0.6875rem;
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.75rem;
   }
 }
 
@@ -770,68 +817,128 @@ const handleLinkClick = (linkUrl: string) => {
   }
 }
 
-.project-screenshot {
+.project-image {
   width: 100%;
-  height: 5rem;
+  height: 4rem;
+  background: var(--bg-elevated);
   border-radius: 0.5rem;
   margin-bottom: 0.625rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 @media (min-width: 375px) {
-  .project-screenshot {
-    height: 6rem;
-    font-size: 0.875rem;
+  .project-image {
+    height: 4.5rem;
     margin-bottom: 0.75rem;
   }
 }
 
 @media (min-width: 640px) {
-  .project-screenshot {
-    height: 7rem;
-    font-size: 0.9375rem;
+  .project-image {
+    height: 5rem;
     margin-bottom: 1rem;
   }
 }
 
-@media (min-width: 768px) {
-  .project-screenshot {
-    height: 8rem;
-    font-size: 1rem;
+.project-image-placeholder {
+  font-size: 1.5rem;
+  font-weight: 700;
+  opacity: 0.2;
+  transform: scale(1);
+  transition: transform 0.5s;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.card-project:hover .project-image-placeholder {
+  transform: scale(1.05);
+}
+
+@media (min-width: 375px) {
+  .project-image-placeholder {
+    font-size: 1.75rem;
   }
 }
 
-.light-mode .project-screenshot {
-  background: #f3f4f6;
-  color: #9ca3af;
-}
-
-.dark-mode .project-screenshot {
-  background: rgba(39, 39, 42, 1);
-  color: #71717a;
+@media (min-width: 640px) {
+  .project-image-placeholder {
+    font-size: 2rem;
+  }
 }
 
 .project-title {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 0.375rem;
+  line-height: 1.3;
+  transition: color 0.2s;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
 @media (min-width: 375px) {
   .project-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
+    margin: 0 0 0.5rem;
   }
 }
 
 @media (min-width: 640px) {
   .project-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
+  }
+}
+
+.card-project:hover .project-title {
+  color: var(--accent-500);
+}
+
+.project-desc {
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0.375rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.75rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex: 1;
+}
+
+@media (min-width: 375px) {
+  .project-desc {
+    font-size: 0.8125rem;
+    margin: 0.5rem 0 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .project-desc {
+    font-size: 0.875rem;
+    line-height: 1.625;
+  }
+}
+
+.project-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .project-footer {
+    margin-top: 1rem;
   }
 }
 
@@ -839,7 +946,6 @@ const handleLinkClick = (linkUrl: string) => {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  margin-top: 0.5rem;
   font-size: 0.75rem;
   color: var(--text-muted);
   flex-wrap: wrap;
@@ -863,6 +969,50 @@ const handleLinkClick = (linkUrl: string) => {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+.project-stack {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tech-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.tech-vue {
+  background: #10b981;
+}
+
+.tech-react {
+  background: #3b82f6;
+}
+
+.tech-ts {
+  background: #2563eb;
+}
+
+.tech-vite {
+  background: #06b6d4;
+}
+
+.tech-node {
+  background: #16a34a;
+}
+
+.tech-less {
+  background: #fb923c;
+}
+
+.tech-java {
+  background: #f59e0b;
+}
+
+.tech-default {
+  background: #9ca3af;
 }
 
 /* ========== 常用导航卡片 (占2列，无外边框) ========== */
