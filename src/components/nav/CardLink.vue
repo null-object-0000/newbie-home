@@ -22,7 +22,7 @@
         <ExternalLink :size="14" class="card-external-icon" />
       </div>
       <div class="card-content">
-        <p class="card-desc">{{ link.desc || "No description available." }}</p>
+        <p class="card-desc" :class="{ 'card-desc-empty': !link.desc }">{{ link.desc || "No description available." }}</p>
       </div>
     </a>
     <!-- 移动端展开按钮 -->
@@ -429,6 +429,7 @@ onUnmounted(() => {
 <style>
 .card-link-wrapper {
   position: relative;
+  width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   min-width: 0;
@@ -446,9 +447,11 @@ onUnmounted(() => {
   color: inherit;
   flex: 1;
   box-sizing: border-box;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
   overflow: hidden;
+  height: 100%;
 }
 
 @media (min-width: 375px) {
@@ -593,6 +596,9 @@ onUnmounted(() => {
 
 .card-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .card-title {
@@ -630,11 +636,20 @@ onUnmounted(() => {
   margin: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  min-height: calc(1.5em * 2);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-desc-empty {
+  opacity: 0.5;
 }
 
 @media (min-width: 375px) {
   .card-desc {
     font-size: 12px;
+    min-height: calc(1.5em * 2);
   }
 }
 

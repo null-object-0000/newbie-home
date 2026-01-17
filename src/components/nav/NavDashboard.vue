@@ -2033,30 +2033,35 @@ onUnmounted(() => {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 16px;
+  align-items: stretch;
 }
 
 @media (min-width: 640px) {
   .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1280px) {
   .cards-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 .card-wrapper {
   position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
 }
 
 .recent-card {
@@ -2067,6 +2072,8 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: flex-start;
+  width: 100%;
+  height: 100%;
 }
 
 .card-delete-btn {
