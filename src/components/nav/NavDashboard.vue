@@ -631,13 +631,10 @@ let timer: ReturnType<typeof setInterval> | null = null
 const fetchIpData = async () => {
   const apis = [
     'https://get.geojs.io/v1/ip/geo.json',
-    'https://ipapi.co/json/',
-    'https://ip-api.com/json/',
     'https://ipwhois.app/json/',
-    'https://ipwho.is/',
     'https://ipinfo.io/json',
-    'https://reallyfreegeoip.org/json',
-    'https://geoip.vuiz.net/json'
+
+    'https://ipapi.co/json/'
   ]
 
   // 创建一个包装函数，将每个API请求转换为Promise
