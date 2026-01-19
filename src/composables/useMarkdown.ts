@@ -223,6 +223,14 @@ export function extractExcerptFromMarkdown(content: string, maxLength: number = 
     .replace(/```[\s\S]*?```/g, '')
     // 移除行内代码 `code`
     .replace(/`[^`]+`/g, '')
+    // 移除加粗 **text** 或 __text__，但保留文本
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    // 移除斜体 *text* 或 _text_，但保留文本
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    // 移除删除线 ~~text~~，但保留文本
+    .replace(/~~([^~]+)~~/g, '$1')
     // 移除容器标记行 ::: xxx 和 :::，但保留容器内的内容
     .replace(/^:::.*$/gm, '')
     // 移除所有标题行（包括标题文本）
