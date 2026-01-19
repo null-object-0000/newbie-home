@@ -58,6 +58,7 @@ const toggle = () => {
   font-weight: 500;
   color: var(--c-text-1);
   transition: background-color 0.2s;
+  min-width: 0; /* 允许 flex 容器收缩 */
 }
 
 .details-summary:hover {
@@ -77,6 +78,10 @@ const toggle = () => {
 
 .details-title {
   flex: 1;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0; /* 允许 flex 子元素收缩 */
 }
 
 .details-content {
@@ -90,6 +95,9 @@ const toggle = () => {
   color: var(--c-text-2);
   font-size: 14px;
   line-height: 1.6;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .details-inner :deep(pre) {
@@ -98,6 +106,9 @@ const toggle = () => {
   background: var(--c-bg);
   border-radius: var(--radius);
   overflow-x: auto;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .details-inner :deep(pre:last-child) {
