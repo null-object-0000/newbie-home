@@ -436,11 +436,21 @@ const displayData = computed(() => {
 
 // 计算属性
 const formattedTime = computed(() => {
-  return currentTime.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  const date = currentTime.value
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${hours}:${minutes}:${seconds}`
 })
 
 const formattedDate = computed(() => {
-  return currentTime.value.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: '2-digit', day: '2-digit' })
+  const date = currentTime.value
+  const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  const weekday = weekdays[date.getDay()]
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${weekday} ${year}-${month}-${day}`
 })
 
 // 方法
