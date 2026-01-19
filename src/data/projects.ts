@@ -29,11 +29,11 @@ export const projects: Project[] = [
   },
   {
     id: 3,
-    name: 'Web LLM API',
+    name: 'Any AI Bridge',
     stars: 1,
     desc: '将网页版 LLM 转换为标准的 OpenAI 兼容 API。',
     stack: ['java', 'vue'],
-    url: 'https://github.com/null-object-0000/newbie-web-llm-api'
+    url: 'https://github.com/null-object-0000/any-ai-bridge'
   }
 ]
 
