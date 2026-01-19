@@ -32,12 +32,12 @@ async function detectBase() {
       return envBase.endsWith('/') ? envBase : envBase + '/'
     }
     
-    // 默认返回 /newbie-space/（GitHub Pages 部署）
-    return '/newbie-space/'
+    // 默认返回 '/'（根路径）
+    return '/'
   } catch {
     // 如果无法读取文件，使用环境变量或默认值
     const envBase = process.env.BASE_URL || process.env.VITE_BASE_URL
-    return envBase ? (envBase.endsWith('/') ? envBase : envBase + '/') : '/newbie-space/'
+    return envBase ? (envBase.endsWith('/') ? envBase : envBase + '/') : '/'
   }
 }
 

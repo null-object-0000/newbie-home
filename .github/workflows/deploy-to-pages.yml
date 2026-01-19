@@ -40,7 +40,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm run build:github
+        run: npm run build -- --base=/newbie-space/
+        env:
+          BASE_URL: /newbie-space/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
