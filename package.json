@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite-ssg build && node scripts/restructure-html.js",
+    "build:github": "vite-ssg build --base=/newbie-space/ && node scripts/restructure-html.js && BASE_URL=/newbie-space/ node scripts/fix-asset-paths.js",
+    "build:custom": "vite-ssg build --base=/ && node scripts/restructure-html.js",
     "preview": "vite preview",
     "add-nav": "node scripts/add-nav.js"
   },
