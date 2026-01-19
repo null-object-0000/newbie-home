@@ -40,7 +40,7 @@
                 </div>
                 <div class="meta-item">
                   <User :size="16" />
-                  <span>Newbie Space</span>
+                  <span>{{ postMeta?.author || 'Newbie Space' }}</span>
                 </div>
               </div>
             </header>
@@ -61,19 +61,12 @@
             <!-- 文章底部 -->
             <div class="post-footer-actions">
               <div class="footer-meta">
-                <span class="footer-text">最后编辑于 {{ postMeta?.date || '' }}</span>
-              </div>
-              <div class="footer-buttons">
-                <button class="action-button">
-                  <ThumbsUp :size="16" />
-                  <span>点赞</span>
-                </button>
-                <button class="action-button">
-                  <Share2 :size="16" />
-                  <span>分享</span>
-                </button>
+                <span class="footer-text">最后编辑于 {{ formattedLastModified }}</span>
               </div>
             </div>
+
+            <!-- 评论区 -->
+            <GiscusComments />
           </div>
 
           <!-- 右侧：目录 (Sticky Sidebar) -->
@@ -108,8 +101,9 @@
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
-import { ArrowLeft, Calendar, Clock, User, ThumbsUp, Share2 } from 'lucide-vue-next'
+import { ArrowLeft, Calendar, Clock, User } from 'lucide-vue-next'
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer.vue'
+import GiscusComments from '@/components/blog/GiscusComments.vue'
 import { getPostBySlug } from '@/data/posts'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
@@ -122,6 +116,27 @@ const content = ref('')
 const postMeta = computed(() => getPostBySlug(route.params.slug as string))
 const tocItems = ref<Array<{ id: string; text: string; level: number }>>([])
 const activeHeading = ref('')
+
+// 格式化最后修改时间
+const formattedLastModified = computed(() => {
+  const meta = postMeta.value
+  if (!meta) return ''
+  
+  // 优先使用 git 的最后修改时间
+  if (meta.lastModified) {
+    const date = new Date(meta.lastModified)
+    return date.toLocaleDateString('zh-CN', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+  
+  // 回退到使用 frontmatter 的 date 字段
+  return meta.date || ''
+})
 
 const goBack = () => {
   router.push('/posts')

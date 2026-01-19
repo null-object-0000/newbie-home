@@ -108,7 +108,8 @@ function escapeHtml(text: string): string {
 
 // 简单的 frontmatter 解析（不使用 gray-matter 以避免 Node.js 依赖）
 function parseFrontmatter(content: string): { frontmatter: Record<string, any>; body: string } {
-  const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/
+  // 支持 Windows (CRLF) 和 Unix (LF) 行尾符
+  const frontmatterRegex = /^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]+/
   const match = content.match(frontmatterRegex)
   
   if (!match) {
@@ -120,7 +121,8 @@ function parseFrontmatter(content: string): { frontmatter: Record<string, any>; 
   
   // 简单解析 YAML 格式的 frontmatter
   const frontmatter: Record<string, any> = {}
-  const lines = frontmatterStr.split('\n')
+  // 统一处理行尾符，支持 CRLF 和 LF
+  const lines = frontmatterStr.split(/\r?\n/)
   
   let currentKey: string | null = null
   let currentArray: string[] | null = null

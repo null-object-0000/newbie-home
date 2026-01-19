@@ -27,9 +27,8 @@
           </div>
           <h3 class="card-title">{{ latestPost?.title || '暂无文章' }}</h3>
           <p class="card-desc">{{ latestPost?.excerpt || '敬请期待更多内容...' }}</p>
-          <div class="card-tags" v-if="latestPost">
-            <span class="tag">#技术</span>
-            <span class="tag">#排查</span>
+          <div class="card-tags" v-if="latestPost && latestPost.tags && latestPost.tags.length > 0">
+            <span class="tag" v-for="tag in latestPost.tags" :key="tag">#{{ tag }}</span>
           </div>
         </div>
 

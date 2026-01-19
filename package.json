@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite-ssg build && node scripts/restructure-html.js && node scripts/fix-asset-paths.js && node scripts/create-404.js",
+    "build": "node scripts/generate-git-timestamps.cjs && vite-ssg build && node scripts/restructure-html.js && node scripts/fix-asset-paths.js && node scripts/create-404.js",
     "preview": "vite preview",
     "add-nav": "node scripts/add-nav.js"
   },
   "dependencies": {
     "@fontsource/noto-sans-sc": "^5.2.9",
     "@fontsource/outfit": "^5.2.8",
+    "@giscus/vue": "^3.1.1",
     "axios": "^1.13.2",
     "highlight.js": "^11.11.1",
     "lucide-vue-next": "^0.562.0",

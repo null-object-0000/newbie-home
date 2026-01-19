@@ -4,6 +4,7 @@
  * Markdown Frontmatter 规范：
  * ---
  * date: 发布日期，格式 YYYY-MM 或 YYYY-MM-DD（必填）
+ * author: 作者名称（可选，默认为 "Newbie Space"）
  * tags: 标签数组（可选）
  *   - 标签1
  *   - 标签2
@@ -17,15 +18,19 @@
  */
 
 import { parseFrontmatter, extractTitleFromMarkdown, extractExcerptFromMarkdown, calculateReadTime } from '@/composables/useMarkdown'
+import gitTimestamps from './git-timestamps.json'
 
 export interface PostMeta {
   slug: string
   title: string
   date: string
+  author?: string         // 作者名称
   excerpt?: string
   readTime?: number
   tags?: string[]
   cover?: string | null
+  lastModified?: string  // Git 最后修改时间
+  created?: string        // Git 创建时间
 }
 
 // 使用 Vite 的 import.meta.glob 动态导入所有 markdown 文件
@@ -65,14 +70,20 @@ function parseAllPosts(): PostMeta[] {
     const excerpt = extractExcerptFromMarkdown(content)
     const readTime = calculateReadTime(content)
     
+    // 获取 git 时间戳
+    const timestamps = gitTimestamps[slug as keyof typeof gitTimestamps]
+    
     posts.push({
       slug,
       title,
       date: frontmatter.date,
+      author: frontmatter.author || 'Newbie Space',  // 默认作者
       excerpt: excerpt || undefined,
       readTime,
       tags: frontmatter.tags,
-      cover: frontmatter.cover
+      cover: frontmatter.cover,
+      lastModified: timestamps?.lastModified,
+      created: timestamps?.created
     })
   }
   
