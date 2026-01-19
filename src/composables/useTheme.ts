@@ -1,4 +1,5 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
+import { getBasePath } from '@/utils/path'
 
 // 响应式的暗色模式状态
 const isDark = ref(false)
@@ -57,10 +58,17 @@ export function useTheme() {
 
 // 导出一个兼容 VitePress useData 的接口
 export function useData() {
+  // 创建一个响应式的 base 路径
+  // 使用 computed 确保每次访问时都重新计算
+  const base = computed(() => getBasePath())
+  
+  // 创建一个响应式的 site 对象
+  const site = computed(() => ({
+    base: base.value
+  }))
+  
   return {
     isDark,
-    site: ref({
-      base: import.meta.env.BASE_URL || '/'
-    })
+    site
   }
 }

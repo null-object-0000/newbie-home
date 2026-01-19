@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, h, createApp } from 'vue'
 import { useData } from '@/composables/useTheme'
+import { getAssetPath, getBasePath } from '@/utils/path'
 import * as lucideIcons from 'lucide-vue-next'
 import { Globe, ExternalLink, ChevronDown, ChevronUp } from 'lucide-vue-next'
 
@@ -122,7 +123,7 @@ const handleSubLinkClick = (subLink: SubLink) => {
 }
 
 const { site } = useData()
-const base = site.value.base || '/'
+const base = computed(() => site.value.base || getBasePath())
 
 // 状态管理
 const isHovered = ref(false)
@@ -267,15 +268,8 @@ const getIconUrl = (link: Link | SubLink) => {
   // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
   if (link.icon && typeof link.icon === 'string') {
     if (link.icon.startsWith('/')) {
-      // 处理 base 路径：支持相对路径和绝对路径
-      if (base === './' || base === '.') {
-        // 相对路径：将 /icons/xxx 转换为 ./icons/xxx
-        return '.' + link.icon
-      } else {
-        // 绝对路径：拼接 base 和 icon
-        const iconPath = base.endsWith('/') ? base + link.icon.substring(1) : base + link.icon
-        return iconPath
-      }
+      // 使用 getAssetPath 处理路径，自动适配不同部署环境
+      return getAssetPath(link.icon)
     } else if (link.icon.startsWith('http://') || link.icon.startsWith('https://')) {
       // 如果是完整的 URL，直接使用
       return link.icon

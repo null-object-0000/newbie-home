@@ -25,7 +25,7 @@ export const createApp = ViteSSG(
   App,
   { 
     routes, 
-    base: import.meta.env.BASE_URL,
+    base: import.meta.env.BASE_URL || '/',
     // 配置 SSG 预渲染路由
     // @ts-ignore
     getRoutes: getStaticRoutes

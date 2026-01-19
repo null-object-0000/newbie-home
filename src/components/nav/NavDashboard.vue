@@ -14,7 +14,7 @@
       <!-- Sidebar Header (Logo / Brand) -->
       <div class="sidebar-header">
         <div class="sidebar-brand" @click="goHome" style="cursor: pointer;">
-          <img :src="`${base}logo.png`" alt="Newbie Space" class="sidebar-logo" />
+          <img :src="getAssetPath('/logo.png')" alt="Newbie Space" class="sidebar-logo" />
           <h1 class="sidebar-title">Newbie Space</h1>
         </div>
       </div>
@@ -191,6 +191,7 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick, h, createApp } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme, useData } from '@/composables/useTheme'
+import { getAssetPath, getBasePath } from '@/utils/path'
 import navData from '@/data/nav-data.json'
 import * as lucideIcons from 'lucide-vue-next'
 import { Sun, Moon, MapPin, X, Clock, Eye, EyeOff, Trash2, Globe, Menu, Search, ExternalLink, Home, AlertTriangle } from 'lucide-vue-next'
@@ -208,7 +209,7 @@ const rawData = navData.map((cat: any) => {
 // 使用自定义主题管理
 const { isDark, toggleDark } = useTheme()
 const { site } = useData()
-const base = site.value.base || '/'
+const base = computed(() => site.value.base || getBasePath())
 const router = useRouter()
 
 // 本地存储键名
@@ -553,15 +554,8 @@ const getIconUrl = (link: any) => {
   // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
   if (link.icon && typeof link.icon === 'string') {
     if (link.icon.startsWith('/')) {
-      // 处理 base 路径：支持相对路径和绝对路径
-      if (base === './' || base === '.') {
-        // 相对路径：将 /icons/xxx 转换为 ./icons/xxx
-        return '.' + link.icon
-      } else {
-        // 绝对路径：拼接 base 和 icon
-        const iconPath = base.endsWith('/') ? base + link.icon.substring(1) : base + link.icon
-        return iconPath
-      }
+      // 使用 getAssetPath 处理路径，自动适配不同部署环境
+      return getAssetPath(link.icon)
     } else if (link.icon.startsWith('http://') || link.icon.startsWith('https://')) {
       // 如果是完整的 URL，直接使用
       return link.icon
