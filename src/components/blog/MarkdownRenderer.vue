@@ -30,6 +30,7 @@
 import { computed, ref, onMounted, nextTick, watch, onBeforeUnmount } from 'vue'
 import { useMarkdown } from '@/composables/useMarkdown'
 import { useTheme } from '@/composables/useTheme'
+import { getAssetPath } from '@/utils/path'
 import ImageGallery from './ImageGallery.vue'
 import ImageViewer from './ImageViewer.vue'
 import Details from './Details.vue'
@@ -92,8 +93,16 @@ const processImageGalleries = async () => {
     const imgElements = gallery.querySelectorAll('img')
     
     imgElements.forEach((img) => {
+      let src = img.getAttribute('src') || ''
+      // 处理图片路径：移除 /public/ 前缀并使用 getAssetPath
+      if (src.startsWith('/public/')) {
+        src = src.replace(/^\/public/, '')
+      }
+      if (src.startsWith('/')) {
+        src = getAssetPath(src)
+      }
       images.push({
-        src: img.getAttribute('src') || '',
+        src: src,
         alt: img.getAttribute('alt') || ''
       })
     })
@@ -208,9 +217,16 @@ const addImageClickHandlers = () => {
       const clickHandler = (e: Event) => {
         e.preventDefault()
         e.stopPropagation()
-        const src = img.getAttribute('src') || ''
+        let src = img.getAttribute('src') || ''
         const alt = img.getAttribute('alt') || ''
         if (src) {
+          // 处理图片路径：移除 /public/ 前缀并使用 getAssetPath
+          if (src.startsWith('/public/')) {
+            src = src.replace(/^\/public/, '')
+          }
+          if (src.startsWith('/')) {
+            src = getAssetPath(src)
+          }
           viewerImageSrc.value = src
           viewerImageAlt.value = alt
           viewerVisible.value = true
@@ -392,11 +408,33 @@ const scrollToElement = (id: string) => {
   }
 }
 
+// 修复图片路径（移除 /public/ 前缀，并适配不同部署环境）
+const fixImagePaths = () => {
+  if (!markdownRef.value) return
+  
+  const images = markdownRef.value.querySelectorAll('img[src]')
+  images.forEach((img) => {
+    const src = img.getAttribute('src')
+    if (src) {
+      let normalizedSrc = src
+      // 移除 /public/ 前缀
+      if (normalizedSrc.startsWith('/public/')) {
+        normalizedSrc = normalizedSrc.replace(/^\/public/, '')
+      }
+      // 使用 getAssetPath 处理路径，自动适配不同部署环境
+      if (normalizedSrc.startsWith('/')) {
+        img.setAttribute('src', getAssetPath(normalizedSrc))
+      }
+    }
+  })
+}
+
 // 处理所有自定义组件
 const processCustomComponents = async () => {
   await nextTick()
   removeFirstH1()
   addHeadingIds()
+  fixImagePaths() // 修复图片路径
   await processImageGalleries()
   await processDetails()
   addImageClickHandlers()

@@ -74,6 +74,26 @@ md.use(container, 'details', {
   }
 })
 
+// 处理图片路径：移除 /public/ 前缀（Vite 会将 public 目录下的文件复制到根目录）
+const defaultImageRender = md.renderer.rules.image || function (tokens: any[], idx: number, options: any, env: any, self: any) {
+  return self.renderToken(tokens, idx, options)
+}
+
+md.renderer.rules.image = function (tokens: any[], idx: number, options: any, env: any, self: any) {
+  const token = tokens[idx]
+  const srcIndex = token.attrIndex('src')
+  
+  if (srcIndex >= 0) {
+    const src = token.attrs[srcIndex][1]
+    // 移除 /public/ 前缀
+    if (src.startsWith('/public/')) {
+      token.attrs[srcIndex][1] = src.replace(/^\/public/, '')
+    }
+  }
+  
+  return defaultImageRender(tokens, idx, options, env, self)
+}
+
 // HTML 转义函数
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
