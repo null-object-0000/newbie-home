@@ -221,8 +221,8 @@ export function extractExcerptFromMarkdown(content: string, maxLength: number = 
     .replace(/```[\s\S]*?```/g, '')
     // 移除行内代码 `code`
     .replace(/`[^`]+`/g, '')
-    // 移除容器 :::xxx ... :::
-    .replace(/:::[\s\S]*?:::/g, '')
+    // 移除容器标记行 ::: xxx 和 :::，但保留容器内的内容
+    .replace(/^:::.*$/gm, '')
     // 移除所有标题行（包括标题文本）
     .replace(/^#{1,6}\s+.+$/gm, '')
     // 移除列表标记
@@ -279,8 +279,8 @@ export function calculateReadTime(content: string): number {
     // 移除图片和链接
     .replace(/!\[.*?\]\(.*?\)/g, '')
     .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-    // 移除容器
-    .replace(/:::[\s\S]*?:::/g, '')
+    // 移除容器标记行 ::: xxx 和 :::，但保留容器内的内容
+    .replace(/^:::.*$/gm, '')
     // 移除标题标记
     .replace(/^#{1,6}\s+/gm, '')
     // 移除列表标记
