@@ -165,10 +165,8 @@
             </div>
           </section>
         </div>
-
-        <footer class="footer">
-          <p>© 2026 My Dashboard. Optimized for Efficiency.</p>
-        </footer>
+        <!-- 页脚 -->
+        <AppFooter />
       </div>
     </main>
 
@@ -2164,13 +2162,6 @@ onUnmounted(() => {
   background-color: rgba(239, 68, 68, 0.3);
   color: #b91c1c;
   transform: scale(1.1);
-}
-
-.footer {
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.3;
-  padding: 32px 0;
 }
 
 </style>

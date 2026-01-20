@@ -255,11 +255,6 @@ const getTechColor = (tech: string) => {
 <style scoped>
 /* ========== 基础样式 ========== */
 .home-page {
-  --brand-500: #3b82f6;
-  --brand-600: #2563eb;
-  --accent-500: #06b6d4;
-  --accent-600: #0891b2;
-
   min-height: 100vh;
   min-height: 100dvh;
   /* 动态视口高度 */
@@ -274,28 +269,12 @@ const getTechColor = (tech: string) => {
 
 /* ========== 深色主题 (完全匹配 test.html) ========== */
 .dark-mode {
-  --bg-main: #09090b;
-  --bg-surface: #18181b;
-  --bg-elevated: #27272a;
-  --border-color: #27272a;
-  --text-primary: #f4f4f5;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-
   background-color: var(--bg-main);
   color: var(--text-primary);
 }
 
 /* ========== 浅色主题 ========== */
 .light-mode {
-  --bg-main: #f9fafb;
-  --bg-surface: #ffffff;
-  --bg-elevated: #f3f4f6;
-  --border-color: #e5e7eb;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-
   background-color: var(--bg-main);
   color: var(--text-primary);
 }

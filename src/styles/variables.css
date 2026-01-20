@@ -5,20 +5,37 @@
   --c-brand-dark: #535bf2;
   --c-brand-lighter: #9499ff;
 
+  /* Brand Colors (Tailwind-style naming) */
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --accent-500: #06b6d4;
+  --accent-600: #0891b2;
+
   /* Text Colors */
   --c-text-1: rgba(60, 60, 67, 1);
   --c-text-2: rgba(60, 60, 67, 0.78);
   --c-text-3: rgba(60, 60, 67, 0.56);
+  
+  /* Text Colors (Semantic naming) */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
 
   /* Background Colors */
   --c-bg: #ffffff;
   --c-bg-soft: #f6f6f7;
   --c-bg-mute: #e7e7e9;
   --c-bg-alt: #f6f6f7;
+  
+  /* Background Colors (Semantic naming) */
+  --bg-main: #f9fafb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f3f4f6;
 
   /* Border/Divider */
   --c-divider: rgba(60, 60, 67, 0.12);
   --c-divider-light: rgba(60, 60, 67, 0.08);
+  --border-color: #e5e7eb;
 
   /* Shadows */
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -74,17 +91,34 @@ html.dark,
   --c-brand-dark: #646cff;
   --c-brand-lighter: #c8caff;
 
+  /* Brand Colors (Tailwind-style naming) */
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --accent-500: #06b6d4;
+  --accent-600: #0891b2;
+
   --c-text-1: rgba(255, 255, 255, 0.87);
   --c-text-2: rgba(235, 235, 245, 0.6);
   --c-text-3: rgba(235, 235, 245, 0.38);
+  
+  /* Text Colors (Semantic naming) */
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
 
   --c-bg: #1a1a1a;
   --c-bg-soft: #242424;
   --c-bg-mute: #2f2f2f;
   --c-bg-alt: #161618;
+  
+  /* Background Colors (Semantic naming) */
+  --bg-main: #09090b;
+  --bg-surface: #18181b;
+  --bg-elevated: #27272a;
 
   --c-divider: rgba(84, 84, 88, 0.48);
   --c-divider-light: rgba(84, 84, 88, 0.32);
+  --border-color: #27272a;
 
   /* Update VitePress aliases for dark mode */
   --vp-c-brand: var(--c-brand);
