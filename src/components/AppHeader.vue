@@ -4,7 +4,7 @@
     <nav class="glass-nav">
       <div class="nav-container">
         <div class="logo-area" @click="$router.push('/')">
-          <div class="logo-icon">N</div>
+          <img src="/logo.png" alt="Newbie Space" class="logo-image" />
           <span class="site-title">Newbie Space</span>
         </div>
 
@@ -160,38 +160,50 @@ const mobileMenuOpen = ref(false)
 .logo-area {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.5rem;
   cursor: pointer;
   flex-shrink: 0;
 }
 
 @media (min-width: 375px) {
   .logo-area {
-    gap: 0.5rem;
+    gap: 0.625rem;
   }
 }
 
-.logo-icon {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 0.375rem;
-  background: linear-gradient(to bottom right, var(--brand-500, #3b82f6), var(--accent-600, #0891b2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 0.875rem;
+@media (min-width: 640px) {
+  .logo-area {
+    gap: 0.75rem;
+  }
+}
+
+.logo-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
   flex-shrink: 0;
+  transition: transform 0.2s;
 }
 
 @media (min-width: 375px) {
-  .logo-icon {
-    width: 2rem;
-    height: 2rem;
+  .logo-image {
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 0.5rem;
-    font-size: 1rem;
   }
+}
+
+@media (min-width: 640px) {
+  .logo-image {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+  }
+}
+
+.logo-area:hover .logo-image {
+  transform: scale(1.05);
 }
 
 .site-title {

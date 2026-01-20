@@ -47,7 +47,7 @@
         <!-- 第二行: 开源项目卡片 (1列) + 常用导航卡片 (2列) -->
 
         <!-- 开源项目卡片 -->
-        <div @click="$router.push('/projects')" class="card card-project" v-if="featuredProject">
+        <div @click="goToProject(featuredProject)" class="card card-project" v-if="featuredProject">
           <div class="project-badge">
             <Box :size="14" />
             <span>精选项目</span>
@@ -67,13 +67,8 @@
               </span>
             </div>
             <div class="project-stack">
-              <span 
-                v-for="tech in featuredProject.stack" 
-                :key="tech"
-                class="tech-dot" 
-                :class="getTechColor(tech)"
-                :title="tech"
-              ></span>
+              <span v-for="tech in featuredProject.stack" :key="tech" class="tech-dot" :class="getTechColor(tech)"
+                :title="tech"></span>
             </div>
           </div>
         </div>
@@ -104,7 +99,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 import { getAllPosts } from '@/data/posts'
-import { projects } from '@/data/projects'
+import { Project, projects } from '@/data/projects'
 import navData from '@/data/nav-data.json'
 import {
   PenTool, User, Compass,
@@ -121,7 +116,7 @@ const latestPost = posts[0]
 // 获取 stars 最多的项目
 const featuredProject = computed(() => {
   if (projects.length === 0) return null
-  
+
   // 将 stars 转换为数字进行比较，字符串（如 "New"）视为 0
   const getStarsValue = (stars: number | string): number => {
     if (typeof stars === 'number') return stars
@@ -131,7 +126,7 @@ const featuredProject = computed(() => {
     }
     return 0
   }
-  
+
   return projects.reduce((max, project) => {
     const maxStars = getStarsValue(max.stars)
     const currentStars = getStarsValue(project.stars)
@@ -222,8 +217,13 @@ const goToLatestPost = () => {
   }
 }
 
-// 处理链接点击（记录点击次数）
+const goToProject = (project: Project) => {
+  window.open(project.url, '_blank', 'noopener,noreferrer')
+}
+
+// 处理链接点击（记录点击次数并打开链接）
 const handleLinkClick = (linkUrl: string) => {
+  // 记录点击次数
   clickCounts.value[linkUrl] = (clickCounts.value[linkUrl] || 0) + 1
   if (typeof localStorage !== 'undefined') {
     try {
@@ -232,6 +232,9 @@ const handleLinkClick = (linkUrl: string) => {
       console.error('Failed to save click counts:', e)
     }
   }
+
+  // 打开链接
+  window.open(linkUrl, '_blank', 'noopener,noreferrer')
 }
 
 // 获取技术栈颜色类
@@ -258,7 +261,8 @@ const getTechColor = (tech: string) => {
   --accent-600: #0891b2;
 
   min-height: 100vh;
-  min-height: 100dvh; /* 动态视口高度 */
+  min-height: 100dvh;
+  /* 动态视口高度 */
   display: flex;
   flex-direction: column;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -340,14 +344,14 @@ const getTechColor = (tech: string) => {
     padding-left: calc(12px + env(safe-area-inset-left, 0px));
     padding-right: calc(12px + env(safe-area-inset-right, 0px));
   }
-  
+
   @media (min-width: 375px) {
     .main-content {
       padding-left: calc(16px + env(safe-area-inset-left, 0px));
       padding-right: calc(16px + env(safe-area-inset-right, 0px));
     }
   }
-  
+
   @media (min-width: 640px) {
     .main-content {
       padding-left: calc(24px + env(safe-area-inset-left, 0px));
