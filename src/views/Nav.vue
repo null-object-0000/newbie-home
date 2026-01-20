@@ -108,8 +108,10 @@
             <MapPin :size="12" class="ip-location-icon" />
             <Transition name="location-fade" mode="out-in">
               <div v-if="ipData" key="content" class="ip-location-content">
-                <span v-if="ipData.city === (ipData.country_name || ipData.country)">{{ ipData.city || 'Unknown' }}</span>
-                <span v-else>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || ipData.country || 'Unknown' }}</span>
+                <span v-if="ipData.city === (ipData.country_name || ipData.country)">{{ ipData.city || 'Unknown'
+                  }}</span>
+                <span v-else>{{ ipData.city || 'Unknown' }}, {{ ipData.country_name || ipData.country || 'Unknown'
+                  }}</span>
                 <span class="ip-location-divider"></span>
                 <span class="ip-location-ip">{{ ipData.ip }}</span>
               </div>
@@ -127,7 +129,7 @@
                 <option value="bing">Bing</option>
               </select>
               <div class="search-divider"></div>
-              <input v-model="searchQuery" type="text" placeholder="Search..." class="search-input" autofocus />
+              <input v-model="searchQuery" type="text" placeholder="Search..." class="search-input" />
               <button type="submit" class="search-button">
                 <Search :size="20" />
               </button>
@@ -150,15 +152,14 @@
 
             <!-- Cards Grid -->
             <div class="cards-grid">
-              <div v-for="(link, idx) in category.links" :key="idx" class="card-wrapper"
-                :class="{ 
-                  'recent-card': category.name === '近期使用'
-                }">
+              <div v-for="(link, idx) in category.links" :key="idx" class="card-wrapper" :class="{
+                'recent-card': category.name === '近期使用'
+              }">
                 <div class="card-link-container">
                   <CardLink :link="link" @click="handleLinkClick" />
                 </div>
-                <button v-if="category.name === '近期使用'" class="card-delete-btn" @click.stop="removeFromRecent(link.link)"
-                  :title="'删除 ' + link.name">
+                <button v-if="category.name === '近期使用'" class="card-delete-btn"
+                  @click.stop="removeFromRecent(link.link)" :title="'删除 ' + link.name">
                   <Trash2 :size="14" />
                 </button>
               </div>
@@ -171,17 +172,9 @@
     </main>
 
     <!-- 非大陆网络提醒对话框 -->
-    <Dialog
-      v-model="showNetworkWarning"
-      title="需要非大陆网络"
-      message="检测到您当前位于中国大陆，该网站需要非大陆网络才能正常访问。"
-      sub-message="如果您已配置代理或 VPN，可以继续访问；否则可能无法正常使用。"
-      :icon="AlertTriangle"
-      cancel-text="取消"
-      confirm-text="继续访问"
-      @confirm="confirmNavigation"
-      @cancel="cancelNavigation"
-    />
+    <Dialog v-model="showNetworkWarning" title="需要非大陆网络" message="检测到您当前位于中国大陆，该网站需要非大陆网络才能正常访问。"
+      sub-message="如果您已配置代理或 VPN，可以继续访问；否则可能无法正常使用。" :icon="AlertTriangle" cancel-text="取消" confirm-text="继续访问"
+      @confirm="confirmNavigation" @cancel="cancelNavigation" />
   </div>
 </template>
 
@@ -264,16 +257,16 @@ const isInMainlandChina = (): boolean => {
     // 如果 IP 数据还未加载，默认不阻止（避免误判）
     return false
   }
-  
+
   // 检查国家代码
   const countryCode = ipData.value.country_code || ipData.value.countryCode || ''
   const countryName = ipData.value.country_name || ipData.value.country || ''
-  
+
   // 检查是否是中国（CN）或中国大陆
   if (countryCode === 'CN' || countryCode === 'cn') {
     return true
   }
-  
+
   // 也检查国家名称（作为备用）
   if (countryName && (
     countryName.toLowerCase().includes('china') ||
@@ -282,7 +275,7 @@ const isInMainlandChina = (): boolean => {
   )) {
     return true
   }
-  
+
   return false
 }
 
@@ -311,7 +304,7 @@ const handleLinkClick = (linkUrl: string, linkData?: any) => {
       if (link) break
     }
   }
-  
+
   // 检查是否需要非大陆网络
   if (link && link.requiresNonMainlandNetwork) {
     // 检查是否在中国大陆
@@ -323,7 +316,7 @@ const handleLinkClick = (linkUrl: string, linkData?: any) => {
       return // 阻止默认跳转
     }
   }
-  
+
   // 正常跳转
   incrementClickCount(linkUrl)
   window.open(linkUrl, '_blank', 'noopener,noreferrer')
@@ -381,7 +374,7 @@ const saveShowRecentSetting = () => {
 
 // 获取所有链接的扁平列表
 const getAllLinks = () => {
-  return rawData.flatMap(cat => 
+  return rawData.flatMap(cat =>
     cat.links.map(link => ({
       ...link,
       categoryName: cat.name,
@@ -419,7 +412,7 @@ const recentUsedCategory = computed(() => {
 
 // 检查是否有任何点击记录
 const hasClickRecords = computed(() => {
-  return Object.keys(clickCounts.value).length > 0 && 
+  return Object.keys(clickCounts.value).length > 0 &&
     Object.values(clickCounts.value).some(count => count > 0)
 })
 
@@ -472,19 +465,19 @@ const scrollToCategory = (name: string) => {
     const headerOffset = isMobile.value ? 76 : 0 // 移动端头部高度约 56px，加上一些间距
     const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - headerOffset
-    
+
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth'
     })
-    
+
     // 如果是在 main-content 内滚动，需要调整
     const mainContent = document.querySelector('.main-content') as HTMLElement
     if (mainContent && isMobile.value) {
       const scrollTop = mainContent.scrollTop
       const elementRelativeTop = element.getBoundingClientRect().top - mainContent.getBoundingClientRect().top
       const targetScrollTop = scrollTop + elementRelativeTop - headerOffset
-      
+
       mainContent.scrollTo({
         top: Math.max(0, targetScrollTop),
         behavior: 'smooth'
@@ -548,7 +541,7 @@ const getIconUrl = (link: any) => {
   if (isLucideIcon(link.icon)) {
     return null
   }
-  
+
   // 如果 link.icon 存在且是路径（以 / 开头），使用本地图标
   if (link.icon && typeof link.icon === 'string') {
     if (link.icon.startsWith('/')) {
@@ -638,11 +631,9 @@ let timer: ReturnType<typeof setInterval> | null = null
 // IP 获取 - 并发查询，使用最先响应的结果
 const fetchIpData = async () => {
   const apis = [
-    'https://get.geojs.io/v1/ip/geo.json',
     'https://ipwhois.app/json/',
-    'https://ipinfo.io/json',
-
-    'https://ipapi.co/json/'
+    'https://get.geojs.io/v1/ip/geo.json',
+    'https://ipinfo.io/json'
   ]
 
   // 创建一个包装函数，将每个API请求转换为 Promise
@@ -663,21 +654,21 @@ const fetchIpData = async () => {
 
   // 并发发起所有请求
   const requests = apis.map(api => createRequest(api))
-  
+
   // 使用 Promise.race 循环获取最先完成的请求
   // 如果最先完成的是成功的，就使用它；否则继续等待下一个
   const pendingIndices = new Set(requests.map((_, index) => index))
-  
+
   while (pendingIndices.size > 0) {
     // 获取所有待处理的请求
-    const pendingRequests = Array.from(pendingIndices).map(index => 
+    const pendingRequests = Array.from(pendingIndices).map(index =>
       requests[index].then(result => ({ ...result, index }))
     )
-    
+
     try {
       // 等待最先完成的请求
       const result = await Promise.race(pendingRequests)
-      
+
       if (result.success) {
         // 找到最先成功的响应，使用它
         ipData.value = result.data
@@ -693,7 +684,7 @@ const fetchIpData = async () => {
       break
     }
   }
-  
+
   // 如果所有请求都失败
   console.error('All IP APIs failed')
 }
@@ -701,19 +692,19 @@ const fetchIpData = async () => {
 // 检查位置信息是否在视野中
 const checkHeaderVisibility = () => {
   if (!ipLocationWidgetRef.value) return
-  
+
   const locationWidget = ipLocationWidgetRef.value
   const rect = locationWidget.getBoundingClientRect()
   const mainContent = locationWidget.closest('.main-content') as HTMLElement
-  
+
   if (!mainContent) return
-  
+
   // 检查位置信息是否完全滚出视野
   const isLocationOutOfView = rect.bottom < 0
-  
+
   // 检查是否在顶部（滚动位置很小）
   const isAtTop = mainContent.scrollTop < 50
-  
+
   // 移动端才应用这个逻辑
   if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     if (isAtTop) {
@@ -757,26 +748,26 @@ const checkIsMobile = () => {
 onMounted(() => {
   // 设置 body overflow 为 hidden，让 NavDashboard 内部的滚动容器处理滚动
   document.body.style.overflow = 'hidden'
-  
+
   // 检测是否为移动端
   checkIsMobile()
-  
+
   // 加载本地存储的数据
   loadClickCounts()
   loadShowRecentSetting()
-  
+
   // 初始化 activeCategory（移动端不显示近期使用）
   if (!isMobile.value && showRecentUsed.value && recentUsedCategory.value) {
     activeCategory.value = '近期使用'
   } else {
     activeCategory.value = rawData[0].name
   }
-  
+
   timer = setInterval(() => {
     currentTime.value = new Date()
   }, 1000)
   fetchIpData()
-  
+
   // 添加滚动监听（移动端）
   mainContentElement = document.querySelector('.main-content') as HTMLElement
   if (mainContentElement) {
@@ -786,7 +777,7 @@ onMounted(() => {
       checkHeaderVisibility()
     })
   }
-  
+
   // 监听窗口大小变化
   window.addEventListener('resize', () => {
     checkIsMobile()
@@ -797,31 +788,31 @@ onMounted(() => {
 // 监听 ipData 变化，实现外框宽度平滑过渡
 watch(ipData, async (newData, oldData) => {
   if (!ipLocationWidgetRef.value) return
-  
+
   // 如果从无数据到有数据，或从有数据到无数据，触发宽度过渡
   if ((!oldData && newData) || (oldData && !newData)) {
     // 先获取当前宽度
     const currentWidth = ipLocationWidgetRef.value.offsetWidth
-    
+
     // 等待 DOM 更新
     await nextTick()
-    
+
     // 获取新内容的宽度
     const newWidth = ipLocationWidgetRef.value.scrollWidth
-    
+
     // 如果宽度不同，设置过渡
     if (Math.abs(newWidth - currentWidth) > 1) {
       // 临时设置固定宽度以实现过渡
       ipLocationWidgetRef.value.style.width = `${currentWidth}px`
-      
+
       // 强制重排
       ipLocationWidgetRef.value.offsetHeight
-      
+
       // 设置新宽度，触发过渡
       requestAnimationFrame(() => {
         if (ipLocationWidgetRef.value) {
           ipLocationWidgetRef.value.style.width = `${newWidth}px`
-          
+
           // 过渡完成后，恢复自动宽度
           setTimeout(() => {
             if (ipLocationWidgetRef.value) {
@@ -839,16 +830,16 @@ onUnmounted(() => {
   if (typeof document !== 'undefined') {
     document.body.style.overflow = ''
   }
-  
+
   if (timer) {
     clearInterval(timer)
   }
-  
+
   // 移除滚动监听
   if (mainContentElement) {
     mainContentElement.removeEventListener('scroll', handleScroll)
   }
-  
+
   // 移除窗口大小监听
   if (typeof window !== 'undefined') {
     window.removeEventListener('resize', handleResize)
@@ -1669,11 +1660,11 @@ onUnmounted(() => {
   backdrop-filter: blur(12px);
   border: 1px solid;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-              max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.3s, 
-              background-color 0.3s, 
-              border-color 0.3s;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s,
+    background-color 0.3s,
+    border-color 0.3s;
   user-select: none;
   max-width: 100%;
   overflow: hidden;
@@ -2163,5 +2154,4 @@ onUnmounted(() => {
   color: #b91c1c;
   transform: scale(1.1);
 }
-
 </style>
