@@ -21,6 +21,12 @@
         "icon": "/icons/newsnow_busiyi_world.svg",
         "link": "https://newsnow.busiyi.world/",
         "desc": "NewsNow - 实时新闻聚合阅读器，汇集全球热点新闻，提供优雅的阅读体验"
+      },
+      {
+        "name": "arthas",
+        "icon": "/icons/arthas_aliyun_com.ico",
+        "link": "https://arthas.aliyun.com/",
+        "desc": "Arthas 是一款线上监控诊断产品，通过全局视角实时查看应用 load、内存、gc、线程的状态信息，并能在不修改应用代码的情况下，对业务问题进行诊断，包括查看方法调用的出入参、异常，监测方法执行耗时，类加载信息等，大大提升线上问题排查效率。"
       }
     ]
   },
@@ -30,24 +36,24 @@
     "icon": "terminal",
     "links": [
       {
-        "name": "微信官方文档 | 微信开放文档",
+        "name": "微信官方文档",
         "icon": "/icons/developers_weixin_qq_com.ico",
         "link": "https://developers.weixin.qq.com/doc/",
         "desc": "微信开发者平台文档",
         "subLinks": [
           {
             "name": "微信公众号开发文档",
-            "icon": "/icons/developers_weixin_qq_com.ico",
+            "icon": "file-text",
             "link": "https://developers.weixin.qq.com/doc/subscription/guide/h5/jssdk.html"
           },
           {
             "name": "微信小程序开发文档",
-            "icon": "/icons/developers_weixin_qq_com.ico",
+            "icon": "smartphone",
             "link": "https://developers.weixin.qq.com/miniprogram/dev/framework/"
           },
           {
             "name": "微信公众号测试号",
-            "icon": "/icons/mp_weixin_qq_com.ico",
+            "icon": "flask-conical",
             "link": "https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login"
           }
         ]
@@ -149,7 +155,15 @@
         "icon": "/icons/gemini_google_com.svg",
         "link": "https://gemini.google.com/",
         "desc": "认识 Gemini：Google 旗下的 AI 助理。在写作、规划和开展头脑风暴等方面获得帮助。体验生成式 AI 的强大功能。",
-        "requiresNonMainlandNetwork": true
+        "requiresNonMainlandNetwork": true,
+        "subLinks": [
+          {
+            "name": "图像去水印",
+            "icon": "banana",
+            "link": "https://banana.ovo.re/",
+            "desc": "Gemini AI 图像去水印，基于反向 Alpha 混合算法，纯浏览器本地处理，免费、极速、无损"
+          }
+        ]
       },
       {
         "name": "天工",

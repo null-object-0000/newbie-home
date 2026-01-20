@@ -83,7 +83,7 @@
             <router-link to="/nav/" class="view-all">查看全部 →</router-link>
           </div>
           <div class="quick-links">
-            <CardLink v-for="link in featuredLinks" :key="link.name" :link="link" @click="handleLinkClick" />
+            <CardLink v-for="link in featuredLinks" :key="link.name" :link="link" :show-sublinks="false" @click="handleLinkClick" />
           </div>
         </div>
       </div>

@@ -105,9 +105,12 @@ interface Link {
 
 interface Props {
   link: Link
+  showSublinks?: boolean // 是否展示子链接卡片
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showSublinks: true // 默认展示子链接
+})
 const emit = defineEmits<{
   click: [linkUrl: string, linkData?: any]
 }>()
@@ -134,7 +137,7 @@ let hideMenuTimer: ReturnType<typeof setTimeout> | null = null
 let isMenuHovered = false
 
 const hasSublinks = computed(() => {
-  return props.link.subLinks && props.link.subLinks.length > 0
+  return props.showSublinks && props.link.subLinks && props.link.subLinks.length > 0
 })
 
 // 检测是否为移动端
@@ -772,7 +775,7 @@ onUnmounted(() => {
 .sublinks-menu-list {
   max-height: 360px;
   overflow-y: auto;
-  padding: 4px;
+  padding: 4px 8px 4px 4px;
 }
 
 .sublinks-menu-list::-webkit-scrollbar {
