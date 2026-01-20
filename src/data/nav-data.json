@@ -91,6 +91,11 @@
             "name": "CDN 管理",
             "link": "https://cdn.console.aliyun.com/",
             "icon": "zap"
+          },
+          {
+            "name": "应用诊断平台",
+            "link": "https://atp.console.aliyun.com/",
+            "icon": "bug"
           }
         ]
       }
