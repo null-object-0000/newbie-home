@@ -93,14 +93,8 @@ const processImageGalleries = async () => {
     const imgElements = gallery.querySelectorAll('img')
     
     imgElements.forEach((img) => {
-      let src = img.getAttribute('src') || ''
-      // 处理图片路径：移除 /public/ 前缀并使用 getAssetPath
-      if (src.startsWith('/public/')) {
-        src = src.replace(/^\/public/, '')
-      }
-      if (src.startsWith('/')) {
-        src = getAssetPath(src)
-      }
+      // 图片路径已被 fixImagePaths() 处理过，直接使用即可
+      const src = img.getAttribute('src') || ''
       images.push({
         src: src,
         alt: img.getAttribute('alt') || ''
@@ -217,16 +211,10 @@ const addImageClickHandlers = () => {
       const clickHandler = (e: Event) => {
         e.preventDefault()
         e.stopPropagation()
-        let src = img.getAttribute('src') || ''
+        // 图片路径已被 fixImagePaths() 处理过，直接使用即可
+        const src = img.getAttribute('src') || ''
         const alt = img.getAttribute('alt') || ''
         if (src) {
-          // 处理图片路径：移除 /public/ 前缀并使用 getAssetPath
-          if (src.startsWith('/public/')) {
-            src = src.replace(/^\/public/, '')
-          }
-          if (src.startsWith('/')) {
-            src = getAssetPath(src)
-          }
           viewerImageSrc.value = src
           viewerImageAlt.value = alt
           viewerVisible.value = true
