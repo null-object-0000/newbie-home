@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const cheerio = require('cheerio');
-const inquirer = require('inquirer');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import inquirer from 'inquirer';
+
+// ES 模块中获取 __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 常见网站的图标映射
 const iconMap = {
@@ -196,7 +201,7 @@ async function fetchWebsiteInfo(url) {
 
 // 读取导航数据
 function readNavData() {
-  const jsonFile = path.join(__dirname, '..', 'nav', 'nav-data.json');
+  const jsonFile = path.join(__dirname, '..', 'src', 'data', 'nav-data.json');
   
   if (!fs.existsSync(jsonFile)) {
     throw new Error('找不到 nav-data.json 文件');
@@ -213,7 +218,7 @@ function readNavData() {
 
 // 写入导航数据
 function writeNavData(navData) {
-  const jsonFile = path.join(__dirname, '..', 'nav', 'nav-data.json');
+  const jsonFile = path.join(__dirname, '..', 'src', 'data', 'nav-data.json');
   
   try {
     const content = JSON.stringify(navData, null, 2);
