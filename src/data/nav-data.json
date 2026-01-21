@@ -206,6 +206,12 @@
         "icon": "/icons/longcat_chat.svg",
         "link": "https://longcat.chat/",
         "desc": "LongCat，不止更快"
+      },
+      {
+        "name": "呜哩AI",
+        "icon": "/icons/wuli_art.ico",
+        "link": "https://wuli.art/",
+        "desc": "呜哩一下，创意开花。在这里，AI绘画与视频创作触手可及，无限灵感在社区中碰撞交融。让呜哩AI成为您的创作引擎，与您一同探索智能创作的星辰大海！"
       }
     ]
   },
