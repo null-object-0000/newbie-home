@@ -212,6 +212,12 @@
         "icon": "/icons/wuli_art.ico",
         "link": "https://wuli.art/",
         "desc": "呜哩一下，创意开花。在这里，AI绘画与视频创作触手可及，无限灵感在社区中碰撞交融。让呜哩AI成为您的创作引擎，与您一同探索智能创作的星辰大海！"
+      },
+      {
+        "name": "Kimi - 会推理解析，能深度思考的AI助手",
+        "icon": "/icons/kimi_com.ico",
+        "link": "https://www.kimi.com/",
+        "desc": "Kimi 是一个有着超大“内存”的智能助手，可以一口气读完二十万字的小说，还会上网冲浪，快来跟他聊聊吧 | Kimi - Moonshot AI 出品的智能助手"
       }
     ]
   },
@@ -252,6 +258,18 @@
         "icon": "/icons/coze_cn.png",
         "link": "https://www.coze.cn/",
         "desc": "扣子(Coze)是基于AI Agent的智能办公平台，提供AI写作、PPT生成、网页开发与AI设计等一体化生产力工具，扣子致力于为用户与企业提供高效、安全、便捷的智能办公新体验。"
+      },
+      {
+        "name": "Pencil",
+        "icon": "/icons/pencil_dev.ico",
+        "link": "https://www.pencil.dev/",
+        "desc": "Pencil fundamentally increases your engineering speed by bringing designing directly into your prefe"
+      },
+      {
+        "name": "Molt",
+        "icon": "/icons/molt_bot.svg",
+        "link": "https://www.molt.bot/",
+        "desc": "Moltbot — The AI that actually does things. Your personal assistant on any platform."
       }
     ]
   },
