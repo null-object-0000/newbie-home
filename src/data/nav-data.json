@@ -266,10 +266,10 @@
         "desc": "Pencil fundamentally increases your engineering speed by bringing designing directly into your prefe"
       },
       {
-        "name": "Molt",
-        "icon": "/icons/molt_bot.svg",
-        "link": "https://www.molt.bot/",
-        "desc": "Moltbot — The AI that actually does things. Your personal assistant on any platform."
+        "name": "Openclaw",
+        "icon": "/icons/openclaw_ai.svg",
+        "link": "https://openclaw.ai/",
+        "desc": "OpenClaw — The AI that actually does things. Your personal assistant on any platform."
       }
     ]
   },
@@ -313,7 +313,7 @@
       },
       {
         "name": "云雾 API",
-        "icon": "yunwu",
+        "icon": "/icons/yunwu_ai.png",
         "link": "https://yunwu.ai/",
         "desc": "提供稳定可靠的API中转服务，支持ChatGPT、Claude等多种AI模型，国内直连无需代理，低延迟高并发，按量计费更经济。"
       }
